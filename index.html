@@ -3,101 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>iTH!NK — the GAME · The First Valley</title>
+<title>iTHiNK — the GAME · The First Valley</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   :root{
     --midnight:#0B1024; --indigo:#141B36; --royal:#1E2A55; --line:#2A3560;
     --teal:#1EA896; --gold:#D4AF37; --sienna:#C26A3D; --amethyst:#8E7BC8;
-    --parchment:#EDE6D6; --stone:#A7A9B2; --text:#E8E4D8; --dim:#7A80A0;
+    --parchment:#EDE6D6; --stone:#A7A9B2; --text:#E8E4D8; --dim:#8A90B0;
+    --wpyellow:#F6EF7D; --wpwhite:#FFFFFF;
   }
   *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
-  body{background:var(--midnight); color:var(--text); font-family:'EB Garamond',Georgia,serif; font-size:16px; line-height:1.5; display:flex; justify-content:center;}
-  #game{width:min(430px,100vw); min-height:100vh; display:flex; flex-direction:column; padding:0 10px calc(14px + env(safe-area-inset-bottom));}
-  button{font-family:inherit; cursor:pointer; border:none; border-radius:10px; font-size:1rem;}
+  body{background:var(--midnight); color:var(--text); font-family:'EB Garamond',Georgia,serif; font-size:17px; line-height:1.5; display:flex; justify-content:center;}
+  #game{width:min(430px,100vw); height:100dvh; display:flex; flex-direction:column; padding:0 10px calc(10px + env(safe-area-inset-bottom)); overflow-y:auto;}
+  button{font-family:inherit; cursor:pointer; border:none; border-radius:10px; font-size:1.02rem;}
   .cinzel{font-family:'Cinzel',Georgia,serif;}
 
-  /* HUD — slim, sticky */
-  #hud{position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:10px; padding:8px 2px 6px; background:var(--midnight); min-height:44px;}
+  /* HUD */
+  #hud{display:flex; align-items:center; gap:10px; padding:10px 2px 8px; background:var(--midnight); min-height:48px; flex:0 0 auto;}
   .hi-wrap{flex:1; min-width:120px;}
-  .hi-label{display:flex; justify-content:space-between; font-size:.58rem; letter-spacing:1.5px; color:var(--dim); margin-bottom:3px; text-transform:uppercase; font-family:'Cinzel',serif;}
-  .hi-track{height:10px; background:#0d1230; border:1px solid var(--line); border-radius:99px; position:relative; overflow:hidden;}
+  .hi-label{display:flex; justify-content:space-between; font-size:.62rem; letter-spacing:1.5px; color:var(--dim); margin-bottom:3px; text-transform:uppercase; font-family:'Cinzel',serif;}
+  .hi-track{height:11px; background:#0d1230; border:1px solid var(--line); border-radius:99px; position:relative; overflow:hidden;}
   .hi-cur{position:absolute; top:0; bottom:0; left:0; background:linear-gradient(90deg,var(--sienna),var(--gold)); border-radius:99px; transition:width 1.4s ease;}
   .hi-pot{position:absolute; top:-1px; bottom:-1px; border:1.5px dashed var(--teal); border-left:none; border-radius:0 99px 99px 0;}
-  .codex-chip{background:var(--indigo); border:1px solid var(--amethyst); color:var(--amethyst); border-radius:99px; padding:6px 12px; font-size:.72rem; font-family:'Cinzel',serif; letter-spacing:1px;}
+  .codex-chip{background:var(--indigo); border:1px solid var(--amethyst); color:var(--amethyst); border-radius:99px; padding:7px 13px; font-size:.76rem; font-family:'Cinzel',serif; letter-spacing:1px;}
 
-  /* stage */
-  #stage{width:100%; background:#0d1230; border:1px solid var(--line); border-radius:12px; overflow:hidden; line-height:0;}
-  #stage svg{width:100%; height:auto; display:block;}
+  /* stage fills the free screen */
+  #stage{flex:1 1 auto; min-height:210px; position:relative; background:#0d1230; border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  #stage svg{position:absolute; inset:0; width:100%; height:100%;}
 
   /* dialogue */
-  #dlg{margin-top:8px; min-height:84px;}
-  .dline{background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:11px 13px; cursor:pointer;}
-  .dline .who{display:inline-block; font-size:.56rem; font-weight:700; letter-spacing:1.5px; padding:3px 9px; border-radius:99px; margin-bottom:6px; font-family:'Cinzel',serif;}
+  #dlg{margin-top:8px; flex:0 0 auto;}
+  .dline{background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:12px 14px; cursor:pointer;}
+  .dline .who{display:inline-block; font-size:.6rem; font-weight:700; letter-spacing:1.5px; padding:3px 10px; border-radius:99px; margin-bottom:6px; font-family:'Cinzel',serif;}
   .who.aadi{background:rgba(212,175,55,.14); color:var(--gold);}
   .who.shyam{background:rgba(142,123,200,.16); color:var(--amethyst);}
   .who.narr{background:rgba(167,169,178,.12); color:var(--stone);}
   .who.tali{background:rgba(237,230,214,.12); color:var(--parchment);}
   .who.world{background:rgba(30,168,150,.14); color:var(--teal);}
-  .dline .txt{display:block; font-size:.98rem;}
-  .dline .adv{float:right; color:var(--dim); font-size:1rem; margin-top:-4px;}
-  .choices{display:flex; flex-direction:column; gap:7px; margin-top:8px;}
-  .choice{background:var(--royal); border:1px solid var(--line); color:var(--text); padding:12px 14px; border-radius:10px; text-align:left; font-size:.95rem; min-height:44px;}
+  .dline .txt{display:block; font-size:1.04rem;}
+  .dline .adv{float:right; color:var(--dim); font-size:1.05rem; margin-top:-4px;}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:8px;}
+  .choice{background:var(--royal); border:1px solid var(--line); color:var(--text); padding:13px 15px; border-radius:11px; text-align:left; font-size:1rem; min-height:48px;}
   .choice:active{border-color:var(--gold);}
 
   /* clues */
-  #clues{display:none; margin-top:7px; gap:5px; flex-wrap:wrap;}
+  #clues{display:none; margin-top:7px; gap:5px; flex-wrap:wrap; flex:0 0 auto;}
   #clues.on{display:flex;}
-  .clue{font-size:.68rem; color:var(--teal); border:1px dashed rgba(30,168,150,.55); border-radius:99px; padding:3px 10px; animation:pop .4s;}
+  .clue{font-size:.74rem; color:var(--teal); border:1px dashed rgba(30,168,150,.55); border-radius:99px; padding:4px 11px; animation:pop .4s;}
   @keyframes pop{0%{transform:scale(.6); opacity:0;}100%{transform:scale(1); opacity:1;}}
 
   /* store + plan */
-  #store{display:none; margin-top:8px; background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:9px 12px;}
-  .st-row{display:flex; align-items:center; gap:8px; margin:4px 0;}
-  .st-name{flex:0 0 70px; font-size:.6rem; letter-spacing:1px; text-transform:uppercase; color:var(--dim); font-family:'Cinzel',serif;}
-  .st-track{flex:1; height:8px; background:#0d1230; border:1px solid var(--line); border-radius:99px; position:relative; overflow:hidden;}
+  #store{display:none; margin-top:8px; background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:10px 13px; flex:0 0 auto;}
+  .st-row{display:flex; align-items:center; gap:9px; margin:5px 0;}
+  .st-name{flex:0 0 76px; font-size:.66rem; letter-spacing:1px; text-transform:uppercase; color:var(--dim); font-family:'Cinzel',serif;}
+  .st-track{flex:1; height:9px; background:#0d1230; border:1px solid var(--line); border-radius:99px; position:relative; overflow:hidden;}
   .st-fill{position:absolute; top:0; bottom:0; left:0; background:var(--teal); border-radius:99px; transition:width .9s ease;}
-  .st-num{flex:0 0 70px; text-align:right; font-size:.78rem; color:var(--stone);}
-  #plan{display:none; margin-top:8px; background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:10px 12px;}
+  .st-num{flex:0 0 76px; text-align:right; font-size:.85rem; color:var(--stone);}
+  #plan{display:none; margin-top:8px; background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:11px 13px; flex:0 0 auto;}
   .plan-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;}
-  .plan-title{font-size:.62rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); font-family:'Cinzel',serif;}
-  .hands-left{font-size:.8rem; color:var(--stone);}
-  .site{display:flex; align-items:center; gap:8px; padding:7px 0; border-top:1px solid rgba(42,53,96,.6);}
+  .plan-title{font-size:.66rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); font-family:'Cinzel',serif;}
+  .hands-left{font-size:.86rem; color:var(--stone);}
+  .site{display:flex; align-items:center; gap:8px; padding:8px 0; border-top:1px solid rgba(42,53,96,.6);}
   .site-name{flex:1; cursor:pointer; line-height:1.3;}
-  .site-name .nm{color:var(--text); font-size:.92rem;}
-  .site-name .yl{display:block; font-size:.72rem; color:var(--dim); font-style:italic;}
-  .ctr{display:flex; align-items:center; gap:6px;}
-  .ctr button{width:38px; height:38px; border-radius:9px; background:var(--royal); color:var(--text); border:1px solid var(--line); font-size:1.2rem; line-height:1;}
+  .site-name .nm{color:var(--text); font-size:.98rem;}
+  .site-name .yl{display:block; font-size:.78rem; color:var(--dim); font-style:italic;}
+  .ctr{display:flex; align-items:center; gap:7px;}
+  .ctr button{width:42px; height:42px; border-radius:10px; background:var(--royal); color:var(--text); border:1px solid var(--line); font-size:1.25rem; line-height:1;}
   .ctr button:disabled{opacity:.3;}
-  .ctr .n{width:20px; text-align:center; font-size:1.05rem; color:var(--gold);}
-  .plan-foot{display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;}
-  .pushbox{display:flex; align-items:center; gap:6px; font-size:.8rem; color:var(--stone); cursor:pointer;}
-  .gobtn{background:var(--sienna); color:#1a0e04; font-weight:700; padding:12px 18px; margin-left:auto; font-family:'Cinzel',serif; letter-spacing:1px; font-size:.82rem; min-height:44px;}
+  .ctr .n{width:22px; text-align:center; font-size:1.1rem; color:var(--gold);}
+  .plan-foot{display:flex; align-items:center; gap:10px; margin-top:9px; flex-wrap:wrap;}
+  .pushbox{display:flex; align-items:center; gap:6px; font-size:.85rem; color:var(--stone); cursor:pointer;}
+  .gobtn{background:var(--sienna); color:#1a0e04; font-weight:700; padding:13px 20px; margin-left:auto; font-family:'Cinzel',serif; letter-spacing:1px; font-size:.86rem; min-height:48px;}
   .gobtn:disabled{opacity:.35;}
 
   /* helper buttons */
-  .btnrow{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;}
-  .ghostbtn{background:transparent; border:1px solid var(--line); color:var(--stone); padding:10px 14px; font-size:.8rem; border-radius:99px; min-height:42px;}
-  .shyambtn{background:transparent; border:1px solid rgba(142,123,200,.5); color:var(--amethyst); padding:10px 14px; font-size:.8rem; border-radius:99px; display:none; min-height:42px;}
+  .btnrow{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; flex:0 0 auto;}
+  .ghostbtn{background:transparent; border:1px solid var(--line); color:var(--stone); padding:11px 15px; font-size:.85rem; border-radius:99px; min-height:44px;}
+  .backbtn{background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:99px; width:36px; height:36px; font-size:1rem; float:left; margin-right:9px; line-height:1;}
+  .shyambtn{background:transparent; border:1px solid rgba(142,123,200,.5); color:var(--amethyst); padding:11px 15px; font-size:.85rem; border-radius:99px; display:none; min-height:44px;}
 
   /* whitestory parchment */
-  .ws{background:var(--parchment); color:#2b2416; border-radius:14px; padding:16px 16px; margin-top:8px; font-size:.98rem;}
-  .ws h3{color:#5a4a1e; letter-spacing:1px; margin-bottom:8px; font-size:.86rem; font-family:'Cinzel',serif;}
+  .ws{background:var(--parchment); color:#2b2416; border-radius:14px; padding:17px 16px; margin-top:8px; font-size:1.02rem;}
+  .ws h3{color:#5a4a1e; letter-spacing:1px; margin-bottom:9px; font-size:.9rem; font-family:'Cinzel',serif;}
   .ws .blank{display:inline-block; min-width:90px; border-bottom:2px solid #8a7a4a; color:#8a2f14; font-weight:600; text-align:center; padding:0 4px;}
-  .ws .wchoices{display:flex; flex-direction:column; gap:6px; margin-top:10px;}
-  .ws .wchoice{background:#e0d6bf; border:1px solid #b3a67f; color:#2b2416; padding:11px 12px; border-radius:8px; text-align:left; font-size:.92rem; min-height:44px;}
+  .ws .wchoices{display:flex; flex-direction:column; gap:7px; margin-top:11px;}
+  .ws .wchoice{background:#e0d6bf; border:1px solid #b3a67f; color:#2b2416; padding:12px 13px; border-radius:8px; text-align:left; font-size:.96rem; min-height:46px;}
+
+  /* login (WHiTePAGE brand) */
+  #login{position:fixed; inset:0; z-index:50; background:var(--wpyellow); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px;}
+  .wp-page{position:relative; background:var(--wpwhite); width:min(300px,80vw); border-radius:6px; padding:38px 28px 30px; box-shadow:0 18px 50px rgba(90,80,10,.18);}
+  .wp-smile{position:absolute; right:-2px; top:38%;}
+  .wp-title{font-family:'Cinzel',serif; font-weight:700; font-size:1.05rem; letter-spacing:3px; color:#3a3418; text-align:center; margin-bottom:4px;}
+  .wp-sub{font-size:.78rem; letter-spacing:2px; color:#9a9260; text-align:center; margin-bottom:26px; font-family:'Cinzel',serif;}
+  .wp-field{width:100%; border:none; border-bottom:2px solid #e6df9a; background:transparent; padding:10px 2px; font-family:'EB Garamond',serif; font-size:1.08rem; color:#3a3418; outline:none; margin-bottom:22px;}
+  .wp-field::placeholder{color:#c2bb85;}
+  .wp-btn{width:100%; background:#3a3418; color:var(--wpyellow); padding:14px; border-radius:8px; font-family:'Cinzel',serif; letter-spacing:2px; font-size:.86rem; min-height:48px;}
+  .wp-foot{margin-top:26px; font-size:.7rem; letter-spacing:2px; color:#8a8250; font-family:'Cinzel',serif;}
 
   /* codex modal */
   #modal{display:none; position:fixed; inset:0; background:rgba(4,6,16,.88); z-index:40; justify-content:center; align-items:center; padding:14px;}
   #modal.on{display:flex;}
-  .card{background:var(--indigo); border:1px solid var(--amethyst); border-radius:16px; max-width:430px; width:100%; padding:18px 18px; max-height:84vh; overflow:auto;}
+  .card{background:var(--indigo); border:1px solid var(--amethyst); border-radius:16px; max-width:430px; width:100%; padding:18px; max-height:84vh; overflow:auto;}
   .card h3{color:var(--amethyst); margin-bottom:6px; letter-spacing:1px; font-family:'Cinzel',serif;}
-  .cipm-row{display:flex; gap:9px; margin:7px 0; font-size:.88rem;}
+  .cipm-row{display:flex; gap:9px; margin:7px 0; font-size:.92rem;}
   .cipm-row .k{flex:0 0 28px; height:28px; border-radius:8px; background:var(--royal); border:1px solid var(--amethyst); color:var(--amethyst); font-weight:800; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif;}
   .cipm-row .v{color:var(--stone); padding-top:3px;}
-  .lockedcard{opacity:.5; font-size:.8rem; color:var(--dim); border-top:1px solid var(--line); padding-top:9px; margin-top:10px;}
+  .lockedcard{opacity:.5; font-size:.84rem; color:var(--dim); border-top:1px solid var(--line); padding-top:9px; margin-top:10px;}
 
   /* fx */
   .tw{animation:twinkle 2.6s ease-in-out infinite;}
@@ -112,7 +125,6 @@
   .snow line{stroke:#cdd6f5; stroke-width:1; opacity:.5;}
   .snow{animation:snowfall 1.4s linear infinite;}
   @keyframes snowfall{0%{transform:translateY(-12px);}100%{transform:translateY(0);}}
-  /* the visiting page — enters, sits, quietly leaves */
   .pagecameo{animation:pagecameo 18s ease forwards;}
   @keyframes pagecameo{
     0%{opacity:0; transform:translateX(-24px);}
@@ -123,6 +135,18 @@
 </style>
 </head>
 <body>
+<div id="login">
+  <div class="wp-page">
+    <svg class="wp-smile" width="26" height="46" viewBox="0 0 26 46">
+      <path d="M2,4 Q22,23 2,42" stroke="var(--wpyellow)" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div class="wp-title">iTHiNK</div>
+    <div class="wp-sub">THE GAME</div>
+    <input class="wp-field" id="wpname" type="text" placeholder="your name" autocomplete="off">
+    <button class="wp-btn" onclick="doLogin()">STEP IN</button>
+    <div class="wp-foot" style="text-align:center;">WHiTePAGE</div>
+  </div>
+</div>
 <div id="game">
   <div id="hud" style="visibility:hidden;">
     <div class="hi-wrap">
@@ -209,12 +233,11 @@ if(typeof module!=="undefined") module.exports = { SIM, computeMoon, winterVerdi
 
 <script>
 /* ==========================================================================
-   iTH!NK v6 — Node 0: THE FIRST VALLEY · mobile-first
-   Cast: Aadi (acts, guesses) · you, the talisman (decides) · Shyam (asks ONLY questions)
-   Objects tell when touched; useful statements come from the world, never Shyam.
+   iTHiNK v7 — Node 0: THE FIRST VALLEY · mobile, full-screen scenes
+   Login (WHiTePAGE) → title (monoline wordmark) → the valley
    ========================================================================== */
 const S = {
-  scene:"title", hi:38, pot:90, season:1, moon:1,
+  scene:"login", hi:38, pot:90, season:1, moon:1, playerName:"",
   store:{food:0,fuel:0,shelter:0},
   alloc:{grove:0,roots:0,river:0,forest:0,huts:0},
   examined:{}, favorDone:false, exhausted:false,
@@ -223,6 +246,13 @@ const S = {
 };
 const $ = id => document.getElementById(id);
 const stage = $("stage"), dlg = $("dlg");
+const PAR = `preserveAspectRatio="xMidYMid slice"`;
+
+function doLogin(){
+  S.playerName = ($("wpname").value||"").trim();
+  $("login").style.display="none";
+  sceneTitle();
+}
 
 /* ---------------- HUD / store ---------------- */
 function hud(on, name){
@@ -244,20 +274,45 @@ function drawStore(){
   });
 }
 
-/* ---------------- dialogue ---------------- */
-let queue = [], onQueueDone = null;
-function say(lines, done){ queue = lines.slice(); onQueueDone = done||null; nextLine(); }
-function nextLine(){
-  if(!queue.length){ dlg.innerHTML=""; if(onQueueDone){const f=onQueueDone; onQueueDone=null; f();} return; }
-  const l = queue.shift();
-  const names = {aadi:"AADI", shyam:"SHYAM", narr:"—", tali:"YOU · THE TALISMAN", world:"THE WORLD"};
-  dlg.innerHTML = `<div class="dline fadein" onclick="nextLine()">
-    <span class="who ${l.who}">${names[l.who]}</span><span class="adv">▸</span>
+/* ---------------- dialogue (with back / story-so-far) ---------------- */
+let queue = [], onQueueDone = null, hist = [], reviewIdx = -1, lastChoices = null;
+const NAMES = {aadi:"AADI", shyam:"SHYAM", narr:"—", tali:"YOU · THE TALISMAN", world:"THE WORLD"};
+function say(lines, done){ queue = lines.slice(); onQueueDone = done||null; lastChoices = null; reviewIdx = -1; nextLine(); }
+function renderLine(l, review){
+  dlg.innerHTML = `<div class="dline fadein" onclick="${review?'reviewFwd()':'nextLine()'}">
+    ${(hist.length>1||review)? `<button class="backbtn" onclick="event.stopPropagation(); goBack()">◂</button>`:""}
+    <span class="who ${l.who}">${NAMES[l.who]}</span><span class="adv">${review?'resume ▸':'▸'}</span>
     <span class="txt">${l.t}</span></div>`;
 }
-function choices(list){
-  dlg.innerHTML = `<div class="choices fadein">${list.map((c,i)=>
-    `<button class="choice" onclick="window.__c${i}()">${c.t}</button>`).join("")}</div>`;
+function nextLine(){
+  if(reviewIdx>=0){ reviewFwd(); return; }
+  if(!queue.length){ dlg.innerHTML=""; if(onQueueDone){const f=onQueueDone; onQueueDone=null; f();} return; }
+  const l = queue.shift();
+  hist.push(l); if(hist.length>200) hist.shift();
+  renderLine(l, false);
+}
+function goBack(){
+  if(!hist.length) return;
+  if(reviewIdx===-1) reviewIdx = Math.max(0, hist.length-2);
+  else reviewIdx = Math.max(0, reviewIdx-1);
+  renderLine(hist[reviewIdx], true);
+}
+function reviewFwd(){
+  reviewIdx++;
+  if(reviewIdx >= hist.length-1 || reviewIdx >= hist.length){
+    reviewIdx = -1;
+    if(lastChoices){ renderChoices(lastChoices); }
+    else if(hist.length){ renderLine(hist[hist.length-1], false); }
+    else dlg.innerHTML="";
+    return;
+  }
+  renderLine(hist[reviewIdx], true);
+}
+function choices(list){ lastChoices = list; reviewIdx = -1; renderChoices(list); }
+function renderChoices(list){
+  dlg.innerHTML = `<div class="choices fadein">
+    ${hist.length? `<button class="backbtn" style="align-self:flex-start;" onclick="goBack()">◂</button>`:""}
+    ${list.map((c,i)=>`<button class="choice" onclick="window.__c${i}()">${c.t}</button>`).join("")}</div>`;
   list.forEach((c,i)=> window["__c"+i] = c.fn);
 }
 function addClue(c){
@@ -268,37 +323,46 @@ function addClue(c){
 }
 
 /* ==========================================================================
-   TITLE — the regal wordmark
+   TITLE — minimal monoline wordmark (straight lines only)
    ========================================================================== */
 function sceneTitle(){
   S.scene="title"; hud(false);
   stage.innerHTML = `
-  <svg viewBox="0 0 390 440" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="goldg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#F3DE9B"/><stop offset=".5" stop-color="#D4AF37"/><stop offset="1" stop-color="#8F6E1A"/>
+        <stop offset="0" stop-color="#F3DE9B"/><stop offset=".55" stop-color="#D4AF37"/><stop offset="1" stop-color="#8F6E1A"/>
       </linearGradient>
       <linearGradient id="ivoryg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#F2EFE6"/><stop offset="1" stop-color="#9DA0B0"/>
-      </linearGradient>
-      <linearGradient id="fadeg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#7A80A0" stop-opacity=".35"/><stop offset="1" stop-color="#7A80A0" stop-opacity="0"/>
+        <stop offset="0" stop-color="#F2EFE6"/><stop offset="1" stop-color="#A7A9B2"/>
       </linearGradient>
     </defs>
-    <rect width="390" height="440" fill="#0B1024"/>
-    <circle cx="60" cy="52" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="330" cy="40" r="1.1" fill="#EDE6D6" class="tw2"/>
-    <circle cx="200" cy="26" r="1" fill="#EDE6D6" class="tw"/><circle cx="290" cy="86" r="1.2" fill="#EDE6D6" class="tw2"/>
-    <line x1="60" y1="110" x2="330" y2="110" stroke="url(#goldg)" stroke-width=".8" opacity=".6"/>
-    <!-- wordmark: gold i/L bracket + TH!NK -->
-    <rect x="62" y="150" width="13" height="13" fill="url(#goldg)"/>
-    <rect x="62" y="172" width="13" height="66" fill="url(#goldg)"/>
-    <rect x="62" y="225" width="58" height="13" fill="url(#goldg)"/>
-    <text x="86" y="226" font-family="Cinzel,serif" font-weight="800" font-size="64" letter-spacing="3" fill="url(#ivoryg)">TH!NK</text>
-    <!-- quiet reflection -->
-    <text x="86" y="-244" transform="scale(1,-1)" font-family="Cinzel,serif" font-weight="800" font-size="64" letter-spacing="3" fill="url(#fadeg)">TH!NK</text>
-    <line x1="60" y1="330" x2="330" y2="330" stroke="url(#goldg)" stroke-width=".8" opacity=".6"/>
-    <text x="195" y="362" text-anchor="middle" font-size="15" letter-spacing="7" fill="url(#goldg)" font-family="Cinzel,serif" font-weight="700">THE GAME</text>
-    <text x="195" y="392" text-anchor="middle" font-size="10" letter-spacing="2.5" fill="#7A80A0" font-family="Cinzel,serif">LEARN ANYTHING · UNDERSTAND EVERYTHING</text>
+    <rect width="390" height="560" fill="#0B1024"/>
+    <circle cx="60" cy="80" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="330" cy="64" r="1.1" fill="#EDE6D6" class="tw2"/>
+    <circle cx="200" cy="42" r="1" fill="#EDE6D6" class="tw"/><circle cx="290" cy="120" r="1.2" fill="#EDE6D6" class="tw2"/>
+    <circle cx="100" cy="140" r="1" fill="#EDE6D6" class="tw2"/>
+    <line x1="70" y1="180" x2="320" y2="180" stroke="url(#goldg)" stroke-width=".8" opacity=".55"/>
+    <!-- iTH!NK — monoline, straight strokes; gold i and gold dots -->
+    <g stroke-linecap="butt" fill="none">
+      <rect x="92" y="216" width="10" height="10" fill="url(#goldg)"/>
+      <line x1="97" y1="238" x2="97" y2="300" stroke="url(#goldg)" stroke-width="10"/>
+      <line x1="113" y1="221" x2="149" y2="221" stroke="url(#ivoryg)" stroke-width="9"/>
+      <line x1="131" y1="221" x2="131" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
+      <line x1="163" y1="216" x2="163" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
+      <line x1="193" y1="216" x2="193" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
+      <line x1="163" y1="258" x2="193" y2="258" stroke="url(#ivoryg)" stroke-width="9"/>
+      <line x1="212" y1="216" x2="212" y2="272" stroke="url(#ivoryg)" stroke-width="9"/>
+      <rect x="207" y="290" width="10" height="10" fill="url(#goldg)"/>
+      <line x1="233" y1="300" x2="233" y2="216" stroke="url(#ivoryg)" stroke-width="9"/>
+      <line x1="233" y1="216" x2="263" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
+      <line x1="263" y1="300" x2="263" y2="216" stroke="url(#ivoryg)" stroke-width="9"/>
+      <line x1="283" y1="216" x2="283" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
+      <line x1="313" y1="216" x2="285" y2="256" stroke="url(#ivoryg)" stroke-width="9"/>
+      <line x1="291" y1="248" x2="315" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
+    </g>
+    <line x1="70" y1="336" x2="320" y2="336" stroke="url(#goldg)" stroke-width=".8" opacity=".55"/>
+    <text x="195" y="376" text-anchor="middle" font-size="17" letter-spacing="8" fill="url(#goldg)" font-family="Cinzel,serif" font-weight="700">THE GAME</text>
+    <text x="195" y="410" text-anchor="middle" font-size="11" letter-spacing="2.5" fill="#8A90B0" font-family="Cinzel,serif">LEARN ANYTHING · UNDERSTAND EVERYTHING</text>
   </svg>`;
   dlg.innerHTML="";
   choices([{t:"Begin ▸", fn:sceneEpigraph}]);
@@ -309,20 +373,21 @@ function sceneTitle(){
    ========================================================================== */
 function sceneEpigraph(){
   stage.innerHTML = `
-  <svg viewBox="0 0 390 240" xmlns="http://www.w3.org/2000/svg">
-    <rect width="390" height="240" fill="#0B1024"/>
-    <circle cx="70" cy="46" r="1.2" fill="#EDE6D6" class="tw"/><circle cx="300" cy="60" r="1.1" fill="#EDE6D6" class="tw2"/>
-    <text x="195" y="86" text-anchor="middle" font-size="15" fill="#D4AF37" font-family="Cinzel,serif" font-weight="700">EPISODE 0 · THE FIRST VALLEY</text>
-    <text x="195" y="126" text-anchor="middle" font-size="10.5" font-style="italic" fill="#A7A9B2">"Economics is the science which studies human behaviour</text>
-    <text x="195" y="142" text-anchor="middle" font-size="10.5" font-style="italic" fill="#A7A9B2">as a relationship between ends and scarce means</text>
-    <text x="195" y="158" text-anchor="middle" font-size="10.5" font-style="italic" fill="#A7A9B2">which have alternative uses."</text>
-    <text x="195" y="186" text-anchor="middle" font-size="9.5" letter-spacing="1.5" fill="#7A80A0" font-family="Cinzel,serif">— LIONEL ROBBINS, 1932</text>
+  <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="560" fill="#0B1024"/>
+    <circle cx="70" cy="100" r="1.2" fill="#EDE6D6" class="tw"/><circle cx="300" cy="130" r="1.1" fill="#EDE6D6" class="tw2"/>
+    <text x="195" y="220" text-anchor="middle" font-size="18" fill="#D4AF37" font-family="Cinzel,serif" font-weight="700">EPISODE 0</text>
+    <text x="195" y="248" text-anchor="middle" font-size="14" fill="#D4AF37" font-family="Cinzel,serif">THE FIRST VALLEY</text>
+    <text x="195" y="300" text-anchor="middle" font-size="12.5" font-style="italic" fill="#A7A9B2">"Economics is the science which studies human</text>
+    <text x="195" y="320" text-anchor="middle" font-size="12.5" font-style="italic" fill="#A7A9B2">behaviour as a relationship between ends and</text>
+    <text x="195" y="340" text-anchor="middle" font-size="12.5" font-style="italic" fill="#A7A9B2">scarce means which have alternative uses."</text>
+    <text x="195" y="372" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="#8A90B0" font-family="Cinzel,serif">— LIONEL ROBBINS, 1932</text>
   </svg>`;
   choices([{t:"▸", fn:sceneExam}]);
 }
 
 /* ==========================================================================
-   THE CITY OF ANSWERS (cold open)
+   THE CITY OF ANSWERS
    ========================================================================== */
 const EXAM = [
   {q:"Define scarcity.", a:"'The state of limited resources against unlimited wants.'"},
@@ -332,18 +397,19 @@ let examIdx = 0;
 function sceneExam(){
   S.scene="exam"; hud(false);
   stage.innerHTML = `
-  <svg viewBox="0 0 390 240" xmlns="http://www.w3.org/2000/svg">
-    <rect width="390" height="240" fill="#0B1024"/>
-    <rect x="0" y="196" width="390" height="44" fill="#141B36"/>
-    <g fill="#1E2A55"><rect x="30" y="40" width="70" height="156" rx="5"/><rect x="290" y="40" width="70" height="156" rx="5"/></g>
-    <g fill="#26335f"><rect x="42" y="56" width="46" height="140"/><rect x="302" y="56" width="46" height="140"/></g>
-    <rect x="125" y="26" width="140" height="170" rx="7" fill="#182046"/>
-    <circle cx="195" cy="82" r="19" fill="#0B1024"/>
-    <rect x="175" y="104" width="40" height="60" rx="8" fill="#0B1024"/>
-    <text x="195" y="87" text-anchor="middle" font-size="12" fill="#D4AF37" font-weight="800">?</text>
-    <g><circle cx="195" cy="212" r="7" fill="#0B1024"/><rect x="187" y="220" width="16" height="20" rx="5" fill="#0B1024"/>
-    <circle cx="198" cy="227" r="3" fill="#EDE6D6" opacity="0.25"/></g>
-    <text x="195" y="16" text-anchor="middle" font-size="8.5" letter-spacing="3" fill="#7A80A0" font-family="Cinzel,serif">THE CITY OF ANSWERS · FINAL EXAMINATION</text>
+  <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="560" fill="#0B1024"/>
+    <rect x="0" y="470" width="390" height="90" fill="#141B36"/>
+    <g fill="#1E2A55"><rect x="18" y="120" width="80" height="350" rx="6"/><rect x="292" y="120" width="80" height="350" rx="6"/></g>
+    <g fill="#26335f"><rect x="32" y="150" width="52" height="320"/><rect x="306" y="150" width="52" height="320"/></g>
+    <rect x="115" y="80" width="160" height="390" rx="8" fill="#182046"/>
+    <circle cx="195" cy="190" r="30" fill="#0B1024"/>
+    <rect x="165" y="228" width="60" height="100" rx="12" fill="#0B1024"/>
+    <text x="195" y="198" text-anchor="middle" font-size="20" fill="#D4AF37" font-weight="800">?</text>
+    <g><circle cx="195" cy="498" r="11" fill="#0B1024"/><rect x="182" y="510" width="26" height="34" rx="8" fill="#0B1024"/>
+    <circle cx="200" cy="522" r="4.5" fill="#EDE6D6" opacity="0.25"/></g>
+    <text x="195" y="40" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE CITY OF ANSWERS</text>
+    <text x="195" y="58" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">FINAL EXAMINATION</text>
   </svg>`;
   say([
     {who:"narr", t:"Aadi has never missed a question in his life. Tonight he graduates first in the City of Answers. You are the talisman on his chest — old, dim, and awake for reasons no one remembers."}
@@ -370,71 +436,70 @@ function examStep(){
 }
 function sceneExile(){
   stage.innerHTML = `
-  <svg viewBox="0 0 390 240" xmlns="http://www.w3.org/2000/svg">
-    <rect width="390" height="240" fill="#0B1024"/>
-    <circle cx="66" cy="40" r="1.2" fill="#EDE6D6" class="tw"/><circle cx="320" cy="52" r="1.1" fill="#EDE6D6" class="tw2"/>
-    <rect x="0" y="190" width="390" height="50" fill="#141B36"/>
-    <rect x="140" y="30" width="110" height="160" rx="8" fill="#182046"/>
-    <rect x="165" y="66" width="60" height="124" rx="30" fill="#0B1024"/>
-    <text x="195" y="50" text-anchor="middle" font-size="7.5" letter-spacing="1.5" fill="#D4AF37" font-family="Cinzel,serif">COME BACK WHEN YOU CAN</text>
-    <text x="195" y="61" text-anchor="middle" font-size="7.5" letter-spacing="1.5" fill="#D4AF37" font-family="Cinzel,serif">EXPLAIN, NOT RECITE</text>
-    <g fill="#0B1024"><circle cx="90" cy="200" r="7"/><rect x="82" y="208" width="16" height="24" rx="5"/></g>
-    <circle cx="93" cy="216" r="3.5" fill="#EDE6D6" opacity="0.5" class="glow"/>
-    <g fill="#0B1024"><ellipse cx="52" cy="224" rx="13" ry="6"/><circle cx="39" cy="217" r="5"/><path d="M63,222 q6,-2 8,-8 l2.5,1.5 q-2,7 -9,10 Z"/></g>
-    <text x="195" y="16" text-anchor="middle" font-size="8.5" letter-spacing="3" fill="#7A80A0" font-family="Cinzel,serif">THE GATE · EXILE</text>
+  <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="560" fill="#0B1024"/>
+    <circle cx="66" cy="90" r="1.2" fill="#EDE6D6" class="tw"/><circle cx="320" cy="110" r="1.1" fill="#EDE6D6" class="tw2"/>
+    <rect x="0" y="440" width="390" height="120" fill="#141B36"/>
+    <rect x="115" y="90" width="160" height="350" rx="10" fill="#182046"/>
+    <rect x="150" y="170" width="90" height="270" rx="45" fill="#0B1024"/>
+    <text x="195" y="122" text-anchor="middle" font-size="10.5" letter-spacing="2" fill="#D4AF37" font-family="Cinzel,serif">COME BACK WHEN YOU CAN</text>
+    <text x="195" y="140" text-anchor="middle" font-size="10.5" letter-spacing="2" fill="#D4AF37" font-family="Cinzel,serif">EXPLAIN, NOT RECITE</text>
+    <g fill="#0B1024"><circle cx="80" cy="462" r="10"/><rect x="68" y="473" width="24" height="36" rx="7"/></g>
+    <circle cx="85" cy="486" r="4.5" fill="#EDE6D6" opacity="0.5" class="glow"/>
+    <text x="195" y="40" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE GATE · EXILE</text>
   </svg>`;
   say([
     {who:"world", t:`THE GATEKEEPER, quietly: "You have every answer, Aadi. You own none of them. The City has no use for a mirror."`},
     {who:"narr", t:"The verdict is exile. The terms of return are carved over the gate: COME BACK WHEN YOU CAN EXPLAIN, NOT RECITE."},
     {who:"tali", t:"(As the gate closes, you warm against his chest — the first time in years. Where he is going, the land itself speaks to whoever carries you. Some things it tells freely. Some… for a favor.)"},
-    {who:"narr", t:"A lean stray dog slips out of the gate's shadow and falls in step beside him. Aadi tells it to go home."},
+    {who:"narr", t:"As the gate swings shut, something falls into step beside him. Aadi turns. The road is empty. He tells whatever it is to go home."},
     {who:"shyam", t:`"You first."`},
-    {who:"aadi", t:"…It talks. The dog talks. Of course it does. Why is today the day I stop being surprised by anything?"},
+    {who:"aadi", t:"…Who said that? Show yourself— …nothing. No one. Of course. Why is today the day I stop being surprised by anything?"},
     {who:"shyam", t:`"Call me Shyam. Are you going to stand here, or is there a road?"`}
   ], sceneValley);
 }
 
 /* ==========================================================================
-   THE FIRST VALLEY
+   THE FIRST VALLEY — portrait, fills the screen
    ========================================================================== */
 function valleySVG(extra=""){
   return `
-  <svg viewBox="0 0 390 250" xmlns="http://www.w3.org/2000/svg">
-    <rect width="390" height="250" fill="#0d1433"/>
-    <circle cx="50" cy="30" r="1.1" fill="#EDE6D6" class="tw"/><circle cx="150" cy="22" r="1" fill="#EDE6D6" class="tw2"/>
-    <circle cx="290" cy="34" r="1.1" fill="#EDE6D6" class="tw"/><circle cx="350" cy="50" r="1" fill="#EDE6D6" class="tw2"/>
-    <path d="M0,105 Q75,58 160,100 L0,165 Z" fill="#141B36"/>
-    <path d="M390,100 Q320,52 235,96 L390,162 Z" fill="#141B36"/>
-    <path d="M0,152 Q100,128 205,146 Q305,162 390,142 L390,250 L0,250 Z" fill="#1E2A55"/>
-    <path d="M168,146 Q182,178 176,222 L194,222 L190,178 L198,148 Z" fill="#16405c"/>
-    <g transform="translate(48,96)">
-      <rect x="17" y="30" width="7" height="24" fill="#241a10"/>
-      <circle cx="20" cy="20" r="20" fill="#1a4a3c"/><circle cx="9" cy="28" r="12" fill="#1a4a3c"/><circle cx="33" cy="29" r="11" fill="#1a4a3c"/>
-      <circle cx="13" cy="16" r="2.4" fill="#C26A3D"/><circle cx="28" cy="12" r="2.4" fill="#C26A3D"/><circle cx="22" cy="25" r="2.4" fill="#C26A3D"/>
+  <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="560" fill="#0d1433"/>
+    <circle cx="50" cy="60" r="1.2" fill="#EDE6D6" class="tw"/><circle cx="150" cy="44" r="1" fill="#EDE6D6" class="tw2"/>
+    <circle cx="290" cy="70" r="1.2" fill="#EDE6D6" class="tw"/><circle cx="350" cy="100" r="1" fill="#EDE6D6" class="tw2"/>
+    <circle cx="330" cy="90" r="17" fill="#dfe4f8" opacity=".85"/><circle cx="322" cy="86" r="17" fill="#0d1433"/>
+    <path d="M0,240 Q90,160 195,228 L0,330 Z" fill="#141B36"/>
+    <path d="M390,232 Q310,155 210,224 L390,326 Z" fill="#141B36"/>
+    <path d="M0,300 Q100,268 200,290 Q300,312 390,286 L390,560 L0,560 Z" fill="#1E2A55"/>
+    <path d="M182,292 Q200,360 188,470 Q184,520 192,560 L226,560 Q214,500 218,430 Q222,350 212,296 Z" fill="#16405c"/>
+    <g transform="translate(30,236)">
+      <rect x="26" y="46" width="10" height="36" fill="#241a10"/>
+      <circle cx="31" cy="30" r="30" fill="#1a4a3c"/><circle cx="14" cy="43" r="18" fill="#1a4a3c"/><circle cx="50" cy="44" r="16" fill="#1a4a3c"/>
+      <circle cx="20" cy="24" r="3.6" fill="#C26A3D"/><circle cx="42" cy="18" r="3.6" fill="#C26A3D"/><circle cx="33" cy="38" r="3.6" fill="#C26A3D"/>
     </g>
-    <text x="68" y="168" text-anchor="middle" font-size="8.5" fill="#A7A9B2">the fruit grove</text>
-    <ellipse cx="128" cy="196" rx="20" ry="5" fill="#3a3050"/>
-    <path d="M116,194 q4,-6 7,0 M125,196 q4,-6 7,0 M134,194 q4,-6 7,0" stroke="#5a4a30" fill="none" stroke-width="1.4"/>
-    <text x="128" y="214" text-anchor="middle" font-size="8.5" fill="#A7A9B2">the root field</text>
-    <text x="184" y="238" text-anchor="middle" font-size="8.5" fill="#A7A9B2">the river</text>
-    <g fill="#241a10"><rect x="238" y="176" width="5" height="20" rx="1.5" transform="rotate(8 240 186)"/><rect x="250" y="173" width="5" height="23" rx="1.5" transform="rotate(-6 252 184)"/><rect x="262" y="177" width="5" height="18" rx="1.5" transform="rotate(3 264 186)"/></g>
-    <text x="252" y="212" text-anchor="middle" font-size="8.5" fill="#A7A9B2">the deadwood forest</text>
-    <g fill="#2a2338"><path d="M304,182 L324,166 L344,182 L344,202 L304,202 Z"/><path d="M338,185 L354,173 L370,185 L370,201 L338,201 Z"/></g>
-    <text x="337" y="218" text-anchor="middle" font-size="8.5" fill="#A7A9B2">the huts</text>
-    <ellipse cx="318" cy="208" rx="7" ry="3" fill="#C26A3D" opacity=".55"/>
-    <path d="M315,208 Q317,198 320,208" fill="#D4AF37" class="flame"/>
-    <g fill="#0B1024"><circle cx="212" cy="184" r="5.4"/><path d="M206,190 Q203,203 206,214 L212,214 L213,206 L215,214 L221,214 Q221,200 218,190 Z"/></g>
-    <circle cx="216" cy="195" r="3" fill="#EDE6D6" opacity="0.5" class="glow"/>
-    <g fill="#0B1024"><ellipse cx="240" cy="208" rx="10" ry="5"/><circle cx="230" cy="203" r="4"/><path d="M249,206 q5,-2 6,-7 l2.5,1.5 q-1.5,6 -7,8 Z"/></g>
+    <text x="62" y="342" text-anchor="middle" font-size="12" fill="#A7A9B2">the fruit grove</text>
+    <ellipse cx="110" cy="420" rx="30" ry="8" fill="#3a3050"/>
+    <path d="M92,417 q6,-9 10,0 M105,420 q6,-9 10,0 M118,417 q6,-9 10,0" stroke="#5a4a30" fill="none" stroke-width="2"/>
+    <text x="110" y="448" text-anchor="middle" font-size="12" fill="#A7A9B2">the root field</text>
+    <text x="252" y="540" text-anchor="middle" font-size="12" fill="#A7A9B2">the river</text>
+    <g fill="#241a10"><rect x="288" y="330" width="7" height="28" rx="2" transform="rotate(8 291 344)"/><rect x="305" y="326" width="7" height="32" rx="2" transform="rotate(-6 308 342)"/><rect x="322" y="331" width="7" height="26" rx="2" transform="rotate(3 325 344)"/></g>
+    <text x="308" y="382" text-anchor="middle" font-size="12" fill="#A7A9B2">the deadwood forest</text>
+    <g fill="#2a2338"><path d="M282,452 L310,430 L338,452 L338,482 L282,482 Z"/><path d="M330,458 L352,441 L374,458 L374,480 L330,480 Z"/></g>
+    <text x="328" y="502" text-anchor="middle" font-size="12" fill="#A7A9B2">the huts</text>
+    <ellipse cx="300" cy="490" rx="9" ry="4" fill="#C26A3D" opacity=".55"/>
+    <path d="M296,490 Q299,477 303,490" fill="#D4AF37" class="flame"/>
+    <g fill="#0B1024"><circle cx="130" cy="480" r="7"/><path d="M122,488 Q118,506 122,520 L130,520 L131,509 L134,520 L142,520 Q142,502 138,488 Z"/></g>
+    <circle cx="135" cy="494" r="4" fill="#EDE6D6" opacity="0.5" class="glow"/>
     ${extra}
-    <text x="195" y="15" text-anchor="middle" font-size="8.5" letter-spacing="3" fill="#7A80A0" font-family="Cinzel,serif">THE FIRST VALLEY</text>
+    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE FIRST VALLEY</text>
   </svg>`;
 }
-/* the visiting page — right-facing profile, smile off the right edge */
+/* the visiting page — right-facing, enters, sits, quietly leaves */
 function pageCameo(){
   return `<g class="pagecameo" opacity="0">
-    <rect x="16" y="176" width="20" height="28" rx="2" fill="#EDE6D6"/>
-    <path d="M31,184 Q42,190 31,197" stroke="#D4AF37" stroke-width="1.6" fill="none"/>
+    <rect x="20" y="380" width="24" height="34" rx="2" fill="#EDE6D6"/>
+    <path d="M38,390 Q51,397 38,405" stroke="#D4AF37" stroke-width="1.8" fill="none"/>
   </g>`;
 }
 function sceneValley(){
@@ -483,7 +548,7 @@ function tellSite(k){
   }
 }
 function treeGate(){
-  stage.innerHTML = valleySVG(`<circle cx="68" cy="116" r="34" fill="#D4AF37" opacity="0.08" class="glow"/>`);
+  stage.innerHTML = valleySVG(`<circle cx="61" cy="266" r="44" fill="#D4AF37" opacity="0.08" class="glow"/>`);
   say([
     {who:"narr", t:"Aadi reaches for a low fruit. The branch lifts it away from his hand. The whole tree turns its leaves toward him, the way a crowd turns its faces."},
     {who:"world", t:"THE OLD TREE: \"Taking, first? Tell me, boy — does nature give you breath for free? You drink my brother the air, and pay him back CO₂ with every breath. Everything here is exchange. What will YOU give?\""},
@@ -510,7 +575,7 @@ function favorDone(){
 }
 
 /* ==========================================================================
-   PLANNING — player decides, Aadi acts
+   PLANNING
    ========================================================================== */
 function startPlanning(){
   S.scene="plan";
@@ -613,7 +678,6 @@ function afterMoon(alloc, res, push){
     else sceneWinter();
   });
 }
-/* Shyam's contingent question — questions ONLY, referencing the actual attempt */
 function shyamAfterMoon(alloc, res, push){
   if(res.fruitRot >= 25) return {who:"shyam", t:`"The grove paid you ${res.fruitGathered} and your baskets kept ${res.fruitKept}. Who ate the difference? And had the grove not told you it would?"`};
   if(res.fishRot > 0) return {who:"shyam", t:`"The river gave ${res.fishRaw} and the smokehouse saved ${res.fishKept}. What does smoke cost — and who forgot to pay it?"`};
@@ -652,11 +716,11 @@ function askShyam(){
    ========================================================================== */
 const VISION = [
   {cap:"THE TALISMAN PULLS YOU BOTH UP AND BACK. The valley from above — one green bowl in a ring of rock. Count its trees; you would finish counting. Count its moons before winter; you already have. Generous is not the same as endless.",
-   svg:`<path d="M50,175 Q195,90 340,175 L340,220 L50,220 Z" fill="#1E2A55"/><path d="M20,175 Q48,120 84,175 Z" fill="#141B36"/><path d="M310,175 Q340,112 372,175 Z" fill="#141B36"/><circle cx="195" cy="60" r="14" fill="#EDE6D6" opacity=".7"/>`},
+   svg:`<path d="M40,340 Q195,200 350,340 L350,430 L40,430 Z" fill="#1E2A55"/><path d="M10,340 Q50,250 100,340 Z" fill="#141B36"/><path d="M290,340 Q340,240 380,340 Z" fill="#141B36"/><circle cx="195" cy="130" r="20" fill="#EDE6D6" opacity=".7"/>`},
   {cap:"HIGHER. The whole earth — one ball of rock and water, lit on one side. Every valley that has ever fed anyone is on it. It does not grow. It has never once grown. Everyone who will ever live shares this one ration.",
-   svg:`<circle cx="195" cy="120" r="58" fill="#16405c"/><path d="M158,92 Q180,76 208,90 Q230,102 220,120 Q195,132 168,118 Z" fill="#1a4a3c"/><circle cx="195" cy="120" r="70" fill="#1EA896" opacity="0.1" class="glow"/><circle cx="70" cy="44" r="1.2" fill="#EDE6D6" class="tw"/><circle cx="320" cy="64" r="1.2" fill="#EDE6D6" class="tw2"/>`},
+   svg:`<circle cx="195" cy="260" r="90" fill="#16405c"/><path d="M138,216 Q172,192 215,212 Q248,230 232,260 Q195,278 152,256 Z" fill="#1a4a3c"/><circle cx="195" cy="260" r="108" fill="#1EA896" opacity="0.1" class="glow"/><circle cx="70" cy="90" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="320" cy="120" r="1.3" fill="#EDE6D6" class="tw2"/>`},
   {cap:"THE FLOOR. Before the earth: a sun, spending itself — so much fire, and even that is a purse, not a spring. Before the sun: hydrogen. Before hydrogen: one beginning. Matter, energy, space, TIME — all of it issued once, 13.8 billion years ago, and never reissued. Scarcity was not invented by misers. It was born here, at 0. Everything since has been choosing.",
-   svg:`<circle cx="195" cy="112" r="8" fill="#D4AF37"/><circle cx="195" cy="112" r="28" fill="#D4AF37" opacity="0.3" class="glow"/><circle cx="195" cy="112" r="64" fill="#8E7BC8" opacity="0.15" class="glow"/><text x="195" y="117" text-anchor="middle" font-size="13" font-weight="800" fill="#EDE6D6" font-family="Cinzel,serif">0</text>`}
+   svg:`<circle cx="195" cy="250" r="12" fill="#D4AF37"/><circle cx="195" cy="250" r="44" fill="#D4AF37" opacity="0.3" class="glow"/><circle cx="195" cy="250" r="100" fill="#8E7BC8" opacity="0.15" class="glow"/><text x="195" y="257" text-anchor="middle" font-size="19" font-weight="800" fill="#EDE6D6" font-family="Cinzel,serif">0</text>`}
 ];
 let visionIdx = 0;
 function startVision(){
@@ -668,9 +732,9 @@ function visionStep(){
   if(visionIdx >= VISION.length){ endVision(); return; }
   const v = VISION[visionIdx];
   S.log.visions = Math.max(S.log.visions, visionIdx+1);
-  stage.innerHTML = `<svg viewBox="0 0 390 240" xmlns="http://www.w3.org/2000/svg">
-    <rect width="390" height="240" fill="#0B1024"/>${v.svg}
-    <text x="195" y="16" text-anchor="middle" font-size="8.5" letter-spacing="3" fill="#8E7BC8" font-family="Cinzel,serif">VISION · ${visionIdx+1} / 3</text>
+  stage.innerHTML = `<svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="560" fill="#0B1024"/>${v.svg}
+    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8E7BC8" font-family="Cinzel,serif">VISION · ${visionIdx+1} / 3</text>
   </svg>`;
   say([{who:"tali", t:v.cap}], ()=>{
     choices([
@@ -694,14 +758,14 @@ function sceneWinter(){
   S.scene="winter"; $("plan").style.display="none";
   const v = winterVerdict(S.store);
   stage.innerHTML = `
-  <svg viewBox="0 0 390 240" xmlns="http://www.w3.org/2000/svg">
-    <rect width="390" height="240" fill="#0d1433"/>
-    <path d="M0,158 Q100,132 205,150 Q305,166 390,146 L390,240 L0,240 Z" fill="#c9cede" opacity="0.9"/>
-    <g fill="#2a2338"><path d="M286,180 L306,162 L326,180 L326,202 L286,202 Z"/><path d="M320,184 L336,170 L352,184 L352,200 L320,200 Z"/></g>
-    <ellipse cx="304" cy="208" rx="7" ry="3" fill="#C26A3D" opacity="${v.fuel? ".8":".25"}"/>
-    ${v.fuel? `<path d="M301,208 Q303,196 306,208" fill="#D4AF37" class="flame"/>`:""}
-    <g class="snow">${Array.from({length:20},(_,i)=>`<line x1="${20*i}" y1="${(i%5)*46}" x2="${20*i}" y2="${(i%5)*46+6}"/>`).join("")}</g>
-    <text x="195" y="16" text-anchor="middle" font-size="8.5" letter-spacing="3" fill="#7A80A0" font-family="Cinzel,serif">WINTER · THE DOOR IS THE TEST</text>
+  <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="560" fill="#0d1433"/>
+    <path d="M0,360 Q100,326 200,350 Q300,372 390,344 L390,560 L0,560 Z" fill="#c9cede" opacity="0.9"/>
+    <g fill="#2a2338"><path d="M120,420 L160,388 L200,420 L200,464 L120,464 Z"/><path d="M190,428 L222,404 L254,428 L254,462 L190,462 Z"/></g>
+    <ellipse cx="156" cy="476" rx="12" ry="5" fill="#C26A3D" opacity="${v.fuel? ".8":".25"}"/>
+    ${v.fuel? `<path d="M151,476 Q155,456 161,476" fill="#D4AF37" class="flame"/>`:""}
+    <g class="snow">${Array.from({length:24},(_,i)=>`<line x1="${17*i}" y1="${(i%6)*90}" x2="${17*i}" y2="${(i%6)*90+9}"/>`).join("")}</g>
+    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">WINTER · THE DOOR IS THE TEST</text>
   </svg>`;
   const beats = [{who:"narr", t:"The first snow does not ask if you are ready. It simply arrives, and begins counting."}];
   if(v.pass){
@@ -733,7 +797,7 @@ function shyamWinterFail(v){
 }
 
 /* ==========================================================================
-   SAY IT IN YOUR OWN WORDS — then defend it against the valley's three voices
+   SAY IT IN YOUR OWN WORDS — then the valley's three voices
    ========================================================================== */
 const WS_BLANKS = [
   {label:"I want to", opts:["pick every fruit in the valley","fill the winter store","make the band work harder"], ok:1},
@@ -745,7 +809,7 @@ let wsIdx=0, wsPicks=[];
 function sceneWhiteStory(){
   S.scene="whitestory"; wsIdx=0; wsPicks=[];
   $("store").style.display="none";
-  stage.innerHTML = valleySVG(`<circle cx="195" cy="90" r="44" fill="#EDE6D6" opacity="0.06" class="glow"/>`);
+  stage.innerHTML = valleySVG(`<circle cx="195" cy="200" r="60" fill="#EDE6D6" opacity="0.06" class="glow"/>`);
   say([
     {who:"narr", t:"Spring. The whole band gathers at the old tree. It is the valley's custom: whoever changes a winter must SAY what they understood — out loud, where the valley can test it."},
     {who:"shyam", t:`"The City is full of recitations, talisman. Can you build this sentence out of what you DID?"`}
@@ -772,7 +836,6 @@ function wsPick(i){
     say([{who:"world", t:counters[Math.min(wsIdx,2)] }], wsBlankStep);
   }
 }
-/* the three voices — the SETTING asks; no jargon, just the questions */
 const PROBES = [
   {who:"THE BOULDER by the path", q:"\"You said 'give up'. What do you mean by giving up?\"",
    opts:["Working fewer hours than before","Every hand sent to one place is a hand lost to every other place","Throwing away the fruit we picked"], ok:1},
@@ -828,30 +891,34 @@ function summarizePlan(plans){
 function sceneThreshold(){
   S.scene="threshold";
   stage.innerHTML = `
-  <svg viewBox="0 0 390 250" xmlns="http://www.w3.org/2000/svg">
-    <rect width="390" height="250" fill="#0B1024"/>
-    <polyline points="40,120 95,138 150,118 205,140 260,122 315,138 360,120" fill="none" stroke="#2A3560" stroke-width="1.2"/>
-    <circle cx="40" cy="120" r="8" fill="#D4AF37"/><text x="40" y="102" text-anchor="middle" font-size="10" font-weight="700" fill="#D4AF37" font-family="Cinzel,serif">0</text>
-    <text x="40" y="146" text-anchor="middle" font-size="8" fill="#A7A9B2">choice ★</text>
-    <text x="40" y="158" text-anchor="middle" font-size="7" fill="#8E7BC8">…at the cost of?</text>
-    <circle cx="95" cy="138" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/><text x="95" y="160" text-anchor="middle" font-size="8" fill="#555f85">labor</text>
-    <text x="95" y="172" text-anchor="middle" font-size="7" fill="#8E7BC8">…at the cost of?</text>
-    <circle cx="150" cy="118" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/><text x="150" y="102" text-anchor="middle" font-size="8" fill="#555f85">surplus</text>
-    <text x="150" y="90" text-anchor="middle" font-size="7" fill="#8E7BC8">…at the cost of?</text>
-    <circle cx="205" cy="140" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/><text x="205" y="162" text-anchor="middle" font-size="8" fill="#555f85">property</text>
-    <circle cx="260" cy="122" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/><text x="260" y="106" text-anchor="middle" font-size="8" fill="#555f85">exchange</text>
-    <circle cx="315" cy="138" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/><text x="315" y="160" text-anchor="middle" font-size="8" fill="#555f85">…</text>
-    <circle cx="360" cy="120" r="6" fill="#0B1024" stroke="#D4AF37" stroke-width="1.4"/>
-    <text x="360" y="103" text-anchor="middle" font-size="8" letter-spacing="1.5" fill="#D4AF37" font-family="Cinzel,serif">HOME</text>
-    <text x="195" y="18" text-anchor="middle" font-size="8.5" letter-spacing="3" fill="#8E7BC8" font-family="Cinzel,serif">THE MAP REORGANIZES · A THRESHOLD IS CROSSED</text>
-    <text x="195" y="222" text-anchor="middle" font-size="9.5" font-style="italic" fill="#A7A9B2">every node on the road now casts a shadow:</text>
-    <text x="195" y="236" text-anchor="middle" font-size="9.5" font-style="italic" fill="#A7A9B2">"…at the cost of what?"</text>
+  <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="560" fill="#0B1024"/>
+    <polyline points="60,180 120,220 185,175 250,225 310,185 340,260 300,330 220,360 140,330 100,400 195,470" fill="none" stroke="#2A3560" stroke-width="1.4"/>
+    <circle cx="60" cy="180" r="10" fill="#D4AF37"/><text x="60" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#D4AF37" font-family="Cinzel,serif">0</text>
+    <text x="60" y="206" text-anchor="middle" font-size="10" fill="#A7A9B2">choice ★</text>
+    <text x="60" y="220" text-anchor="middle" font-size="9" fill="#8E7BC8">…at the cost of?</text>
+    <circle cx="120" cy="220" r="6" fill="#0B1024" stroke="#555f85" stroke-width="1.3"/><text x="120" y="244" text-anchor="middle" font-size="10" fill="#555f85">labor</text>
+    <text x="120" y="257" text-anchor="middle" font-size="9" fill="#8E7BC8">…at the cost of?</text>
+    <circle cx="185" cy="175" r="6" fill="#0B1024" stroke="#555f85" stroke-width="1.3"/><text x="185" y="157" text-anchor="middle" font-size="10" fill="#555f85">surplus</text>
+    <circle cx="250" cy="225" r="6" fill="#0B1024" stroke="#555f85" stroke-width="1.3"/><text x="250" y="249" text-anchor="middle" font-size="10" fill="#555f85">property</text>
+    <circle cx="310" cy="185" r="6" fill="#0B1024" stroke="#555f85" stroke-width="1.3"/><text x="310" y="167" text-anchor="middle" font-size="10" fill="#555f85">exchange</text>
+    <circle cx="340" cy="260" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/>
+    <circle cx="300" cy="330" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/>
+    <circle cx="220" cy="360" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/>
+    <circle cx="140" cy="330" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/>
+    <circle cx="100" cy="400" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/>
+    <circle cx="195" cy="470" r="8" fill="#0B1024" stroke="#D4AF37" stroke-width="1.6"/>
+    <text x="195" y="450" text-anchor="middle" font-size="11" letter-spacing="2" fill="#D4AF37" font-family="Cinzel,serif">HOME</text>
+    <text x="195" y="34" text-anchor="middle" font-size="10" letter-spacing="2.5" fill="#8E7BC8" font-family="Cinzel,serif">THE MAP REORGANIZES</text>
+    <text x="195" y="52" text-anchor="middle" font-size="10" letter-spacing="2.5" fill="#8E7BC8" font-family="Cinzel,serif">A THRESHOLD IS CROSSED</text>
+    <text x="195" y="516" text-anchor="middle" font-size="11.5" font-style="italic" fill="#A7A9B2">every node on the road now casts a shadow:</text>
+    <text x="195" y="534" text-anchor="middle" font-size="11.5" font-style="italic" fill="#A7A9B2">"…at the cost of what?"</text>
   </svg>`;
   say([
     {who:"tali", t:"(Something shifts in how the whole road LOOKS. Every place you will ever visit now casts a faint shadow-question: at the cost of what? You cannot unsee it. That is what crossing a threshold means.)"},
     {who:"narr", t:"On the last night of spring, a small thing happens that refuses to leave Aadi alone. Bodhi the fisher comes back with two baskets. Kesar the hunter — stronger, older, prouder — comes back with half of one. Same day. Same valley. Same hours of work."},
     {who:"aadi", t:"Same purse spent… DIFFERENT harvest back. So a hand-moon is not a hand-moon? What is hiding inside WORK, Shyam? …Shyam?"},
-    {who:"shyam", t:`"*already trotting toward the eastern pass* Does this valley have that answer? Then why are your feet still in it?"`}
+    {who:"shyam", t:`"*the voice is already somewhere ahead, on the eastern path* Does this valley have that answer? Then why are your feet still in it?"`}
   ], sceneLog);
 }
 function sceneLog(){
@@ -861,9 +928,9 @@ function sceneLog(){
   }).join(" ");
   dlg.innerHTML = `
   <div class="dline" style="cursor:default;">
-    <div style="font-size:.6rem; letter-spacing:1.5px; color:var(--dim); text-transform:uppercase; margin-bottom:8px; font-family:'Cinzel',serif;">Journey log — what the game learned about the learner</div>
+    <div style="font-size:.64rem; letter-spacing:1.5px; color:var(--dim); text-transform:uppercase; margin-bottom:8px; font-family:'Cinzel',serif;">Journey log — what the game learned about the learner</div>
     <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px;">${plans}</div>
-    <div style="font-size:.85rem; color:var(--stone);">
+    <div style="font-size:.9rem; color:var(--stone);">
       seasons: <b style="color:var(--text)">${S.log.seasons}</b> ·
       fruit rotted: <b style="color:var(--text)">${S.log.fruitRotTotal}</b> ·
       fish lost: <b style="color:var(--text)">${S.log.fishRotTotal}</b> ·
@@ -872,13 +939,13 @@ function sceneLog(){
       vision: <b style="color:var(--text)">${S.log.visions}/3</b> ·
       probes retried: <b style="color:var(--text)">${S.log.probeRetries}</b>
     </div>
-    <div style="font-size:.78rem; color:var(--dim); margin-top:9px;">Every rotted basket is a diagnosed misconception; every rung is a located gap; every extra season is productive failure doing its work. At the Gate, one day, Aadi will answer with exactly what you taught him here.</div>
-    <div style="font-size:.78rem; color:var(--dim); margin-top:7px; font-style:italic;">Era II consumes this card: the Labor mission opens only for those who can already name the first price. Knowledge is the crafting material.</div>
+    <div style="font-size:.82rem; color:var(--dim); margin-top:9px;">Every rotted basket is a diagnosed misconception; every rung is a located gap; every extra season is productive failure doing its work. At the Gate, one day, Aadi will answer with exactly what you taught him here.</div>
+    <div style="font-size:.82rem; color:var(--dim); margin-top:7px; font-style:italic;">Era II consumes this card: the Labor mission opens only for those who can already name the first price. Knowledge is the crafting material.</div>
     <div class="btnrow" style="margin-top:10px;">
       <button class="ghostbtn" onclick="openCodex()">Open the Codex ✦</button>
       <button class="ghostbtn" onclick="location.reload()">Play again</button>
     </div>
-    <div style="font-size:.76rem; color:var(--dim); margin-top:12px; text-align:center; font-style:italic;">…and, for the time being, that's all folks…</div>
+    <div style="font-size:.8rem; color:var(--dim); margin-top:12px; text-align:center; font-style:italic;">…and, for the time being, that's all folks…</div>
   </div>`;
   $("clues").classList.remove("on");
   $("shyambtn").style.display="none"; $("visionbtn").style.display="none";
@@ -888,22 +955,21 @@ function sceneLog(){
 function openCodex(){
   const box = $("cardbox");
   box.innerHTML = `<h3>THE CODEX</h3>
-  <p style="font-size:.8rem; color:var(--dim); margin-bottom:10px;">It lights only when something is understood. ${S.cards.length} card(s) lit.</p>
+  <p style="font-size:.84rem; color:var(--dim); margin-bottom:10px;">It lights only when something is understood. ${S.cards.length} card(s) lit.</p>
   ${S.cards.map(c=>`
     <div style="border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:10px;">
-      <h3 style="font-size:.95rem; margin-bottom:7px;">✦ ${c.name}</h3>
+      <h3 style="font-size:.98rem; margin-bottom:7px;">✦ ${c.name}</h3>
       <div class="cipm-row"><span class="k">C</span><span class="v">${c.C}</span></div>
       <div class="cipm-row"><span class="k">I</span><span class="v">${c.I}</span></div>
       <div class="cipm-row"><span class="k">P</span><span class="v">${c.P}</span></div>
       <div class="cipm-row"><span class="k">M</span><span class="v">${c.M}</span></div>
-    </div>`).join("") || `<p style="color:var(--dim); font-size:.88rem;">Nothing lit yet. Understanding, not answers, fills these pages.</p>`}
+    </div>`).join("") || `<p style="color:var(--dim); font-size:.92rem;">Nothing lit yet. Understanding, not answers, fills these pages.</p>`}
   <div class="lockedcard">Era II · LABOR — locked. Opens for those who carry 'Choice — the First Price'. Bodhi's two baskets are waiting to be explained.</div>`;
   $("modal").classList.add("on");
 }
 
 /* ---------------- boot ---------------- */
 window.__test = { S, EXAM, VISION, WS_BLANKS, PROBES, ladder, summarizePlan };
-sceneTitle();
 </script>
 </body>
 </html>
