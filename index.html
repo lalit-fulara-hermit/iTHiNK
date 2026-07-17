@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>iTHiNK — the GAME · The First Valley</title>
+<title>iTHiNK — the GAME · Episodes 0–1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -20,7 +20,6 @@
   button{font-family:inherit; cursor:pointer; border:none; border-radius:10px; font-size:1.02rem;}
   .cinzel{font-family:'Cinzel',Georgia,serif;}
 
-  /* HUD */
   #hud{display:flex; align-items:center; gap:10px; padding:10px 2px 8px; background:var(--midnight); min-height:48px; flex:0 0 auto;}
   .hi-wrap{flex:1; min-width:120px;}
   .hi-label{display:flex; justify-content:space-between; font-size:.62rem; letter-spacing:1.5px; color:var(--dim); margin-bottom:3px; text-transform:uppercase; font-family:'Cinzel',serif;}
@@ -29,11 +28,9 @@
   .hi-pot{position:absolute; top:-1px; bottom:-1px; border:1.5px dashed var(--teal); border-left:none; border-radius:0 99px 99px 0;}
   .codex-chip{background:var(--indigo); border:1px solid var(--amethyst); color:var(--amethyst); border-radius:99px; padding:7px 13px; font-size:.76rem; font-family:'Cinzel',serif; letter-spacing:1px;}
 
-  /* stage fills the free screen */
   #stage{flex:1 1 auto; min-height:210px; position:relative; background:#0B1024; border:1px solid var(--line); border-radius:14px; overflow:hidden;}
   #stage svg{position:absolute; inset:0; width:100%; height:100%;}
 
-  /* dialogue */
   #dlg{margin-top:8px; flex:0 0 auto;}
   .dline{background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:12px 14px; cursor:pointer;}
   .dline .who{display:inline-block; font-size:.6rem; font-weight:700; letter-spacing:1.5px; padding:3px 10px; border-radius:99px; margin-bottom:6px; font-family:'Cinzel',serif;}
@@ -47,22 +44,22 @@
   .choices{display:flex; flex-direction:column; gap:8px; margin-top:8px;}
   .choice{background:var(--royal); border:1px solid var(--line); color:var(--text); padding:13px 15px; border-radius:11px; text-align:left; font-size:1rem; min-height:48px;}
   .choice:active{border-color:var(--gold);}
+  .backbtn{background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:99px; width:36px; height:36px; font-size:1rem; float:left; margin-right:9px; line-height:1;}
 
-  /* clues */
   #clues{display:none; margin-top:7px; gap:5px; flex-wrap:wrap; flex:0 0 auto;}
   #clues.on{display:flex;}
   .clue{font-size:.74rem; color:var(--teal); border:1px dashed rgba(30,168,150,.55); border-radius:99px; padding:4px 11px; animation:pop .4s;}
   @keyframes pop{0%{transform:scale(.6); opacity:0;}100%{transform:scale(1); opacity:1;}}
 
-  /* store + plan */
   #store{display:none; margin-top:8px; background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:10px 13px; flex:0 0 auto;}
   .st-row{display:flex; align-items:center; gap:9px; margin:5px 0;}
   .st-name{flex:0 0 76px; font-size:.66rem; letter-spacing:1px; text-transform:uppercase; color:var(--dim); font-family:'Cinzel',serif;}
   .st-track{flex:1; height:9px; background:#0d1230; border:1px solid var(--line); border-radius:99px; position:relative; overflow:hidden;}
   .st-fill{position:absolute; top:0; bottom:0; left:0; background:var(--teal); border-radius:99px; transition:width .9s ease;}
   .st-num{flex:0 0 76px; text-align:right; font-size:.85rem; color:var(--stone);}
-  #plan{display:none; margin-top:8px; background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:11px 13px; flex:0 0 auto;}
-  .plan-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;}
+
+  #plan,#crew{display:none; margin-top:8px; background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:11px 13px; flex:0 0 auto;}
+  .plan-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; flex-wrap:wrap; gap:4px;}
   .plan-title{font-size:.66rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); font-family:'Cinzel',serif;}
   .hands-left{font-size:.86rem; color:var(--stone);}
   .site{display:flex; align-items:center; gap:8px; padding:8px 0; border-top:1px solid rgba(42,53,96,.6);}
@@ -73,36 +70,31 @@
   .ctr button{width:42px; height:42px; border-radius:10px; background:var(--royal); color:var(--text); border:1px solid var(--line); font-size:1.25rem; line-height:1;}
   .ctr button:disabled{opacity:.3;}
   .ctr .n{width:22px; text-align:center; font-size:1.1rem; color:var(--gold);}
+  .taskbtn{min-width:104px; background:var(--royal); border:1px solid var(--line); color:var(--gold); padding:11px 10px; border-radius:10px; font-size:.9rem; min-height:44px;}
   .plan-foot{display:flex; align-items:center; gap:10px; margin-top:9px; flex-wrap:wrap;}
   .pushbox{display:flex; align-items:center; gap:6px; font-size:.85rem; color:var(--stone); cursor:pointer;}
   .gobtn{background:var(--sienna); color:#1a0e04; font-weight:700; padding:13px 20px; margin-left:auto; font-family:'Cinzel',serif; letter-spacing:1px; font-size:.86rem; min-height:48px;}
   .gobtn:disabled{opacity:.35;}
 
-  /* helper buttons */
   .btnrow{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; flex:0 0 auto;}
   .ghostbtn{background:transparent; border:1px solid var(--line); color:var(--stone); padding:11px 15px; font-size:.85rem; border-radius:99px; min-height:44px;}
-  .backbtn{background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:99px; width:36px; height:36px; font-size:1rem; float:left; margin-right:9px; line-height:1;}
   .shyambtn{background:transparent; border:1px solid rgba(142,123,200,.5); color:var(--amethyst); padding:11px 15px; font-size:.85rem; border-radius:99px; display:none; min-height:44px;}
 
-  /* whitestory parchment */
   .ws{background:var(--parchment); color:#2b2416; border-radius:14px; padding:17px 16px; margin-top:8px; font-size:1.02rem;}
   .ws h3{color:#5a4a1e; letter-spacing:1px; margin-bottom:9px; font-size:.9rem; font-family:'Cinzel',serif;}
   .ws .blank{display:inline-block; min-width:90px; border-bottom:2px solid #8a7a4a; color:#8a2f14; font-weight:600; text-align:center; padding:0 4px;}
   .ws .wchoices{display:flex; flex-direction:column; gap:7px; margin-top:11px;}
   .ws .wchoice{background:#e0d6bf; border:1px solid #b3a67f; color:#2b2416; padding:12px 13px; border-radius:8px; text-align:left; font-size:.96rem; min-height:46px;}
 
-  /* login (WHiTePAGE brand) */
   #login{position:fixed; inset:0; z-index:50; background:var(--wpyellow); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px;}
   .wp-page{position:relative; background:var(--wpwhite); width:min(300px,80vw); border-radius:6px; padding:38px 28px 30px; box-shadow:0 18px 50px rgba(90,80,10,.18);}
   .wp-smile{position:absolute; right:-2px; top:38%;}
-  .wp-title{font-family:'Cinzel',serif; font-weight:700; font-size:1.05rem; letter-spacing:3px; color:#3a3418; text-align:center; margin-bottom:4px;}
   .wp-sub{font-size:.78rem; letter-spacing:2px; color:#9a9260; text-align:center; margin-bottom:26px; font-family:'Cinzel',serif;}
   .wp-field{width:100%; border:none; border-bottom:2px solid #e6df9a; background:transparent; padding:10px 2px; font-family:'EB Garamond',serif; font-size:1.08rem; color:#3a3418; outline:none; margin-bottom:22px;}
   .wp-field::placeholder{color:#c2bb85;}
   .wp-btn{width:100%; background:#3a3418; color:var(--wpyellow); padding:14px; border-radius:8px; font-family:'Cinzel',serif; letter-spacing:2px; font-size:.86rem; min-height:48px;}
   .wp-foot{margin-top:26px; font-size:.7rem; letter-spacing:2px; color:#8a8250; font-family:'Cinzel',serif;}
 
-  /* codex modal */
   #modal{display:none; position:fixed; inset:0; background:rgba(4,6,16,.88); z-index:40; justify-content:center; align-items:center; padding:14px;}
   #modal.on{display:flex;}
   .card{background:var(--indigo); border:1px solid var(--amethyst); border-radius:16px; max-width:430px; width:100%; padding:18px; max-height:84vh; overflow:auto;}
@@ -112,7 +104,6 @@
   .cipm-row .v{color:var(--stone); padding-top:3px;}
   .lockedcard{opacity:.5; font-size:.84rem; color:var(--dim); border-top:1px solid var(--line); padding-top:9px; margin-top:10px;}
 
-  /* fx */
   .tw{animation:twinkle 2.6s ease-in-out infinite;}
   .tw2{animation:twinkle 3.4s ease-in-out infinite 1.2s;}
   @keyframes twinkle{0%,100%{opacity:1;}50%{opacity:.2;}}
@@ -125,6 +116,8 @@
   .snow line{stroke:#cdd6f5; stroke-width:1; opacity:.5;}
   .snow{animation:snowfall 1.4s linear infinite;}
   @keyframes snowfall{0%{transform:translateY(-12px);}100%{transform:translateY(0);}}
+  .ripple{animation:rippleflow 4s ease-in-out infinite;}
+  @keyframes rippleflow{0%,100%{transform:translateX(0);}50%{transform:translateX(6px);}}
   .pagecameo{animation:pagecameo 22s ease forwards;}
   @keyframes pagecameo{
     0%{opacity:0; transform:translateX(-24px);}
@@ -190,6 +183,17 @@
       <button class="gobtn" id="gobtn" onclick="runMoon()" disabled>Begin the moon</button>
     </div>
   </div>
+  <div id="crew">
+    <div class="plan-head">
+      <span class="plan-title" id="daytitle">Day One</span>
+      <span class="hands-left" id="rackline">racks: <b style="color:var(--gold)">0</b> / 380</span>
+    </div>
+    <div id="crewrows"></div>
+    <div class="plan-foot">
+      <span style="font-size:.8rem; color:var(--dim); font-style:italic;" id="qline">net quality: 75%</span>
+      <button class="gobtn" id="daybtn" onclick="runDay()" disabled>Begin the day</button>
+    </div>
+  </div>
   <div class="btnrow">
     <button class="shyambtn" id="shyambtn" onclick="askShyam()">Ask Shyam</button>
     <button class="ghostbtn" id="visionbtn" style="display:none;" onclick="startVision()">✦ Why is there never enough?</button>
@@ -243,22 +247,56 @@ function winterVerdict(store){
            shelter: store.shelter >= SIM.NEED.shelter,
            pass: store.food>=SIM.NEED.food && store.fuel>=SIM.NEED.fuel && store.shelter>=SIM.NEED.shelter };
 }
-if(typeof window!=="undefined") window.__sim = { SIM, computeMoon, winterVerdict };
-if(typeof module!=="undefined") module.exports = { SIM, computeMoon, winterVerdict };
+/* ---- era II: labor ---- */
+const SIM2 = {
+  DAYS:3, TARGET:380, QSTART:0.75,
+  WORKERS:{
+    meen:{name:"Meen", gift:"sharp eyes — she calls the shoals before they break", apt:{spot:2.0,net:1.0,mend:0.8,smoke:0.8}},
+    karn:{name:"Karn", gift:"a strong back — hauls wood like straw, but his net comes up torn", apt:{spot:0.7,net:1.0,mend:0.6,smoke:1.5}},
+    dhara:{name:"Dhara", gift:"steady hands — her pull is slow and never slips", apt:{spot:0.8,net:1.6,mend:1.2,smoke:0.9}},
+    tara:{name:"Tara", gift:"quick fingers — they dance through knots", apt:{spot:0.9,net:1.1,mend:1.8,smoke:0.8}},
+    puna:{name:"Old Puna", gift:"sixty years of water — sits, watches, points, and is always right", apt:{spot:1.8,net:0.9,mend:1.0,smoke:1.2}}
+  },
+  TASKS:["spot","net","mend","smoke"],
+  TASKNAMES:{spot:"spotting shoals", net:"the nets", mend:"mending", smoke:"the racks"}
+};
+function computeDay(assign, streaks, quality){
+  const pts = {spot:0,net:0,mend:0,smoke:0};
+  for(const w in assign){
+    const t = assign[w]; if(!t) continue;
+    const mult = 1 + 0.25*Math.min(streaks[w]||0, 2);
+    pts[t] += SIM2.WORKERS[w].apt[t]*mult;
+  }
+  const netted = Math.round(55 * pts.net * (1 + 0.2*pts.spot) * quality);
+  const cap = Math.round(100 * pts.smoke);
+  const stored = Math.min(netted, cap);
+  const wasted = netted - stored;
+  const nextQ = Math.max(0.55, Math.min(1, quality - 0.15 + 0.15*pts.mend));
+  return {pts, netted, cap, stored, wasted, nextQ};
+}
+if(typeof window!=="undefined") window.__sim = { SIM, computeMoon, winterVerdict, SIM2, computeDay };
+if(typeof module!=="undefined") module.exports = { SIM, computeMoon, winterVerdict, SIM2, computeDay };
 </script>
 
 <script>
 /* ==========================================================================
-   iTHiNK v7 — Node 0: THE FIRST VALLEY · mobile, full-screen scenes
-   Login (WHiTePAGE) → title (monoline wordmark) → the valley
+   iTHiNK v8 — Episodes 0 & 1: THE FIRST VALLEY · THE NETMAKERS' WATER
+   Foundations: player decides, Aadi acts, Shyam asks only questions,
+   objects tell when touched, first-touched object gates with a favor,
+   the door is the test, HI only rises, cards are consumed by later gates.
    ========================================================================== */
 const S = {
-  scene:"login", hi:38, pot:90, season:1, moon:1, playerName:"",
+  scene:"login", era:0, hi:38, pot:90, season:1, moon:1, playerName:"",
   store:{food:0,fuel:0,shelter:0},
   alloc:{grove:0,roots:0,river:0,forest:0,huts:0},
   examined:{}, favorDone:false, exhausted:false,
   clues:[], cards:[], rung:0, cameoShown:false,
-  log:{plans:[], asks:0, deepestRung:0, visions:0, probeRetries:0, seasons:1, fruitRotTotal:0, fishRotTotal:0, pushes:0}
+  /* era II state */
+  day:1, week:1, assign:{}, prevAssign:{}, streaks:{}, quality:0.75, stored:0,
+  watched:false, gateDone2:false, seen2:{}, rotatedDay:0,
+  log:{plans:[], asks:0, deepestRung:0, visions:0, probeRetries:0, seasons:1,
+       fruitRotTotal:0, fishRotTotal:0, pushes:0,
+       days:[], weeks:1, wastedTotal:0, rotations:0, gateRetries:0}
 };
 const $ = id => document.getElementById(id);
 const stage = $("stage"), dlg = $("dlg");
@@ -270,7 +308,7 @@ function doLogin(){
   sceneTitle();
 }
 
-/* ---------------- HUD / store ---------------- */
+/* ---------------- HUD ---------------- */
 function hud(on, name){
   $("hud").style.visibility = on?"visible":"hidden";
   if(name) $("hiname").textContent = name;
@@ -337,28 +375,20 @@ function addClue(c){
   $("clues").classList.add("on");
   $("clues").innerHTML = S.clues.map(x=>`<span class="clue">◆ ${x}</span>`).join("");
 }
+function clearClues(){ S.clues=[]; $("clues").classList.remove("on"); $("clues").innerHTML=""; }
 
 /* ==========================================================================
-   TITLE — minimal monoline wordmark (straight lines only)
+   TITLE — the wordmark
    ========================================================================== */
 function sceneTitle(){
   S.scene="title"; hud(false);
   stage.innerHTML = `
   <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="goldg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#F3DE9B"/><stop offset=".55" stop-color="#D4AF37"/><stop offset="1" stop-color="#8F6E1A"/>
-      </linearGradient>
-      <linearGradient id="ivoryg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#F2EFE6"/><stop offset="1" stop-color="#A7A9B2"/>
-      </linearGradient>
-    </defs>
     <rect width="390" height="560" fill="#0B1024"/>
     <circle cx="60" cy="80" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="330" cy="64" r="1.1" fill="#EDE6D6" class="tw2"/>
     <circle cx="200" cy="42" r="1" fill="#EDE6D6" class="tw"/><circle cx="290" cy="120" r="1.2" fill="#EDE6D6" class="tw2"/>
     <circle cx="100" cy="140" r="1" fill="#EDE6D6" class="tw2"/>
     <line x1="70" y1="180" x2="320" y2="180" stroke="#D4AF37" stroke-width=".8" opacity=".5"/>
-    <!-- iTH!NK — the wordmark: blocky straight strokes, gold i/L, solid fills -->
     <g transform="translate(62,212) scale(1.33)">
       <rect x="2" y="0" width="10" height="10" fill="#D4AF37"/>
       <g stroke="#D4AF37" stroke-width="10" stroke-linecap="butt">
@@ -375,16 +405,13 @@ function sceneTitle(){
       <rect x="100" y="44" width="10" height="9" fill="#DCDEE6"/>
     </g>
     <line x1="70" y1="336" x2="320" y2="336" stroke="#D4AF37" stroke-width=".8" opacity=".5"/>
-    <text x="195" y="376" text-anchor="middle" font-size="17" letter-spacing="8" fill="url(#goldg)" font-family="Cinzel,serif" font-weight="700">THE GAME</text>
+    <text x="195" y="376" text-anchor="middle" font-size="17" letter-spacing="8" fill="#D4AF37" font-family="Cinzel,serif" font-weight="700">THE GAME</text>
     <text x="195" y="410" text-anchor="middle" font-size="11" letter-spacing="2.5" fill="#8A90B0" font-family="Cinzel,serif">LEARN ANYTHING · UNDERSTAND EVERYTHING</text>
   </svg>`;
   dlg.innerHTML="";
   choices([{t:"Begin ▸", fn:sceneEpigraph}]);
 }
 
-/* ==========================================================================
-   EPIGRAPH
-   ========================================================================== */
 function sceneEpigraph(){
   stage.innerHTML = `
   <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
@@ -401,7 +428,8 @@ function sceneEpigraph(){
 }
 
 /* ==========================================================================
-   THE CITY OF ANSWERS
+   EPISODE 0 — THE CITY OF ANSWERS → THE FIRST VALLEY
+   (unchanged foundations from the approved node-0 build)
    ========================================================================== */
 const EXAM = [
   {q:"Define scarcity.", a:"'The state of limited resources against unlimited wants.'"},
@@ -473,9 +501,6 @@ function sceneExile(){
   ], sceneValley);
 }
 
-/* ==========================================================================
-   THE FIRST VALLEY — portrait, fills the screen
-   ========================================================================== */
 function valleySVG(extra=""){
   return `
   <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
@@ -499,7 +524,7 @@ function valleySVG(extra=""){
     <text x="252" y="540" text-anchor="middle" font-size="12" fill="#A7A9B2">the river</text>
     <g fill="#241a10"><rect x="288" y="330" width="7" height="28" rx="2" transform="rotate(8 291 344)"/><rect x="305" y="326" width="7" height="32" rx="2" transform="rotate(-6 308 342)"/><rect x="322" y="331" width="7" height="26" rx="2" transform="rotate(3 325 344)"/></g>
     <text x="308" y="382" text-anchor="middle" font-size="12" fill="#A7A9B2">the deadwood forest</text>
-    <g fill="#2a2338"><path d="M282,452 L310,430 L338,452 L338,482 L282,482 Z"/><path d="M330,458 L352,441 L374,458 L374,480 L330,480 Z"/></g>
+    <g fill="#2a2338"><path d="M282,452 L310,430 L338,452 L338,482 L282,482 Z"/><path d="M330,458 L352,441 L370,458 L370,480 L330,480 Z"/></g>
     <text x="328" y="502" text-anchor="middle" font-size="12" fill="#A7A9B2">the huts</text>
     <ellipse cx="300" cy="490" rx="9" ry="4" fill="#C26A3D" opacity=".55"/>
     <path d="M296,490 Q299,477 303,490" fill="#D4AF37" class="flame"/>
@@ -509,11 +534,10 @@ function valleySVG(extra=""){
     <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE FIRST VALLEY</text>
   </svg>`;
 }
-/* the visiting page — right-facing, enters, sits, quietly leaves */
-function pageCameo(){
+function pageCameo(y=380){
   return `<g class="pagecameo" opacity="0">
-    <rect x="20" y="380" width="24" height="34" rx="2" fill="#EDE6D6"/>
-    <path d="M38,390 Q51,397 38,405" stroke="#D4AF37" stroke-width="1.8" fill="none"/>
+    <rect x="20" y="${y}" width="24" height="34" rx="2" fill="#EDE6D6"/>
+    <path d="M38,${y+10} Q51,${y+17} 38,${y+25}" stroke="#D4AF37" stroke-width="1.8" fill="none"/>
   </g>`;
 }
 function sceneValley(){
@@ -532,7 +556,6 @@ function sceneValley(){
   });
 }
 
-/* ---------------- walking the valley ---------------- */
 const TELL = {
   roots:  {t:"Knobbly, dull, patient. A hand digs about eight measures a moon. Dry them and they keep till spring without complaint — the humblest thing here, and the most loyal.", clue:"roots store; 8 a moon"},
   river:  {t:"Quick silver under the surface. A hand nets about ten measures a moon — but fish rots in days unless it is SMOKED, and smoking one hand's catch eats two measures of firewood. The river gives with one hand and charges with the other.", clue:"fish: 10 a moon, smoking costs 2 firewood"},
@@ -548,7 +571,6 @@ function exploreChoices(){
   if(S.favorDone && seen>=3) opts.push({t:"Enough walking — gather the band. We plan. ▸", fn:startPlanning});
   choices(opts);
 }
-/* the exchange lesson gates whichever object the player approaches FIRST */
 const GATES = {
   grove:{voice:"THE OLD TREE",
     stop:"Aadi reaches for a low fruit. The branch lifts it away from his hand. The whole tree turns its leaves toward him, the way a crowd turns its faces.",
@@ -621,9 +643,7 @@ function tellSite(k){
   }
 }
 
-/* ==========================================================================
-   PLANNING
-   ========================================================================== */
+/* ---------------- era 0 planning ---------------- */
 function startPlanning(){
   S.scene="plan";
   stage.innerHTML = valleySVG();
@@ -678,7 +698,6 @@ function updateHands(){
 function inc(k){ if(handsUsed()<SIM.HANDS){ S.alloc[k]++; updateHands(); } }
 function dec(k){ if(S.alloc[k]>0){ S.alloc[k]--; updateHands(); } }
 
-/* ---------------- run a moon ---------------- */
 function runMoon(){
   const push = $("pushchk").checked;
   const alloc = {...S.alloc};
@@ -693,7 +712,6 @@ function runMoon(){
   S.log.fruitRotTotal += res.fruitRot; S.log.fishRotTotal += res.fishRot;
   $("plan").style.display="none"; $("pushchk").checked=false;
   drawStore();
-
   const beats = [];
   if(wasExhausted) beats.push({who:"narr", t:"The band moves like wet rope this moon — last moon's pushing is being repaid, with interest."});
   if(alloc.grove) beats.push({who:"narr", t:`The grove: ${res.fruitGathered} measures picked${res.fruitRot?` — and by moon's end, ${res.fruitRot} lie blackened in the baskets. ${res.fruitKept} survive`:""}.`});
@@ -702,7 +720,6 @@ function runMoon(){
   if(alloc.forest) beats.push({who:"narr", t:`The forest: ${res.wood} measures of firewood hauled.`});
   if(alloc.huts) beats.push({who:"narr", t:`The huts: ${res.hutwork} patches set against the wind.`});
   if(push) beats.push({who:"narr", t:"The band worked past dusk every day. It shows in the piles — and in their faces. Something was borrowed this moon."});
-
   say(beats, ()=>{ S.rung=0; afterMoon(alloc, res, push); });
 }
 function paceShort(){
@@ -734,18 +751,38 @@ function shyamAfterMoon(alloc, res, push){
   return {who:"shyam", t:`"What will you STOP doing next moon? Is adding the only move you know?"`};
 }
 
-/* ---------------- Shyam's cascade — every rung a question ---------------- */
+/* ---------------- Shyam's cascade — era-aware, questions only ---------------- */
 function ladder(){
-  const last = S.log.plans[S.log.plans.length-1];
-  const topTask = last ? Object.keys(last.alloc).reduce((a,b)=> last.alloc[a]>=last.alloc[b]?a:b) : null;
+  if(S.era===0){
+    const last = S.log.plans[S.log.plans.length-1];
+    const topTask = last ? Object.keys(last.alloc).reduce((a,b)=> last.alloc[a]>=last.alloc[b]?a:b) : null;
+    return [
+      last && last.alloc[topTask]>0
+        ? `"Last moon you gave ${SIM.SITES[topTask].label} ${last.alloc[topTask]} hands. While they stood THERE — what did the valley not get? Can you name it?"`
+        : `"Before you choose — whatever you pick, can you name what you are NOT picking?"`,
+      `"One hand. One moon. One place. Can it be in two? Then what happens to the choice you did not make — does it wait for you?"`,
+      `"Count with me, slowly. Eight hands, three moons — how big is the purse? And what must it buy, all of it, before the snow?"`,
+      `"On the road here we came to a fork, and you took the left path. Where did the right one go? What would you call a thing that stops existing the moment you choose?"`
+    ];
+  }
+  // era 1 — labor
+  const bad = worstFit();
   return [
-    last && last.alloc[topTask]>0
-      ? `"Last moon you gave ${SIM.SITES[topTask].label} ${last.alloc[topTask]} hands. While they stood THERE — what did the valley not get? Can you name it?"`
-      : `"Before you choose — whatever you pick, can you name what you are NOT picking?"`,
-    `"One hand. One moon. One place. Can it be in two? Then what happens to the choice you did not make — does it wait for you?"`,
-    `"Count with me, slowly. Eight hands, three moons — how big is the purse? And what must it buy, all of it, before the snow?"`,
-    `"On the road here we came to a fork, and you took the left path. Where did the right one go? What would you call a thing that stops existing the moment you choose?"`
+    bad ? `"You set ${bad.name} to ${SIM2.TASKNAMES[bad.task]}. What is ${bad.name}'s hand actually FOR? Have you watched it?"`
+        : `"Before you set the day — can you say what each hand is FOR, not just where it stands?"`,
+    `"Two hands, same hour, different baskets — if the hours are equal, what is unequal?"`,
+    `"What grows in a hand that repeats one craft? Can you buy it at any market? Can you lend it to a neighbor?"`,
+    `"The first time you tied a knot, how long did it take? And the hundredth time? What changed — the rope, or you?"`
   ];
+}
+function worstFit(){
+  let worst=null;
+  for(const w in S.assign){
+    const t=S.assign[w]; if(!t) continue;
+    const apt=SIM2.WORKERS[w].apt[t];
+    if(apt<1.0 && (!worst || apt<worst.apt)) worst={name:SIM2.WORKERS[w].name, task:t, apt};
+  }
+  return worst;
 }
 function askShyam(){
   S.log.asks++;
@@ -753,31 +790,48 @@ function askShyam(){
   const r = Math.min(S.rung, L.length-1);
   S.log.deepestRung = Math.max(S.log.deepestRung, r+1);
   const lines = [{who:"shyam", t:L[r]}];
-  if(r===L.length-1) lines.push({who:"world", t:`THE WIND, through the grass, almost a word: "…the price… the price…"`});
-  say(lines, ()=>{ if(S.scene==="plan") showPlan(); });
+  if(r===L.length-1) lines.push({who:"world", t: S.era===0
+    ? `THE WIND, through the grass, almost a word: "…the price… the price…"`
+    : `THE WIND, off the water, almost a word: "…the hand… the hand…"`});
+  say(lines, ()=>{ restorePanels(); });
   S.rung = (r+1) % L.length;
+}
+function restorePanels(){
+  if(S.scene==="plan") showPlan();
+  if(S.scene==="crew") showCrew();
 }
 
 /* ==========================================================================
-   VISION — trace scarcity to 0
+   VISIONS — era-aware
    ========================================================================== */
-const VISION = [
-  {cap:"THE TALISMAN PULLS YOU BOTH UP AND BACK. The valley from above — one green bowl in a ring of rock. Count its trees; you would finish counting. Count its moons before winter; you already have. Generous is not the same as endless.",
-   svg:`<path d="M40,340 Q195,200 350,340 L350,430 L40,430 Z" fill="#1E2A55"/><path d="M10,340 Q50,250 100,340 Z" fill="#141B36"/><path d="M290,340 Q340,240 380,340 Z" fill="#141B36"/><circle cx="195" cy="130" r="20" fill="#EDE6D6" opacity=".7"/>`},
-  {cap:"HIGHER. The whole earth — one ball of rock and water, lit on one side. Every valley that has ever fed anyone is on it. It does not grow. It has never once grown. Everyone who will ever live shares this one ration.",
-   svg:`<circle cx="195" cy="260" r="90" fill="#16405c"/><path d="M138,216 Q172,192 215,212 Q248,230 232,260 Q195,278 152,256 Z" fill="#1a4a3c"/><circle cx="195" cy="260" r="108" fill="#1EA896" opacity="0.1" class="glow"/><circle cx="70" cy="90" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="320" cy="120" r="1.3" fill="#EDE6D6" class="tw2"/>`},
-  {cap:"THE FLOOR. Before the earth: a sun, spending itself — so much fire, and even that is a purse, not a spring. Before the sun: hydrogen. Before hydrogen: one beginning. Matter, energy, space, TIME — all of it issued once, 13.8 billion years ago, and never reissued. Scarcity was not invented by misers. It was born here, at 0. Everything since has been choosing.",
-   svg:`<circle cx="195" cy="250" r="12" fill="#D4AF37"/><circle cx="195" cy="250" r="44" fill="#D4AF37" opacity="0.3" class="glow"/><circle cx="195" cy="250" r="100" fill="#8E7BC8" opacity="0.15" class="glow"/><text x="195" y="257" text-anchor="middle" font-size="19" font-weight="800" fill="#EDE6D6" font-family="Cinzel,serif">0</text>`}
-];
+const VISIONS = {
+  0:[
+    {cap:"THE TALISMAN PULLS YOU BOTH UP AND BACK. The valley from above — one green bowl in a ring of rock. Count its trees; you would finish counting. Count its moons before winter; you already have. Generous is not the same as endless.",
+     svg:`<path d="M40,340 Q195,200 350,340 L350,430 L40,430 Z" fill="#1E2A55"/><path d="M10,340 Q50,250 100,340 Z" fill="#141B36"/><path d="M290,340 Q340,240 380,340 Z" fill="#141B36"/><circle cx="195" cy="130" r="20" fill="#EDE6D6" opacity=".7"/>`},
+    {cap:"HIGHER. The whole earth — one ball of rock and water, lit on one side. Every valley that has ever fed anyone is on it. It does not grow. It has never once grown. Everyone who will ever live shares this one ration.",
+     svg:`<circle cx="195" cy="260" r="90" fill="#16405c"/><path d="M138,216 Q172,192 215,212 Q248,230 232,260 Q195,278 152,256 Z" fill="#1a4a3c"/><circle cx="195" cy="260" r="108" fill="#1EA896" opacity="0.1" class="glow"/><circle cx="70" cy="90" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="320" cy="120" r="1.3" fill="#EDE6D6" class="tw2"/>`},
+    {cap:"THE FLOOR. Before the earth: a sun, spending itself — so much fire, and even that is a purse, not a spring. Before the sun: hydrogen. Before hydrogen: one beginning. Matter, energy, space, TIME — all of it issued once, 13.8 billion years ago, and never reissued. Scarcity was not invented by misers. It was born here, at 0. Everything since has been choosing.",
+     svg:`<circle cx="195" cy="250" r="12" fill="#D4AF37"/><circle cx="195" cy="250" r="44" fill="#D4AF37" opacity="0.3" class="glow"/><circle cx="195" cy="250" r="100" fill="#8E7BC8" opacity="0.15" class="glow"/><text x="195" y="257" text-anchor="middle" font-size="19" font-weight="800" fill="#EDE6D6" font-family="Cinzel,serif">0</text>`}
+  ],
+  1:[
+    {cap:"THE TALISMAN TURNS THE LIGHT AROUND. Dhara's arm, mid-pull — and inside it, yesterday's bread. Inside the bread, a field of wheat, drinking a summer. Work is eaten sunlight, spent through a hand.",
+     svg:`<path d="M60,380 Q195,300 330,380 L330,430 L60,430 Z" fill="#1E2A55"/><circle cx="195" cy="180" r="46" fill="#D4AF37" opacity=".8"/><path d="M120,340 q10,-40 6,-70 M150,344 q8,-44 2,-80 M180,342 q4,-40 0,-74 M215,344 q-4,-42 2,-78 M250,340 q-8,-40 -4,-72" stroke="#C2A44A" stroke-width="4" fill="none"/>`},
+    {cap:"FURTHER. The wheat drinks the sun; the sun burns itself thinner with every heartbeat. Every stroke of every net that has ever been cast was a loan from that fire, passed through soil and stomach into a shoulder.",
+     svg:`<circle cx="195" cy="230" r="70" fill="#D4AF37" opacity=".9"/><circle cx="195" cy="230" r="100" fill="#D4AF37" opacity=".25" class="glow"/><circle cx="195" cy="230" r="140" fill="#C26A3D" opacity=".1" class="glow"/><circle cx="80" cy="80" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="320" cy="100" r="1.3" fill="#EDE6D6" class="tw2"/>`},
+    {cap:"THE FLOOR AGAIN. The same floor as always: 0. Energy, issued once, never reissued. But look — a hand that LEARNS wastes less of the loan with every repetition. That is all skill is. A borrowed fire, spent more and more carefully. And it is everything.",
+     svg:`<circle cx="195" cy="250" r="12" fill="#D4AF37"/><circle cx="195" cy="250" r="44" fill="#D4AF37" opacity="0.3" class="glow"/><circle cx="195" cy="250" r="100" fill="#8E7BC8" opacity="0.15" class="glow"/><text x="195" y="257" text-anchor="middle" font-size="19" font-weight="800" fill="#EDE6D6" font-family="Cinzel,serif">0</text>`}
+  ]
+};
 let visionIdx = 0;
 function startVision(){
   visionIdx = 0;
-  $("plan").style.display="none"; $("store").style.display="none";
+  $("plan").style.display="none"; $("store").style.display="none"; $("crew").style.display="none";
   visionStep();
 }
 function visionStep(){
-  if(visionIdx >= VISION.length){ endVision(); return; }
-  const v = VISION[visionIdx];
+  const V = VISIONS[S.era];
+  if(visionIdx >= V.length){ endVision(); return; }
+  const v = V[visionIdx];
   S.log.visions = Math.max(S.log.visions, visionIdx+1);
   stage.innerHTML = `<svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
     <rect width="390" height="560" fill="#0B1024"/>${v.svg}
@@ -785,21 +839,29 @@ function visionStep(){
   </svg>`;
   say([{who:"tali", t:v.cap}], ()=>{
     choices([
-      {t: visionIdx<VISION.length-1 ? "Further back ⟵" : "…there is nothing before this. ⟵", fn:()=>{visionIdx++; visionStep();}},
-      {t:"Enough — back to the valley ↩", fn:endVision}
+      {t: visionIdx<V.length-1 ? "Further back ⟵" : "…there is nothing before this. ⟵", fn:()=>{visionIdx++; visionStep();}},
+      {t:"Enough — return ↩", fn:endVision}
     ]);
   });
 }
 function endVision(){
-  say([{who:"aadi", t: S.log.visions>=3
-    ? "I recited 'limited resources' in an exam two weeks ago. I just watched the limit get ISSUED. Once. At the start of everything. …Every plan we make down there is us spending the first purse."
-    : "My head is full. But that door stays open — I want to go deeper some night."}],
-  ()=>{ stage.innerHTML = valleySVG(); $("store").style.display="block"; drawStore();
-        if(S.scene==="plan") showPlan(); else exploreChoices(); });
+  const line = S.era===0
+    ? (S.log.visions>=3
+      ? "I recited 'limited resources' in an exam two weeks ago. I just watched the limit get ISSUED. Once. At the start of everything. …Every plan we make down there is us spending the first purse."
+      : "My head is full. But that door stays open — I want to go deeper some night.")
+    : (S.log.visions>=3
+      ? "In the City they made us chant 'labor is a factor of production'. Nobody said it was SUNLIGHT learning to tie knots."
+      : "Enough. The lake is waiting — but that door stays open.");
+  say([{who:"aadi", t:line}], ()=>{
+    if(S.era===0){ stage.innerHTML = valleySVG(); $("store").style.display="block"; drawStore();
+      if(S.scene==="plan") showPlan(); else exploreChoices(); }
+    else { stage.innerHTML = lakeSVG();
+      if(S.scene==="crew") showCrew(); else exploreLake(); }
+  });
 }
 
 /* ==========================================================================
-   WINTER — the door is the test
+   ERA 0 — WINTER, WHITESTORY, THRESHOLD
    ========================================================================== */
 function sceneWinter(){
   S.scene="winter"; $("plan").style.display="none";
@@ -819,7 +881,7 @@ function sceneWinter(){
     beats.push({who:"narr", t:`The store holds: ${S.store.food} food against the hundred needed. The woodpile: ${S.store.fuel} against forty. The roofs: ${S.store.shelter} patches, tight as a drum.`});
     beats.push({who:"world", t:"THE ELDER, at midwinter, holding a bowl that is FULL: \"Same valley. Same hands. Same days. We have never eaten like this in deep snow. What did you change, boy?\""});
     beats.push({who:"aadi", t:"Nothing you had. Only where it STOOD. …We stopped asking the valley for more. We started asking every hand: 'and what will you NOT do today?' That question was the harvest."});
-    say(beats, ()=>{ raiseHI(74); sceneWhiteStory(); });
+    say(beats, ()=>{ raiseHI(74); sceneWhiteStory0(); });
   } else {
     const misses = [];
     if(!v.food) misses.push(`food ran out with ${S.store.food} of 100 — the gap gnaws from the third snow onward`);
@@ -843,80 +905,80 @@ function shyamWinterFail(v){
   return {who:"shyam", t:`"Never mind what went wrong. What would you NOT do, next season?"`};
 }
 
-/* ==========================================================================
-   SAY IT IN YOUR OWN WORDS — then the valley's three voices
-   ========================================================================== */
-const WS_BLANKS = [
-  {label:"I want to", opts:["pick every fruit in the valley","fill the winter store","make the band work harder"], ok:1},
-  {label:"by", opts:["doing everything a little","gathering only what is free","spending each hand where it matters most"], ok:2},
-  {label:"so that", opts:["the valley owes us","the band lives to spring","no fruit is ever wasted"], ok:1},
-  {label:"creating value through", opts:["endless effort","choosing what to give up","taking more from the valley"], ok:1}
-];
-let wsIdx=0, wsPicks=[];
-function sceneWhiteStory(){
-  S.scene="whitestory"; wsIdx=0; wsPicks=[];
-  $("store").style.display="none";
-  stage.innerHTML = valleySVG(`<circle cx="195" cy="200" r="60" fill="#EDE6D6" opacity="0.06" class="glow"/>`);
-  say([
-    {who:"narr", t:"Spring. The whole band gathers at the old tree. It is the valley's custom: whoever changes a winter must SAY what they understood — out loud, where the valley can test it."},
-    {who:"shyam", t:`"The City is full of recitations, talisman. Can you build this sentence out of what you DID?"`}
-  ], wsBlankStep);
-}
+/* ---------------- generic whitestory runner ---------------- */
+let WS=null, wsIdx=0, wsPicks=[], probeIdx=0;
+function wsRun(cfg){ WS=cfg; wsIdx=0; wsPicks=[]; probeIdx=0; wsBlankStep(); }
 function wsBlankStep(){
-  if(wsIdx >= WS_BLANKS.length){ probeIntro(); return; }
-  const b = WS_BLANKS[wsIdx];
-  const built = WS_BLANKS.map((x,i)=> i<wsIdx ? `${x.label} <span class="blank">${x.opts[wsPicks[i]]}</span>` : (i===wsIdx? `${x.label} <span class="blank">＿＿＿</span>`:"")).join(" ");
+  if(wsIdx >= WS.blanks.length){ probeIntro(); return; }
+  const b = WS.blanks[wsIdx];
+  const built = WS.blanks.map((x,i)=> i<wsIdx ? `${x.label} <span class="blank">${x.opts[wsPicks[i]]}</span>` : (i===wsIdx? `${x.label} <span class="blank">＿＿＿</span>`:"")).join(" ");
   dlg.innerHTML = `<div class="ws fadein"><h3>SAY IT IN YOUR OWN WORDS</h3>
     <div>${built}</div>
     <div class="wchoices">${b.opts.map((o,i)=>`<button class="wchoice" onclick="wsPick(${i})">${o}</button>`).join("")}</div></div>`;
 }
 function wsPick(i){
-  const b = WS_BLANKS[wsIdx];
+  const b = WS.blanks[wsIdx];
   if(i===b.ok){ wsPicks.push(i); wsIdx++; wsBlankStep(); }
   else {
     S.log.probeRetries++;
-    const counters = [
-      `THE OLD TREE: "Every fruit? Seven in ten of mine ROT, boy — your own baskets testified. Is that truly what you wanted?"`,
-      `THE OLD TREE: "You TRIED that. Ask your first winter how it went."`,
-      `THE OLD TREE: "The valley keeps no ledgers of debt — yet. Look at the children and try again."`
-    ];
-    say([{who:"world", t:counters[Math.min(wsIdx,2)] }], wsBlankStep);
+    say([{who:"world", t:WS.counters[Math.min(wsIdx, WS.counters.length-1)] }], wsBlankStep);
   }
 }
-const PROBES = [
-  {who:"THE BOULDER by the path", q:"\"You said 'give up'. What do you mean by giving up?\"",
-   opts:["Working fewer hours than before","Every hand sent to one place is a hand lost to every other place","Throwing away the fruit we picked"], ok:1},
-  {who:"THE OLD TREE", q:"\"How do you know that choosing beats sheer effort?\"",
-   opts:["Shyam told us, and he seems wise","Twenty-four hand-moons was all we ever had; the store only filled when each went to its best use — the baskets are our proof","Because fruit tastes better when you work less"], ok:1},
-  {who:"THE RIVER", q:"\"Why must anything be given up at all?\"",
-   opts:["Because the elders demand sacrifice","Because fruit rots","Because hands and moons are finite — walking one path abandons every other. It began with the world itself"], ok:2}
-];
-let probeIdx=0;
 function probeIntro(){
   say([
-    {who:"narr", t:"The sentence stands. And now — the valley itself leans in. Three voices, three tests. This is how the land decides whether understanding is OWNED or borrowed."}
+    {who:"narr", t:"The sentence stands. And now — the place itself leans in. Three voices, three tests. This is how the land decides whether understanding is OWNED or borrowed."}
   ], probeStep);
 }
 function probeStep(){
-  if(probeIdx >= PROBES.length){ wsDone(); return; }
-  const p = PROBES[probeIdx];
+  if(probeIdx >= WS.probes.length){ WS.onDone(); return; }
+  const p = WS.probes[probeIdx];
   say([{who:"world", t:`${p.who}: ${p.q}`}], ()=>{
     choices(p.opts.map((o,i)=>({t:o, fn:()=>{
       if(i===p.ok){ probeIdx++; probeStep(); }
       else {
         S.log.probeRetries++;
-        say([{who:"world", t:`${p.who}: "…No. You are reciting again. Stand in what you DID this winter, and answer from there."`}], probeStep);
+        say([{who:"world", t:`${p.who}: "…No. You are reciting again. Stand in what you DID, and answer from there."`}], probeStep);
       }
     }})));
   });
 }
-function wsDone(){
+
+/* ---------------- era 0 whitestory ---------------- */
+function sceneWhiteStory0(){
+  S.scene="whitestory"; $("store").style.display="none";
+  stage.innerHTML = valleySVG(`<circle cx="195" cy="200" r="60" fill="#EDE6D6" opacity="0.06" class="glow"/>`);
+  say([
+    {who:"narr", t:"Spring. The whole band gathers at the old tree. It is the valley's custom: whoever changes a winter must SAY what they understood — out loud, where the valley can test it."},
+    {who:"shyam", t:`"The City is full of recitations, talisman. Can you build this sentence out of what you DID?"`}
+  ], ()=> wsRun({
+    blanks:[
+      {label:"I want to", opts:["pick every fruit in the valley","fill the winter store","make the band work harder"], ok:1},
+      {label:"by", opts:["doing everything a little","gathering only what is free","spending each hand where it matters most"], ok:2},
+      {label:"so that", opts:["the valley owes us","the band lives to spring","no fruit is ever wasted"], ok:1},
+      {label:"creating value through", opts:["endless effort","choosing what to give up","taking more from the valley"], ok:1}
+    ],
+    counters:[
+      `THE OLD TREE: "Every fruit? Seven in ten of mine ROT, boy — your own baskets testified. Is that truly what you wanted?"`,
+      `THE OLD TREE: "You TRIED that. Ask your first winter how it went."`,
+      `THE OLD TREE: "The valley keeps no ledgers of debt — yet. Look at the children and try again."`
+    ],
+    probes:[
+      {who:"THE BOULDER by the path", q:"\"You said 'give up'. What do you mean by giving up?\"",
+       opts:["Working fewer hours than before","Every hand sent to one place is a hand lost to every other place","Throwing away the fruit we picked"], ok:1},
+      {who:"THE OLD TREE", q:"\"How do you know that choosing beats sheer effort?\"",
+       opts:["Shyam told us, and he seems wise","Twenty-four hand-moons was all we ever had; the store only filled when each went to its best use — the baskets are our proof","Because fruit tastes better when you work less"], ok:1},
+      {who:"THE RIVER", q:"\"Why must anything be given up at all?\"",
+       opts:["Because the elders demand sacrifice","Because fruit rots","Because hands and moons are finite — walking one path abandons every other. It began with the world itself"], ok:2}
+    ],
+    onDone: wsDone0
+  }));
+}
+function wsDone0(){
   const winning = S.log.plans.filter(p=>p.season===S.season);
-  const planStr = summarizePlan(winning);
   S.cards.push({
     name:"Choice — the First Price ★",
     C:"A finite purse: 8 hands × 3 moons = 24, against needs bigger than any single task. Enough existed; it stood in the wrong places.",
-    I:`The valley's offers — fruit (fast, rots), roots (slow, loyal), fish (rich, charges firewood), wood, roofs. Your season: ${planStr}.`,
+    I:`The valley's offers — fruit (fast, rots), roots (slow, loyal), fish (rich, charges firewood), wood, roofs. Your season: ${summarizePlan(winning)}.`,
     P:"Ranking wants, spending each hand-moon on its best use, and PAYING for every yes with a named no. Effort was never the lever; placement was.",
     M:"A winter that held — and the law under it: the true price of anything is what you gave up to get it. Money will not be invented for eras yet. Price already exists."
   });
@@ -924,31 +986,25 @@ function wsDone(){
   say([
     {who:"narr", t:"The talisman flares — properly, for the first time. A card writes itself in the codex, out of nothing but what you actually did. (Codex: 'Choice — the First Price' lights.)"},
     {who:"world", t:"THE OLD TREE: \"Carry it, boy. Everything you meet on this road — every coin, every debt, every price — is this one law wearing better clothes.\""}
-  ], sceneThreshold);
+  ], sceneThreshold0);
 }
 function summarizePlan(plans){
   const tot={grove:0,roots:0,river:0,forest:0,huts:0};
   plans.forEach(p=> Object.keys(tot).forEach(k=> tot[k]+=p.alloc[k]||0));
   return Object.keys(tot).filter(k=>tot[k]>0).map(k=>`${SIM.SITES[k].label} ${tot[k]}`).join(" · ");
 }
-
-/* ==========================================================================
-   THRESHOLD + CLIFFHANGER + LOG
-   ========================================================================== */
-function sceneThreshold(){
-  S.scene="threshold";
-  stage.innerHTML = `
+function mapSVG(litN, pulseN){
+  const nodes=[[60,180,"choice ★"],[120,220,"labor"],[185,175,"surplus"],[250,225,"property"],[310,185,"exchange"]];
+  return `
   <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
     <rect width="390" height="560" fill="#0B1024"/>
     <polyline points="60,180 120,220 185,175 250,225 310,185 340,260 300,330 220,360 140,330 100,400 195,470" fill="none" stroke="#2A3560" stroke-width="1.4"/>
-    <circle cx="60" cy="180" r="10" fill="#D4AF37"/><text x="60" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#D4AF37" font-family="Cinzel,serif">0</text>
-    <text x="60" y="206" text-anchor="middle" font-size="10" fill="#A7A9B2">choice ★</text>
-    <text x="60" y="220" text-anchor="middle" font-size="9" fill="#8E7BC8">…at the cost of?</text>
-    <circle cx="120" cy="220" r="6" fill="#0B1024" stroke="#555f85" stroke-width="1.3"/><text x="120" y="244" text-anchor="middle" font-size="10" fill="#555f85">labor</text>
-    <text x="120" y="257" text-anchor="middle" font-size="9" fill="#8E7BC8">…at the cost of?</text>
-    <circle cx="185" cy="175" r="6" fill="#0B1024" stroke="#555f85" stroke-width="1.3"/><text x="185" y="157" text-anchor="middle" font-size="10" fill="#555f85">surplus</text>
-    <circle cx="250" cy="225" r="6" fill="#0B1024" stroke="#555f85" stroke-width="1.3"/><text x="250" y="249" text-anchor="middle" font-size="10" fill="#555f85">property</text>
-    <circle cx="310" cy="185" r="6" fill="#0B1024" stroke="#555f85" stroke-width="1.3"/><text x="310" y="167" text-anchor="middle" font-size="10" fill="#555f85">exchange</text>
+    ${nodes.map((n,i)=>{
+      const lit = i<=litN, pulse = i===pulseN;
+      return `<circle cx="${n[0]}" cy="${n[1]}" r="${lit?9:6}" fill="${lit?'#D4AF37':'#0B1024'}" stroke="${lit?'#D4AF37':'#555f85'}" stroke-width="1.3" ${pulse?'class="glow"':''}/>
+      <text x="${n[0]}" y="${n[1]+24}" text-anchor="middle" font-size="10" fill="${lit?'#D4AF37':'#555f85'}">${n[2]}</text>
+      <text x="${n[0]}" y="${n[1]+37}" text-anchor="middle" font-size="8.5" fill="#8E7BC8">…at the cost of?</text>`;
+    }).join("")}
     <circle cx="340" cy="260" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/>
     <circle cx="300" cy="330" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/>
     <circle cx="220" cy="360" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/>
@@ -956,51 +1012,375 @@ function sceneThreshold(){
     <circle cx="100" cy="400" r="5" fill="#0B1024" stroke="#555f85" stroke-width="1.2"/>
     <circle cx="195" cy="470" r="8" fill="#0B1024" stroke="#D4AF37" stroke-width="1.6"/>
     <text x="195" y="450" text-anchor="middle" font-size="11" letter-spacing="2" fill="#D4AF37" font-family="Cinzel,serif">HOME</text>
-    <text x="195" y="34" text-anchor="middle" font-size="10" letter-spacing="2.5" fill="#8E7BC8" font-family="Cinzel,serif">THE MAP REORGANIZES</text>
-    <text x="195" y="52" text-anchor="middle" font-size="10" letter-spacing="2.5" fill="#8E7BC8" font-family="Cinzel,serif">A THRESHOLD IS CROSSED</text>
-    <text x="195" y="516" text-anchor="middle" font-size="11.5" font-style="italic" fill="#A7A9B2">every node on the road now casts a shadow:</text>
-    <text x="195" y="534" text-anchor="middle" font-size="11.5" font-style="italic" fill="#A7A9B2">"…at the cost of what?"</text>
+    <text x="195" y="34" text-anchor="middle" font-size="10" letter-spacing="2.5" fill="#8E7BC8" font-family="Cinzel,serif">THE ROAD OF UNDERSTANDING</text>
   </svg>`;
+}
+function sceneThreshold0(){
+  S.scene="threshold";
+  stage.innerHTML = mapSVG(0, 1);
   say([
     {who:"tali", t:"(Something shifts in how the whole road LOOKS. Every place you will ever visit now casts a faint shadow-question: at the cost of what? You cannot unsee it. That is what crossing a threshold means.)"},
     {who:"narr", t:"On the last night of spring, a small thing happens that refuses to leave Aadi alone. Bodhi the fisher comes back with two baskets. Kesar the hunter — stronger, older, prouder — comes back with half of one. Same day. Same valley. Same hours of work."},
     {who:"aadi", t:"Same purse spent… DIFFERENT harvest back. So a hand-moon is not a hand-moon? What is hiding inside WORK, Shyam? …Shyam?"},
     {who:"shyam", t:`"*the voice is already somewhere ahead, on the eastern path* Does this valley have that answer? Then why are your feet still in it?"`}
-  ], sceneLog);
+  ], ()=>sceneLog(0));
 }
-function sceneLog(){
-  const plans = S.log.plans.map(p=>{
-    const parts = Object.keys(p.alloc).filter(k=>p.alloc[k]>0).map(k=>`${k}:${p.alloc[k]}`).join(" ");
-    return `<span class="clue" style="border-color:var(--line); color:var(--stone);">s${p.season}·m${p.moon} — ${parts}${p.push?" ·pushed":""}</span>`;
-  }).join(" ");
+
+/* ==========================================================================
+   EPISODE 1 — THE NETMAKERS' WATER (labor)
+   ========================================================================== */
+function goEast(){
+  S.era=1; S.hi=40; S.pot=92; S.rung=0;
+  S.scene="travel"; clearClues();
+  $("visionbtn").textContent="✦ What is work made of?";
+  hud(true, "The Netmakers' Water");
+  stage.innerHTML = `
+  <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="560" fill="#0B1024"/>
+    <path d="M0,420 Q100,380 200,404 Q300,424 390,396 L390,560 L0,560 Z" fill="#141B36"/>
+    <path d="M30,470 Q140,430 260,452 Q330,462 390,446" stroke="#3a3050" stroke-width="7" fill="none"/>
+    <circle cx="80" cy="100" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="300" cy="80" r="1.2" fill="#EDE6D6" class="tw2"/>
+    <g fill="#0B1024"><circle cx="120" cy="452" r="9"/><rect x="110" y="462" width="22" height="30" rx="7"/></g>
+    <circle cx="126" cy="472" r="4" fill="#EDE6D6" opacity="0.5" class="glow"/>
+    <text x="195" y="40" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">EPISODE 1 · EASTWARD</text>
+    <text x="195" y="200" text-anchor="middle" font-size="12.5" font-style="italic" fill="#A7A9B2">"The greatest improvement in the productive powers of labour</text>
+    <text x="195" y="220" text-anchor="middle" font-size="12.5" font-style="italic" fill="#A7A9B2">…seem to have been the effects of the division of labour."</text>
+    <text x="195" y="248" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="#8A90B0" font-family="Cinzel,serif">— ADAM SMITH, 1776</text>
+  </svg>`;
+  say([
+    {who:"narr", t:"The eastern pass gives way to water — a grey-silver sheet held in the hills' cupped hands. Nets hang on every wall of the village below. The racks by the shore stand half empty."},
+    {who:"shyam", t:`"Same sun, more water. Will the valley's lesson be enough here — or is something new hiding in the hands?"`}
+  ], sceneLake);
+}
+function lakeSVG(extra=""){
+  return `
+  <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="560" fill="#0d1433"/>
+    <circle cx="60" cy="66" r="1.2" fill="#EDE6D6" class="tw"/><circle cx="330" cy="52" r="1.1" fill="#EDE6D6" class="tw2"/>
+    <circle cx="200" cy="40" r="1" fill="#EDE6D6" class="tw"/>
+    <path d="M0,250 Q100,180 200,236 L0,330 Z" fill="#141B36"/>
+    <path d="M390,240 Q300,170 210,232 L390,330 Z" fill="#141B36"/>
+    <path d="M0,300 Q195,270 390,296 L390,560 L0,560 Z" fill="#16405c"/>
+    <g class="ripple" stroke="#2a5a7c" stroke-width="1.5" fill="none" opacity=".8">
+      <path d="M40,360 q30,-8 60,0 q30,8 60,0"/><path d="M180,410 q30,-8 60,0 q30,8 60,0"/>
+      <path d="M70,470 q30,-8 60,0 q30,8 60,0"/><path d="M230,510 q30,-8 60,0"/>
+    </g>
+    <text x="195" y="345" text-anchor="middle" font-size="12" fill="#A7A9B2">the lake</text>
+    <g fill="#2a2338"><path d="M20,296 L44,278 L68,296 L68,318 L20,318 Z"/><path d="M62,300 L82,286 L102,300 L102,316 L62,316 Z"/></g>
+    <text x="60" y="336" text-anchor="middle" font-size="11" fill="#A7A9B2">the village</text>
+    <g stroke="#5a4a30" stroke-width="2.5" fill="none">
+      <path d="M300,270 L300,306 M322,270 L322,306 M344,270 L344,306 M296,280 L348,280 M296,294 L348,294"/>
+    </g>
+    <text x="322" y="326" text-anchor="middle" font-size="11" fill="#A7A9B2">the racks</text>
+    <path d="M128,288 q14,-16 30,0 q-14,16 -30,0 M162,282 q12,-14 26,0 q-12,14 -26,0" stroke="#8890b0" stroke-width="1.5" fill="none"/>
+    <text x="152" y="322" text-anchor="middle" font-size="11" fill="#A7A9B2">the nets</text>
+    <text x="240" y="270" text-anchor="middle" font-size="11" fill="#A7A9B2">the hands at work</text>
+    <g fill="#0B1024"><circle cx="240" cy="286" r="5"/><path d="M235,291 Q233,302 235,310 L245,310 Q247,300 245,291 Z"/></g>
+    <g fill="#0B1024"><circle cx="130" cy="500" r="7"/><path d="M122,508 Q118,524 122,538 L130,538 L131,528 L134,538 L142,538 Q142,522 138,508 Z"/></g>
+    <circle cx="135" cy="514" r="4" fill="#EDE6D6" opacity="0.5" class="glow"/>
+    ${extra}
+    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE NETMAKERS' WATER</text>
+  </svg>`;
+}
+function sceneLake(){
+  S.scene="lake"; hud(true, "The Netmakers' Water");
+  stage.innerHTML = lakeSVG();
+  say([
+    {who:"world", t:"ELDER NILA, mending by feel, not looking up: \"Every family fishes dawn to dusk. Every family, every day. And still the racks go into winter thin. The Festival of Lamps is in three days — if the racks are not full by then, we borrow fish from the far villages, and owe them our spring.\""},
+    {who:"aadi", t:"Everyone's working. All day. This isn't the valley's problem — no one is standing in the wrong PLACE… wait. Bodhi and Kesar. Two baskets, half a basket. Same hours. It followed us here."},
+    {who:"tali", t:"(Happiness: 40 of a possible 92. The gap is not effort, and it is not placement. It is something INSIDE the work.)"}
+  ], exploreLake);
+}
+const TELL2 = {
+  lake:{t:"THE LAKE: \"My fish run in shoals — silver crowds that move like one mind. Eyes that find them double every net that follows. Cast blind, and you drag empty water.\"", clue:"spotting multiplies the nets"},
+  nets:{t:"THE NETS: \"We tear a little every day — reeds, teeth, stones. Unmended, we fish like ghosts: present, and holding nothing. Quick fingers keep us whole.\"", clue:"nets decay daily; mending restores them"},
+  racks:{t:"THE RACKS: \"We drink only what the smoke can hold — no more. Fish beyond our breath rot on the shore by noon. Feed us steadily, or feed the flies.\"", clue:"rack capacity caps each day's keep"},
+  hands:{t:"Aadi watches the shore for a long hour. Meen calls shoals before they break the surface. Karn hauls wood like straw — but his net comes up torn. Dhara's pull is slow and never slips. Tara's fingers dance through knots. Old Puna sits, watches, points — and is always right.", clue:"five hands, five different gifts"}
+};
+function exploreLake(){
+  const opts = [];
+  [["lake","Walk to the water's edge"],["nets","Touch the hanging nets"],["racks","Stand by the smoking racks"],["hands","Watch the hands at work"]].forEach(([k,label])=>{
+    if(!S.seen2[k]) opts.push({t:label, fn:()=> S.gateDone2? tellLake(k) : lakeGate(k)});
+  });
+  const seen = Object.keys(S.seen2).length;
+  if(S.gateDone2 && seen>=3) opts.push({t:"Gather the five — set the day's work ▸", fn:startCrew});
+  choices(opts);
+}
+function lakeGate(k){
+  say([
+    {who:"narr", t:"Before Aadi takes three steps, the whole lake goes flat — flat as held breath. A voice moves under the surface like a slow wave."},
+    {who:"world", t:`THE LAKE: "You carry a lit card, boy. I can feel it burning from here. SPEND it, and I open. Listen: one morning, one back — Tara can mend the nets, or dig the day's bait. She mends. What is the true price of the mended net?"`}
+  ], ()=>{
+    choices([
+      {t:"Nothing — mending costs no coin.", fn:()=>{
+        S.log.gateRetries++;
+        say([{who:"world", t:`THE LAKE: "No coin, no price? Your codex is glowing in your satchel. Read it back to me, and come again."`}], ()=>lakeGate(k));
+      }},
+      {t:"The bait that never got dug — the morning spent one way, lost every other way.", fn:()=>{
+        if(S.cards[0]) S.cards[0].spent = "the Lake-gate · Episode 1";
+        S.gateDone2 = true; raiseHI(46);
+        say([
+          {who:"world", t:`THE LAKE: "Spent well. And look — the card still burns. Knowledge is the only coin that survives its spending."`},
+          {who:"shyam", t:`"Did you notice, talisman? The lake asked for the OLD lesson before it would teach the new one. What do you suppose the next place will ask for?"`}
+        ], ()=>{ stage.innerHTML = lakeSVG(pageCameo(430)); tellLake(k); });
+      }},
+      {t:"Whatever a mended net is worth at the festival.", fn:()=>{
+        S.log.gateRetries++;
+        say([{who:"world", t:`THE LAKE: "You are pricing the NET. I asked the price of the MENDING — the morning itself. Come again."`}], ()=>lakeGate(k));
+      }}
+    ]);
+  });
+}
+function tellLake(k){
+  S.seen2[k]=true;
+  if(k==="hands") S.watched=true;
+  say([{who: k==="hands"?"narr":"world", t:TELL2[k].t}], ()=>{ addClue(TELL2[k].clue); exploreLake(); });
+}
+
+/* ---------------- crew assignment ---------------- */
+function startCrew(){
+  S.scene="crew";
+  stage.innerHTML = lakeSVG();
+  if(S.day===1 && S.week===1){
+    say([
+      {who:"aadi", t:"Karn's arms are twice mine — nets to Karn, obviously. The rest… wherever. Unless you've been watching something I haven't?"},
+      {who:"shyam", t:`"Arms. Hm. When Meen looks at the water, what does SHE see that Karn does not?"`}
+    ], showCrew);
+  } else showCrew();
+}
+function showCrew(){
+  $("crew").style.display="block";
+  $("daytitle").textContent = ["Day One","Day Two — festival eve's eve","Last Day — festival eve"][S.day-1] + (S.week>1? " · week "+S.week:"");
+  $("rackline").innerHTML = `racks: <b style="color:var(--gold)">${S.stored}</b> / ${SIM2.TARGET}`;
+  $("qline").textContent = `net quality: ${Math.round(S.quality*100)}%`;
+  renderCrew();
+  dlg.innerHTML="";
+}
+function renderCrew(){
+  $("crewrows").innerHTML = Object.keys(SIM2.WORKERS).map(w=>{
+    const wk = SIM2.WORKERS[w];
+    const gift = S.watched ? wk.gift : "…watch the hands at work to learn this hand";
+    const t = S.assign[w];
+    const streak = S.streaks[w]||0;
+    return `<div class="site">
+      <div class="site-name"><span class="nm">${wk.name}${streak>0? ` <span style="color:var(--teal); font-size:.75rem;">practiced ×${streak}</span>`:""}</span><span class="yl">${gift}</span></div>
+      <button class="taskbtn" onclick="cycleTask('${w}')">${t? SIM2.TASKNAMES[t] : "— pick task —"}</button>
+    </div>`;
+  }).join("");
+  $("daybtn").disabled = !Object.keys(SIM2.WORKERS).every(w=>S.assign[w]);
+}
+function cycleTask(w){
+  if(S.rotatedDay===S.day && S.week===S.rotatedWeek){ return; } // locked by the rotation promise
+  const cur = S.assign[w];
+  const i = cur? SIM2.TASKS.indexOf(cur) : -1;
+  S.assign[w] = SIM2.TASKS[(i+1)%SIM2.TASKS.length];
+  renderCrew();
+}
+function runDay(){
+  // streaks update
+  for(const w in SIM2.WORKERS){
+    S.streaks[w] = (S.prevAssign[w]===S.assign[w]) ? (S.streaks[w]||0)+1 : 0;
+  }
+  const res = computeDay(S.assign, S.streaks, S.quality);
+  S.log.days.push({week:S.week, day:S.day, assign:{...S.assign}, stored:res.stored, wasted:res.wasted});
+  S.log.wastedTotal += res.wasted;
+  S.stored += res.stored;
+  S.quality = res.nextQ;
+  S.prevAssign = {...S.assign};
+  $("crew").style.display="none";
+  const practiced = Object.keys(SIM2.WORKERS).filter(w=>S.streaks[w]>0 && S.assign[w]);
+  const beats = [
+    {who:"narr", t:`The day: ${res.netted} fish netted${res.netted>0?` (the spotters' calls ${res.pts.spot>2?"doubled the casts":"helped"})`:""}. The racks drank ${res.stored}${res.wasted?` — and ${res.wasted} lay silver on the shore till noon, then the smell began. The racks could not hold them`:""}.`}
+  ];
+  if(practiced.length) beats.push({who:"narr", t:practiced.map(w=>`${SIM2.WORKERS[w].name}'s hands are surer at ${SIM2.TASKNAMES[S.assign[w]]} than yesterday`).join("; ")+"."});
+  beats.push({who:"narr", t:`(Net quality stands at ${Math.round(S.quality*100)}% for tomorrow.)`});
+  say(beats, ()=>{ S.rung=0; afterDay(res); });
+}
+function afterDay(res){
+  const pace = SIM2.TARGET * S.day/SIM2.DAYS;
+  const onPace = S.stored >= pace;
+  if(onPace) raiseHI(46 + S.day*4);
+  const lines = [];
+  if(!onPace){
+    lines.push({who:"narr", t:`(At this pace the racks reach ${Math.round(S.stored*SIM2.DAYS/S.day)} by the festival — short of ${SIM2.TARGET}.)`});
+    lines.push(shyamAfterDay(res));
+  } else {
+    lines.push({who:"aadi", t: S.day<3? "Look at the tally. In the valley we moved hands between PLACES. Here the number moved when we let a hand STAY. Something is growing that I can't see…" : "The racks are heavy. Tomorrow the lamps are lit — and the tally speaks for us."});
+  }
+  say(lines, ()=>{
+    if(S.day < SIM2.DAYS){
+      S.day++;
+      if(S.day===2 && S.week===1){ fairnessEvent(); } else showCrew();
+    }
+    else festival();
+  });
+}
+function shyamAfterDay(res){
+  const bad = worstFit();
+  if(res.wasted > 40) return {who:"shyam", t:`"The lake paid ${res.netted} and the racks drank ${res.stored}. Where is the rest now? Who was standing at the smoke while the shore turned silver?"`};
+  if(bad && bad.apt<=1.0 && S.assign.karn==="net") return {who:"shyam", t:`"You gave Karn the nets for his arms. What did the fish care about arms?"`};
+  const rotated = Object.keys(SIM2.WORKERS).every(w=>!S.streaks[w]);
+  if(rotated && S.log.days.length>1) return {who:"shyam", t:`"Every hand somewhere new today. Yesterday's learning — where did it go? Can a hand master four crafts in three days?"`};
+  if(S.quality<0.7) return {who:"shyam", t:`"The nets gape wider every dawn. Who is listening to them?"`};
+  return {who:"shyam", t:`"Which hand surprised you today? And why were you surprised — what had you assumed about it?"`};
+}
+function fairnessEvent(){
+  say([
+    {who:"world", t:`ELDER NILA, at dawn, with half the village behind her: "The families murmur, travelers. Meen's daughter wants a day at the nets. Karn's pride is hurt at the racks. ROTATE the tasks — it is only fair."`},
+    {who:"aadi", t:"Fair… every hand gets every task. It sounds right. It sounded right in the City too — everyone the same lessons, everyone the same answers. …Talisman, what do we tell her?"}
+  ], ()=>{
+    choices([
+      {t:"Rotate every hand today — fairness first.", fn:()=>{
+        S.log.rotations++;
+        // engine rotates: each worker shifts one task along
+        for(const w in S.assign){ const i=SIM2.TASKS.indexOf(S.assign[w]); S.assign[w]=SIM2.TASKS[(i+1)%4]; }
+        S.rotatedDay = S.day; S.rotatedWeek = S.week;
+        say([
+          {who:"narr", t:"The village nods, satisfied. Every hand walks to a stranger's post. The morning is full of patient teaching and slow, wrong movements."},
+          {who:"shyam", t:`"Fair to the families, yes. Was it fair to the FISH the racks needed? We shall count at dusk, shall we?"`}
+        ], showCrew);
+      }},
+      {t:"Keep hands where they learn — and have Aadi explain why to Nila.", fn:()=>{
+        say([
+          {who:"aadi", t:"Nila — watch Dhara's pull today, then remember it from two days ago. Something is GROWING in that hand. Move her now and it dies at half-height. After the festival, I'll teach anyone anything. Let the baskets argue for me till then."},
+          {who:"world", t:`ELDER NILA, after a long silence: "…The baskets, then. They have until the lamps."`}
+        ], showCrew);
+      }}
+    ]);
+  });
+}
+function festival(){
+  S.scene="festival";
+  const pass = S.stored >= SIM2.TARGET;
+  stage.innerHTML = `
+  <svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="560" fill="#0d1433"/>
+    <path d="M0,300 Q195,270 390,296 L390,560 L0,560 Z" fill="#16405c"/>
+    ${Array.from({length:7},(_,i)=>`<g><circle cx="${60+i*45}" cy="${340+(i%2)*30}" r="4" fill="#D4AF37" class="glow"/><circle cx="${60+i*45}" cy="${340+(i%2)*30}" r="9" fill="#D4AF37" opacity=".2" class="glow"/></g>`).join("")}
+    <g stroke="#5a4a30" stroke-width="2.5" fill="none">
+      <path d="M280,220 L280,266 M310,220 L310,266 M340,220 L340,266 M276,232 L344,232 M276,248 L344,248"/>
+    </g>
+    ${pass? Array.from({length:12},(_,i)=>`<rect x="${278+(i%6)*11}" y="${226+Math.floor(i/6)*16}" width="7" height="4" rx="2" fill="#C2A44A"/>`).join(""):""}
+    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE FESTIVAL OF LAMPS · THE DOOR IS THE TEST</text>
+  </svg>`;
+  if(pass){
+    say([
+      {who:"narr", t:`The lamps go out on the water one by one, each on its little raft. The racks stand FULL: ${S.stored} against the ${SIM2.TARGET} needed. No one will owe the far villages their spring.`},
+      {who:"world", t:`ELDER NILA, holding up her palms, cracked with sixty winters of mending: "Same hands as last year, travelers. Same lake. Same days. What did you change?"`},
+      {who:"aadi", t:"Nothing — and everything. We stopped asking hands to be EQUAL and started asking them to be THEMSELVES. Then we let them repeat until the work moved in. Nila — the hours were never the work. The hours were just… the jar."}
+    ], ()=>{ raiseHI(80); sceneWhiteStory1(); });
+  } else {
+    const rotated = S.log.rotations>0;
+    say([
+      {who:"narr", t:`The lamps are lit over thin racks: ${S.stored} of ${SIM2.TARGET}. The far villages send fish — and take the promise of spring nets in return. No one starves. Everyone remembers.`},
+      rotated? {who:"shyam", t:`"The rotation day — go and look at its tally against the days around it. What did 'fair' cost, and who ended up paying it?"`}
+             : {who:"shyam", t:`"Three days, five hands. Which hand never found its craft? And who chose where it stood?"`},
+      {who:"world", t:`ELDER NILA: "The lake forgives. The week returns. Set the hands again, travelers — and this time set them like you have WATCHED them."`}
+    ], ()=>{
+      S.week++; S.log.weeks=S.week; S.day=1; S.stored=0; S.quality=SIM2.QSTART;
+      S.assign={}; S.prevAssign={}; S.streaks={}; S.rotatedDay=0;
+      stage.innerHTML = lakeSVG(); showCrew();
+    });
+  }
+}
+
+/* ---------------- era 1 whitestory ---------------- */
+function sceneWhiteStory1(){
+  S.scene="whitestory";
+  stage.innerHTML = lakeSVG(`<circle cx="195" cy="200" r="60" fill="#EDE6D6" opacity="0.06" class="glow"/>`);
+  say([
+    {who:"narr", t:"After the lamps, the village gathers at the shore. The custom here is the same as everywhere the talisman goes: whoever changes a season must SAY what they understood, where the water can test it."},
+    {who:"shyam", t:`"Same rule as the valley, talisman. Out of what you DID — can you build it?"`}
+  ], ()=> wsRun({
+    blanks:[
+      {label:"I want to", opts:["make every hand equally busy","fill the festival racks","catch every fish in the lake"], ok:1},
+      {label:"by", opts:["rotating tasks so no one complains","adding hours to every day","setting each hand to its gift, and letting it stay to learn"], ok:2},
+      {label:"so that", opts:["the village eats through the lean days","no family envies another","the lake learns respect"], ok:0},
+      {label:"creating value through", opts:["strong arms","work fitted to the worker, sharpened by repetition","longer days"], ok:1}
+    ],
+    counters:[
+      `THE RACKS: "Busy? We have drunk from busy hands all our lives and stood half empty. Is busy what you WANTED?"`,
+      `THE RACKS: "Hours? The lake gave the same hours to everyone, every year, forever. Try again."`,
+      `THE RACKS: "Look at the tally, not at the words. What actually filled us?"`
+    ],
+    probes:[
+      {who:"THE RACKS", q:"\"You said 'gift'. And 'skill'. What do you mean by skill?\"",
+       opts:["Strength saved up from childhood","What repetition writes into a hand — it cannot be handed over, only grown","A trick the old ones keep secret"], ok:1},
+      {who:"THE NETS", q:"\"How do you know practice grows the catch?\"",
+       opts:["Because Shyam hinted at it","The same hands, the same water — and the third day out-fished the first. The tally is our witness","Because festivals make everyone try harder"], ok:1},
+      {who:"THE LAKE", q:"\"Why do equal hours fill unequal baskets?\"",
+       opts:["Because some people are simply lazy","Because luck swims where it pleases","Because hours are only vessels — gift and practice fill them. Time was never the whole of work"], ok:2}
+    ],
+    onDone: wsDone1
+  }));
+}
+function wsDone1(){
+  S.cards.push({
+    name:"Labor — the Hand that Learns",
+    C:"Eight hours are equal for everyone; baskets are not. A village worked dawn to dusk and stayed thin — effort without fit and practice leaks.",
+    I:"Five hands, four crafts, three days — each hand carrying a different gift: eyes, back, steadiness, fingers, sixty years of water.",
+    P:"Fitting work to the worker, then letting repetition compound — the same hand at the same craft, a steeper catch each day. Refusing the rotation that resets the climb.",
+    M:"Racks full past the festival — and the law under it: labor is not time. It is time FILLED — with fit, and with practice. And now there is more than mouths…"
+  });
+  raiseHI(92); hud(true);
+  say([
+    {who:"narr", t:"The talisman flares again — brighter than at the valley. A second card writes itself beside the first. (Codex: 'Labor — the Hand that Learns' lights.)"},
+    {who:"world", t:`THE LAKE: "Carry them both, boy. They spend together from here on — every wage, every wanted worker, every 'why is she paid more' you will ever meet is these two cards, shuffled."`}
+  ], sceneThreshold1);
+}
+function sceneThreshold1(){
+  S.scene="threshold";
+  stage.innerHTML = mapSVG(1, 2);
+  say([
+    {who:"tali", t:"(The map stirs again. Two nodes burn gold now. The road ahead — surplus, property, exchange — sits in their light differently than it did. You can feel the next question before anyone asks it.)"},
+    {who:"narr", t:"Because here is what full racks do that thin racks never did: three days after the festival, the racks are STILL full. The village eats, and eats, and the pile does not end. On the fourth day, flies find the northern rack. Old Puna stands before it, saying nothing."},
+    {who:"world", t:`OLD PUNA, finally: "Sixty years. I have never once seen a pile outlive its week. What does a village DO with more-than-enough?"`},
+    {who:"aadi", t:"More than enough… The valley taught us to fill the store. The lake taught us HOW hands fill it faster than hours should allow. Nobody ever taught anyone what happens AFTER the store is full. Shyam? …of course. Gone ahead again."},
+    {who:"shyam", t:`"*faint, from the northern road* The pile is asking you a question, boy. Are you coming, or will you let the flies answer it?"`}
+  ], ()=>sceneLog(1));
+}
+
+/* ==========================================================================
+   JOURNEY LOG — era-aware
+   ========================================================================== */
+function sceneLog(era){
+  const chips = era===0
+    ? S.log.plans.map(p=>{
+        const parts = Object.keys(p.alloc).filter(k=>p.alloc[k]>0).map(k=>`${k}:${p.alloc[k]}`).join(" ");
+        return `<span class="clue" style="border-color:var(--line); color:var(--stone);">s${p.season}·m${p.moon} — ${parts}${p.push?" ·pushed":""}</span>`;
+      }).join(" ")
+    : S.log.days.map(d=>{
+        const parts = Object.keys(d.assign).map(w=>`${w.slice(0,4)}→${d.assign[w]}`).join(" ");
+        return `<span class="clue" style="border-color:var(--line); color:var(--stone);">w${d.week}·d${d.day} — ${parts} (+${d.stored}${d.wasted?`, waste ${d.wasted}`:""})</span>`;
+      }).join(" ");
+  const stats = era===0
+    ? `seasons: <b style="color:var(--text)">${S.log.seasons}</b> · fruit rotted: <b style="color:var(--text)">${S.log.fruitRotTotal}</b> · fish lost: <b style="color:var(--text)">${S.log.fishRotTotal}</b> · pushes: <b style="color:var(--text)">${S.log.pushes}</b>`
+    : `weeks: <b style="color:var(--text)">${S.log.weeks}</b> · fish wasted on shore: <b style="color:var(--text)">${S.log.wastedTotal}</b> · rotations chosen: <b style="color:var(--text)">${S.log.rotations}</b> · gate retries: <b style="color:var(--text)">${S.log.gateRetries}</b>`;
   dlg.innerHTML = `
   <div class="dline" style="cursor:default;">
-    <div style="font-size:.64rem; letter-spacing:1.5px; color:var(--dim); text-transform:uppercase; margin-bottom:8px; font-family:'Cinzel',serif;">Journey log — what the game learned about the learner</div>
-    <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px;">${plans}</div>
-    <div style="font-size:.9rem; color:var(--stone);">
-      seasons: <b style="color:var(--text)">${S.log.seasons}</b> ·
-      fruit rotted: <b style="color:var(--text)">${S.log.fruitRotTotal}</b> ·
-      fish lost: <b style="color:var(--text)">${S.log.fishRotTotal}</b> ·
-      pushes: <b style="color:var(--text)">${S.log.pushes}</b> ·
-      Shyam asked: <b style="color:var(--text)">${S.log.asks}×</b> (deepest rung ${S.log.deepestRung}/4) ·
-      vision: <b style="color:var(--text)">${S.log.visions}/3</b> ·
-      probes retried: <b style="color:var(--text)">${S.log.probeRetries}</b>
-    </div>
-    <div style="font-size:.82rem; color:var(--dim); margin-top:9px;">Every rotted basket is a diagnosed misconception; every rung is a located gap; every extra season is productive failure doing its work. At the Gate, one day, Aadi will answer with exactly what you taught him here.</div>
-    <div style="font-size:.82rem; color:var(--dim); margin-top:7px; font-style:italic;">Era II consumes this card: the Labor mission opens only for those who can already name the first price. Knowledge is the crafting material.</div>
+    <div style="font-size:.64rem; letter-spacing:1.5px; color:var(--dim); text-transform:uppercase; margin-bottom:8px; font-family:'Cinzel',serif;">Journey log · episode ${era} — what the game learned about the learner</div>
+    <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px;">${chips}</div>
+    <div style="font-size:.9rem; color:var(--stone);">${stats} · Shyam asked: <b style="color:var(--text)">${S.log.asks}×</b> (deepest rung ${S.log.deepestRung}/4) · vision: <b style="color:var(--text)">${S.log.visions}/3</b> · probes retried: <b style="color:var(--text)">${S.log.probeRetries}</b></div>
+    <div style="font-size:.82rem; color:var(--dim); margin-top:9px;">${era===0
+      ? "Every rotted basket is a diagnosed misconception; every rung a located gap; every extra season, productive failure at work."
+      : "The rotation tally, the shore waste, the gate retries — each one names the exact idea that still wobbles. At the Gate, one day, Aadi answers with all of it."}</div>
     <div class="btnrow" style="margin-top:10px;">
+      ${era===0? `<button class="gobtn" style="margin-left:0;" onclick="goEast()">Walk east — toward the question ▸</button>`:""}
       <button class="ghostbtn" onclick="openCodex()">Open the Codex ✦</button>
       <button class="ghostbtn" onclick="location.reload()">Play again</button>
     </div>
-    <div style="font-size:.8rem; color:var(--dim); margin-top:12px; text-align:center; font-style:italic;">…and, for the time being, that's all folks…</div>
+    <div style="font-size:.8rem; color:var(--dim); margin-top:12px; text-align:center; font-style:italic;">${era===0? "…the road continues…" : "…and, for the time being, that's all folks…"}</div>
   </div>`;
   $("clues").classList.remove("on");
-  $("shyambtn").style.display="none"; $("visionbtn").style.display="none";
+  if(era===1){ $("shyambtn").style.display="none"; $("visionbtn").style.display="none"; }
 }
 
 /* ---------------- codex ---------------- */
 function openCodex(){
   const box = $("cardbox");
+  const locked = S.era===0
+    ? "Episode 1 · LABOR — locked. Opens for those who carry 'Choice — the First Price'. Bodhi's two baskets are waiting to be explained."
+    : "Episode 2 · SURPLUS — locked. Opens for those who carry both cards. A pile that outlives its week is waiting, and the flies have found it first.";
   box.innerHTML = `<h3>THE CODEX</h3>
   <p style="font-size:.84rem; color:var(--dim); margin-bottom:10px;">It lights only when something is understood. ${S.cards.length} card(s) lit.</p>
   ${S.cards.map(c=>`
@@ -1010,13 +1390,14 @@ function openCodex(){
       <div class="cipm-row"><span class="k">I</span><span class="v">${c.I}</span></div>
       <div class="cipm-row"><span class="k">P</span><span class="v">${c.P}</span></div>
       <div class="cipm-row"><span class="k">M</span><span class="v">${c.M}</span></div>
+      ${c.spent? `<div style="font-size:.78rem; color:var(--teal); margin-top:6px;">◆ spent at ${c.spent} — and still lit</div>`:""}
     </div>`).join("") || `<p style="color:var(--dim); font-size:.92rem;">Nothing lit yet. Understanding, not answers, fills these pages.</p>`}
-  <div class="lockedcard">Era II · LABOR — locked. Opens for those who carry 'Choice — the First Price'. Bodhi's two baskets are waiting to be explained.</div>`;
+  <div class="lockedcard">${locked}</div>`;
   $("modal").classList.add("on");
 }
 
 /* ---------------- boot ---------------- */
-window.__test = { S, EXAM, VISION, WS_BLANKS, PROBES, ladder, summarizePlan };
+window.__test = { S, EXAM, VISIONS, ladder, summarizePlan, worstFit };
 </script>
 </body>
 </html>
