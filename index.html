@@ -30,7 +30,7 @@
   .codex-chip{background:var(--indigo); border:1px solid var(--amethyst); color:var(--amethyst); border-radius:99px; padding:7px 13px; font-size:.76rem; font-family:'Cinzel',serif; letter-spacing:1px;}
 
   /* stage fills the free screen */
-  #stage{flex:1 1 auto; min-height:210px; position:relative; background:#0d1230; border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  #stage{flex:1 1 auto; min-height:210px; position:relative; background:#0B1024; border:1px solid var(--line); border-radius:14px; overflow:hidden;}
   #stage svg{position:absolute; inset:0; width:100%; height:100%;}
 
   /* dialogue */
@@ -125,11 +125,11 @@
   .snow line{stroke:#cdd6f5; stroke-width:1; opacity:.5;}
   .snow{animation:snowfall 1.4s linear infinite;}
   @keyframes snowfall{0%{transform:translateY(-12px);}100%{transform:translateY(0);}}
-  .pagecameo{animation:pagecameo 18s ease forwards;}
+  .pagecameo{animation:pagecameo 22s ease forwards;}
   @keyframes pagecameo{
     0%{opacity:0; transform:translateX(-24px);}
-    12%{opacity:.16; transform:translateX(0);}
-    78%{opacity:.16; transform:translateX(0);}
+    10%{opacity:.3; transform:translateX(0);}
+    80%{opacity:.3; transform:translateX(0);}
     100%{opacity:0; transform:translateX(14px);}
   }
 </style>
@@ -140,7 +140,23 @@
     <svg class="wp-smile" width="26" height="46" viewBox="0 0 26 46">
       <path d="M2,4 Q22,23 2,42" stroke="var(--wpyellow)" stroke-width="5" fill="none" stroke-linecap="round"/>
     </svg>
-    <div class="wp-title">iTHiNK</div>
+    <div style="display:flex; justify-content:center; margin-bottom:8px;">
+      <svg width="190" height="68" viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="0" width="10" height="10" fill="#E5D64A"/>
+        <g stroke="#E5D64A" stroke-width="10" stroke-linecap="butt">
+          <line x1="7" y1="16" x2="7" y2="66"/>
+          <line x1="2" y1="61" x2="94" y2="61"/>
+        </g>
+        <g stroke="#A6A6AC" stroke-width="10" stroke-linecap="butt" fill="none">
+          <line x1="19" y1="15" x2="55" y2="15"/><line x1="37" y1="15" x2="37" y2="52"/>
+          <line x1="65" y1="10" x2="65" y2="52"/><line x1="87" y1="10" x2="87" y2="52"/><line x1="65" y1="31" x2="87" y2="31"/>
+          <line x1="105" y1="10" x2="105" y2="36"/>
+          <line x1="123" y1="52" x2="123" y2="10"/><line x1="123" y1="10" x2="147" y2="52"/><line x1="147" y1="52" x2="147" y2="10"/>
+          <line x1="165" y1="10" x2="165" y2="52"/><line x1="193" y1="10" x2="167" y2="33"/><line x1="171" y1="29" x2="195" y2="52"/>
+        </g>
+        <rect x="100" y="44" width="10" height="9" fill="#A6A6AC"/>
+      </svg>
+    </div>
     <div class="wp-sub">THE GAME</div>
     <input class="wp-field" id="wpname" type="text" placeholder="your name" autocomplete="off">
     <button class="wp-btn" onclick="doLogin()">STEP IN</button>
@@ -246,7 +262,7 @@ const S = {
 };
 const $ = id => document.getElementById(id);
 const stage = $("stage"), dlg = $("dlg");
-const PAR = `preserveAspectRatio="xMidYMid slice"`;
+const PAR = `preserveAspectRatio="xMidYMid meet"`;
 
 function doLogin(){
   S.playerName = ($("wpname").value||"").trim();
@@ -341,26 +357,24 @@ function sceneTitle(){
     <circle cx="60" cy="80" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="330" cy="64" r="1.1" fill="#EDE6D6" class="tw2"/>
     <circle cx="200" cy="42" r="1" fill="#EDE6D6" class="tw"/><circle cx="290" cy="120" r="1.2" fill="#EDE6D6" class="tw2"/>
     <circle cx="100" cy="140" r="1" fill="#EDE6D6" class="tw2"/>
-    <line x1="70" y1="180" x2="320" y2="180" stroke="url(#goldg)" stroke-width=".8" opacity=".55"/>
-    <!-- iTH!NK — monoline, straight strokes; gold i and gold dots -->
-    <g stroke-linecap="butt" fill="none">
-      <rect x="92" y="216" width="10" height="10" fill="url(#goldg)"/>
-      <line x1="97" y1="238" x2="97" y2="300" stroke="url(#goldg)" stroke-width="10"/>
-      <line x1="113" y1="221" x2="149" y2="221" stroke="url(#ivoryg)" stroke-width="9"/>
-      <line x1="131" y1="221" x2="131" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
-      <line x1="163" y1="216" x2="163" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
-      <line x1="193" y1="216" x2="193" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
-      <line x1="163" y1="258" x2="193" y2="258" stroke="url(#ivoryg)" stroke-width="9"/>
-      <line x1="212" y1="216" x2="212" y2="272" stroke="url(#ivoryg)" stroke-width="9"/>
-      <rect x="207" y="290" width="10" height="10" fill="url(#goldg)"/>
-      <line x1="233" y1="300" x2="233" y2="216" stroke="url(#ivoryg)" stroke-width="9"/>
-      <line x1="233" y1="216" x2="263" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
-      <line x1="263" y1="300" x2="263" y2="216" stroke="url(#ivoryg)" stroke-width="9"/>
-      <line x1="283" y1="216" x2="283" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
-      <line x1="313" y1="216" x2="285" y2="256" stroke="url(#ivoryg)" stroke-width="9"/>
-      <line x1="291" y1="248" x2="315" y2="300" stroke="url(#ivoryg)" stroke-width="9"/>
+    <line x1="70" y1="180" x2="320" y2="180" stroke="#D4AF37" stroke-width=".8" opacity=".5"/>
+    <!-- iTH!NK — the wordmark: blocky straight strokes, gold i/L, solid fills -->
+    <g transform="translate(62,212) scale(1.33)">
+      <rect x="2" y="0" width="10" height="10" fill="#D4AF37"/>
+      <g stroke="#D4AF37" stroke-width="10" stroke-linecap="butt">
+        <line x1="7" y1="16" x2="7" y2="66"/>
+        <line x1="2" y1="61" x2="94" y2="61"/>
+      </g>
+      <g stroke="#DCDEE6" stroke-width="10" stroke-linecap="butt" fill="none">
+        <line x1="19" y1="15" x2="55" y2="15"/><line x1="37" y1="15" x2="37" y2="52"/>
+        <line x1="65" y1="10" x2="65" y2="52"/><line x1="87" y1="10" x2="87" y2="52"/><line x1="65" y1="31" x2="87" y2="31"/>
+        <line x1="105" y1="10" x2="105" y2="36"/>
+        <line x1="123" y1="52" x2="123" y2="10"/><line x1="123" y1="10" x2="147" y2="52"/><line x1="147" y1="52" x2="147" y2="10"/>
+        <line x1="165" y1="10" x2="165" y2="52"/><line x1="193" y1="10" x2="167" y2="33"/><line x1="171" y1="29" x2="195" y2="52"/>
+      </g>
+      <rect x="100" y="44" width="10" height="9" fill="#DCDEE6"/>
     </g>
-    <line x1="70" y1="336" x2="320" y2="336" stroke="url(#goldg)" stroke-width=".8" opacity=".55"/>
+    <line x1="70" y1="336" x2="320" y2="336" stroke="#D4AF37" stroke-width=".8" opacity=".5"/>
     <text x="195" y="376" text-anchor="middle" font-size="17" letter-spacing="8" fill="url(#goldg)" font-family="Cinzel,serif" font-weight="700">THE GAME</text>
     <text x="195" y="410" text-anchor="middle" font-size="11" letter-spacing="2.5" fill="#8A90B0" font-family="Cinzel,serif">LEARN ANYTHING · UNDERSTAND EVERYTHING</text>
   </svg>`;
@@ -527,14 +541,73 @@ const TELL = {
 };
 function exploreChoices(){
   const opts = [];
-  if(!S.favorDone) opts.push({t:"Walk to the fruit grove", fn:treeGate});
-  else if(!S.examined.grove) opts.push({t:"Walk to the fruit grove", fn:()=>tellSite("grove")});
-  ["roots","river","forest","huts"].forEach(k=>{
-    if(!S.examined[k]) opts.push({t:"Walk to "+SIM.SITES[k].label, fn:()=>tellSite(k)});
+  Object.keys(SIM.SITES).forEach(k=>{
+    if(!S.examined[k]) opts.push({t:"Walk to "+SIM.SITES[k].label, fn:()=> S.favorDone? tellSite(k) : gateScene(k)});
   });
   const seen = Object.keys(S.examined).length;
   if(S.favorDone && seen>=3) opts.push({t:"Enough walking — gather the band. We plan. ▸", fn:startPlanning});
   choices(opts);
+}
+/* the exchange lesson gates whichever object the player approaches FIRST */
+const GATES = {
+  grove:{voice:"THE OLD TREE",
+    stop:"Aadi reaches for a low fruit. The branch lifts it away from his hand. The whole tree turns its leaves toward him, the way a crowd turns its faces.",
+    ask:`"Taking, first? Tell me, boy — does nature give you breath for free? You drink my brother the air, and pay him back CO₂ with every breath. Everything here is exchange. What will YOU give?"`,
+    favor:"Have Aadi bury one fruit at the field's edge — what is taken must send roots back.",
+    favorNarr:"Aadi kneels and buries the fruit whole, seeds and all. The tree is quiet for a long moment."},
+  roots:{voice:"THE ROOT FIELD",
+    stop:"Aadi pushes his fingers into the soil — and the soil hardens like a shut jaw. The furrows shift, almost turning to face him.",
+    ask:`"Digging, first? Tell me, boy — does nature give you breath for free? You drink the air and pay it back with every breath. Everything here is exchange. What will YOU give?"`,
+    favor:"Have Aadi replant the smallest root as next year's seed — what is taken must be resown.",
+    favorNarr:"Aadi sets the smallest root back into the earth and closes the furrow over it. The soil loosens under his hands."},
+  river:{voice:"THE RIVER",
+    stop:"Aadi dips the net — and the current shoves it back empty, twice, like a hand pushing his chest.",
+    ask:`"Taking, first? Tell me, boy — does nature give you breath for free? You drink the air and pay it back with every breath. Everything here is exchange. What will YOU give?"`,
+    favor:"Have Aadi clear the choked reeds at the bend — give the water its breath back before asking for its fish.",
+    favorNarr:"Aadi wades in and pulls the rotting reeds from the bend. The river runs clearer through the gap, and the current stops fighting him."},
+  forest:{voice:"THE DEADWOOD FOREST",
+    stop:"Aadi grips a dead branch — and the whole treeline creaks toward him at once, like a room of elders sitting up.",
+    ask:`"Hauling, first? Tell me, boy — does nature give you breath for free? You drink the air and pay it back with every breath. Everything here is exchange. What will YOU give?"`,
+    favor:"Have Aadi plant a seed-cone at the treeline — take from the dead, owe to the unborn.",
+    favorNarr:"Aadi presses a seed-cone into the loam at the forest's edge and covers it. The creaking settles."},
+  huts:{voice:"THE OLD HUT",
+    stop:"Aadi reaches for the torn thatch — and the doorway groans, sagging away from his hand.",
+    ask:`"Mending, first? Even mending begins with taking — reeds, wood, time. Does nature give you breath for free? Everything here is exchange. What will YOU give?"`,
+    favor:"Have Aadi carry the hearth's cold ash to the root field — the house feeds the soil that feeds the house.",
+    favorNarr:"Aadi spreads the ash over the field in a thin grey arc. The doorway stands straight again, as if listening."}
+};
+function gateScene(k){
+  const g = GATES[k];
+  say([
+    {who:"narr", t:g.stop},
+    {who:"world", t:`${g.voice}: ${g.ask}`},
+    {who:"aadi", t:"I— I don't have anything. I have answers. Nobody out here charges in answers."}
+  ], ()=>{
+    choices([
+      {t:g.favor, fn:()=>doFavor(k)},
+      {t:"Have Aadi recite the definition of exchange at it.", fn:()=>{
+        say([
+          {who:"world", t:`${g.voice}: "Words. The wind brings me words all day, and none of them ever grew into anything. Try again."`}
+        ], ()=>gateScene(k));
+      }}
+    ]);
+  });
+}
+function doFavor(k){
+  const g = GATES[k];
+  S.favorDone=true; raiseHI(42); drawStore();
+  say([
+    {who:"narr", t:g.favorNarr},
+    {who:"world", t:`${g.voice}: "Good. Now I will tell you what the elder cannot count. Before the last leaf falls, this band needs: ONE HUNDRED measures of food in store. FORTY of firewood. FIFTEEN patches on the huts. Less than that, and winter collects the difference from the children."`},
+    {who:"world", t:`${g.voice}: "You have eight hands and three moons. Twenty-four hand-moons. That is your whole purse, boy. Spend it well — it is the only coin that has ever existed."`},
+    {who:"shyam", t:`"Twenty-four. Will you still remember that number when the piles start looking big?"`}
+  ], ()=>{
+    addClue("winter needs: 100 food · 40 firewood · 15 patches");
+    addClue("the purse: 8 hands × 3 moons = 24");
+    S.cameoShown = true;
+    stage.innerHTML = valleySVG(pageCameo());
+    tellSite(k);
+  });
 }
 function tellSite(k){
   S.examined[k]=true;
@@ -546,32 +619,6 @@ function tellSite(k){
   } else {
     say([{who:"world", t:TELL[k].t}], ()=>{ addClue(TELL[k].clue); exploreChoices(); });
   }
-}
-function treeGate(){
-  stage.innerHTML = valleySVG(`<circle cx="61" cy="266" r="44" fill="#D4AF37" opacity="0.08" class="glow"/>`);
-  say([
-    {who:"narr", t:"Aadi reaches for a low fruit. The branch lifts it away from his hand. The whole tree turns its leaves toward him, the way a crowd turns its faces."},
-    {who:"world", t:"THE OLD TREE: \"Taking, first? Tell me, boy — does nature give you breath for free? You drink my brother the air, and pay him back CO₂ with every breath. Everything here is exchange. What will YOU give?\""},
-    {who:"aadi", t:"I— I don't have anything. I have answers. Nobody out here charges in answers."}
-  ], ()=>{
-    choices([
-      {t:"Have Aadi bury one fruit at the field's edge — what is taken must send roots back.", fn:favorDone},
-      {t:"Have Aadi recite the definition of exchange at the tree.", fn:()=>{
-        say([
-          {who:"world", t:"THE OLD TREE, leaves rattling like dry laughter: \"Words. The wind brings me words all day, and none of them ever grew into anything. Try again.\""}
-        ], treeGate);
-      }}
-    ]);
-  });
-}
-function favorDone(){
-  S.favorDone=true; raiseHI(42); drawStore();
-  say([
-    {who:"narr", t:"Aadi kneels and buries the fruit whole, seeds and all, at the edge of the field. The tree is quiet for a long moment."},
-    {who:"world", t:"THE OLD TREE: \"Good. Now I will tell you what the elder cannot count. Before the last leaf falls, this band needs: ONE HUNDRED measures of food in store. FORTY of firewood. FIFTEEN patches on the huts. Less than that, and winter collects the difference from the children.\""},
-    {who:"world", t:"THE OLD TREE: \"You have eight hands and three moons. Twenty-four hand-moons. That is your whole purse, boy. Spend it well — it is the only coin that has ever existed.\""},
-    {who:"shyam", t:`"Twenty-four. Will you still remember that number when the piles start looking big?"`}
-  ], ()=>{ addClue("winter needs: 100 food · 40 firewood · 15 patches"); addClue("the purse: 8 hands × 3 moons = 24"); tellSite("grove"); });
 }
 
 /* ==========================================================================
