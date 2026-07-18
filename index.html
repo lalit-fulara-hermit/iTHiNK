@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>iTHiNK — the GAME · Episodes 0–1</title>
+<title>iTHiNK — the GAME · Episodes 0–1 · v9</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -44,6 +44,7 @@
   .choices{display:flex; flex-direction:column; gap:8px; margin-top:8px;}
   .choice{background:var(--royal); border:1px solid var(--line); color:var(--text); padding:13px 15px; border-radius:11px; text-align:left; font-size:1rem; min-height:48px;}
   .choice:active{border-color:var(--gold);}
+  .choice:disabled{opacity:.35;}
   .backbtn{background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:99px; width:36px; height:36px; font-size:1rem; float:left; margin-right:9px; line-height:1;}
 
   #clues{display:none; margin-top:7px; gap:5px; flex-wrap:wrap; flex:0 0 auto;}
@@ -85,6 +86,13 @@
   .ws .blank{display:inline-block; min-width:90px; border-bottom:2px solid #8a7a4a; color:#8a2f14; font-weight:600; text-align:center; padding:0 4px;}
   .ws .wchoices{display:flex; flex-direction:column; gap:7px; margin-top:11px;}
   .ws .wchoice{background:#e0d6bf; border:1px solid #b3a67f; color:#2b2416; padding:12px 13px; border-radius:8px; text-align:left; font-size:.96rem; min-height:46px;}
+
+  /* v9: chain (learner-built vision) */
+  .chainrow{display:flex; flex-direction:column; gap:7px; margin-top:8px;}
+  .chainbtn{background:var(--royal); border:1px solid var(--line); color:var(--text); padding:12px 14px; border-radius:11px; text-align:left; font-size:.96rem; min-height:46px;}
+  .chainbtn.done{background:rgba(142,123,200,.14); border-color:var(--amethyst); color:var(--amethyst); pointer-events:none;}
+  .chainbtn.shake{animation:shake .35s;}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
 
   #login{position:fixed; inset:0; z-index:50; background:var(--wpyellow); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px;}
   .wp-page{position:relative; background:var(--wpwhite); width:min(300px,80vw); border-radius:6px; padding:38px 28px 30px; box-shadow:0 18px 50px rgba(90,80,10,.18);}
@@ -179,7 +187,7 @@
     </div>
     <div id="sites"></div>
     <div class="plan-foot">
-      <label class="pushbox"><input type="checkbox" id="pushchk"> push the band harder</label>
+      <label class="pushbox" id="pushwrap"><input type="checkbox" id="pushchk"> push the band harder</label>
       <button class="gobtn" id="gobtn" onclick="runMoon()" disabled>Begin the moon</button>
     </div>
   </div>
@@ -207,35 +215,44 @@ const SIM = {
   HANDS: 8, MOONS: 3,
   NEED: { food: 100, fuel: 40, shelter: 15 },
   SITES: {
-    grove:  { label:"the fruit grove",     unit:"food",    per:12, keep:0.3 },
-    roots:  { label:"the root field",      unit:"food",    per:8,  keep:1   },
+    grove:  { label:"the fruit grove",     unit:"food",    per:12 },
+    roots:  { label:"the root field",      unit:"food",    per:8,  keep:1 },
     river:  { label:"the river",           unit:"food",    per:10, keep:1, smokeFuel:2 },
     forest: { label:"the deadwood forest", unit:"fuel",    per:8 },
-    huts:   { label:"the huts",            unit:"shelter", per:6 }
+    huts:   { label:"the huts",            unit:"shelter" },
+    shop:   { label:"the workshop",        unit:"none",    per:0 }
   }
 };
-function computeMoon(alloc, push, exhausted, fuelStore){
+/* tech = what the band has learned to do differently. Starts poor. */
+function freshTech(){ return { fruitKeep:0.3, fruitFuelFlat:0, hutPer:6, tried:{} }; }
+function computeMoon(alloc, push, exhausted, fuelStore, tech){
   const m = (push?1.3:1) * (exhausted?0.6:1);
   const a = k => alloc[k]||0;
   const out = { mult:m, fruitGathered:0, fruitKept:0, fruitRot:0,
                 fishRaw:0, fishKept:0, fishRot:0, smokeUsed:0,
                 roots:0, wood:0, hutwork:0, gained:{food:0,fuel:0,shelter:0} };
   out.fruitGathered = Math.round(a("grove")*SIM.SITES.grove.per*m);
-  out.fruitKept = Math.round(out.fruitGathered*SIM.SITES.grove.keep);
-  out.fruitRot = out.fruitGathered - out.fruitKept;
   out.roots = Math.round(a("roots")*SIM.SITES.roots.per*m);
   out.wood  = Math.round(a("forest")*SIM.SITES.forest.per*m);
-  out.hutwork = Math.round(a("huts")*SIM.SITES.huts.per*m);
+  out.hutwork = Math.round(a("huts")*tech.hutPer*m);
   out.fishRaw = Math.round(a("river")*SIM.SITES.river.per*m);
+  let avail = fuelStore + out.wood;
   if(a("river")){
     const cost = SIM.SITES.river.smokeFuel * a("river");
-    const avail = fuelStore + out.wood;
     if(avail >= cost){ out.fishKept = out.fishRaw; out.smokeUsed = cost; }
     else { const hands = Math.floor(avail/SIM.SITES.river.smokeFuel);
            out.fishKept = Math.round(out.fishRaw*hands/a("river"));
            out.smokeUsed = hands*SIM.SITES.river.smokeFuel;
            out.fishRot = out.fishRaw - out.fishKept; }
+    avail -= out.smokeUsed;
   }
+  let keep = tech.fruitKeep;
+  if(a("grove") && tech.fruitFuelFlat>0){
+    if(avail >= tech.fruitFuelFlat){ out.smokeUsed += tech.fruitFuelFlat; avail -= tech.fruitFuelFlat; }
+    else { keep = 0.3; } /* no wood for the fruit-smoke: falls back to raw storage */
+  }
+  out.fruitKept = Math.round(out.fruitGathered*keep);
+  out.fruitRot = out.fruitGathered - out.fruitKept;
   out.gained.food = out.roots + out.fishKept + out.fruitKept;
   out.gained.fuel = out.wood - out.smokeUsed;
   out.gained.shelter = out.hutwork;
@@ -247,6 +264,35 @@ function winterVerdict(store){
            shelter: store.shelter >= SIM.NEED.shelter,
            pass: store.food>=SIM.NEED.food && store.fuel>=SIM.NEED.fuel && store.shelter>=SIM.NEED.shelter };
 }
+/* ---- the workshop: attempts change tech. Each is try-once. ---- */
+const WORKSHOP = {
+  problems: {
+    rot: { label:"the fruit that blackens", need:"fruitRotSeen",
+      methods: {
+        sun:   { label:"spread the fruit thin under the sun — the way the roots dry", ok:true,
+                 apply:t=>{t.fruitKeep=0.7; t.fruitFuelFlat=0;},
+                 tell:"THE GROVE: \"…So the sun takes the water and leaves the sweetness. Seven of ten now survive to winter. You did not grow one more fruit, boy — you stopped LOSING them. Remember which of those was free.\"" },
+        smoke: { label:"hang the fruit in the smokehouse beside the fish", ok:true,
+                 apply:t=>{t.fruitKeep=0.9; t.fruitFuelFlat=2;},
+                 tell:"THE SMOKEHOUSE: \"Nine of ten will keep — but I drink two measures of wood each moon for it. Every improvement has a price. Yours is now a standing bill.\"" },
+        river: { label:"sink the fruit baskets in the cold river", ok:false,
+                 apply:t=>{t.fruitKeep=0.5;},
+                 tell:"THE RIVER: \"Cold slows the rot. It does not stop it. Half will still blacken — better than before, worse than you hoped. Now you know what cold is and is not.\"" },
+        bury:  { label:"bury the fruit in the cool earth, like roots", ok:false,
+                 apply:t=>{},
+                 tell:"THE ROOT FIELD: \"The root LIVES in the earth — the fruit only dies there faster. Damp is rot's mother. A failed test that teaches is not a wasted hand, boy. But it was still a hand.\"" }
+      }},
+    roofs: { label:"the roofs that leak", need:null,
+      methods: {
+        reeds: { label:"weave river reeds into the thatch, tight as a net", ok:true,
+                 apply:t=>{t.hutPer=9;},
+                 tell:"THE OLD HUT: \"Reed over straw, crossed like netting — the wind slides off instead of in. Nine patches a moon per hand now, where six went before. Same hands. Better idea.\"" },
+        ash:   { label:"pack hearth ash into the gaps", ok:false,
+                 apply:t=>{},
+                 tell:"THE OLD HUT: \"Dry, the ash sat. Wet, it ran like grey soup down my walls. The field drinks ash; walls do not. Wrong place for a right thing.\"" }
+      }}
+  }
+};
 /* ---- era II: labor ---- */
 const SIM2 = {
   DAYS:3, TARGET:380, QSTART:0.75,
@@ -274,29 +320,38 @@ function computeDay(assign, streaks, quality){
   const nextQ = Math.max(0.55, Math.min(1, quality - 0.15 + 0.15*pts.mend));
   return {pts, netted, cap, stored, wasted, nextQ};
 }
-if(typeof window!=="undefined") window.__sim = { SIM, computeMoon, winterVerdict, SIM2, computeDay };
-if(typeof module!=="undefined") module.exports = { SIM, computeMoon, winterVerdict, SIM2, computeDay };
+if(typeof window!=="undefined") window.__sim = { SIM, computeMoon, winterVerdict, SIM2, computeDay, WORKSHOP, freshTech };
+if(typeof module!=="undefined") module.exports = { SIM, computeMoon, winterVerdict, SIM2, computeDay, WORKSHOP, freshTech };
 </script>
 
 <script>
 /* ==========================================================================
-   iTHiNK v8 — Episodes 0 & 1: THE FIRST VALLEY · THE NETMAKERS' WATER
-   Foundations: player decides, Aadi acts, Shyam asks only questions,
-   objects tell when touched, first-touched object gates with a favor,
-   the door is the test, HI only rises, cards are consumed by later gates.
+   iTHiNK v9 — Episodes 0 & 1, rebuilt under the Neurocircuitry Test:
+   every activity must make the player GENERATE, not select.
+   New in v9:
+   · The Workshop — invent preservation/patching methods before being taught
+   · Push-harder now demands a PREDICTION first, then confronts it
+   · Visions are chains the player ASSEMBLES, not slideshows
+   · After every failure, the world TELLS — plainly, tied to the actual attempt
+   · Aadi restates each lesson with one flaw — the player must catch it
+   · Telemetry tags every probe with its cube face (What / How / Why)
    ========================================================================== */
 const S = {
   scene:"login", era:0, hi:38, pot:90, season:1, moon:1, playerName:"",
   store:{food:0,fuel:0,shelter:0},
-  alloc:{grove:0,roots:0,river:0,forest:0,huts:0},
+  alloc:{grove:0,roots:0,river:0,forest:0,huts:0,shop:0},
   examined:{}, favorDone:false, exhausted:false,
   clues:[], cards:[], rung:0, cameoShown:false,
+  tech: freshTech(), expPending:null, pushAsked:false, pushPrediction:null,
+  fruitRotSeen:false,
   /* era II state */
   day:1, week:1, assign:{}, prevAssign:{}, streaks:{}, quality:0.75, stored:0,
-  watched:false, gateDone2:false, seen2:{}, rotatedDay:0,
+  watched:false, gateDone2:false, seen2:{}, rotatedDay:0, netPrediction:null,
   log:{plans:[], asks:0, deepestRung:0, visions:0, probeRetries:0, seasons:1,
        fruitRotTotal:0, fishRotTotal:0, pushes:0,
-       days:[], weeks:1, wastedTotal:0, rotations:0, gateRetries:0}
+       days:[], weeks:1, wastedTotal:0, rotations:0, gateRetries:0,
+       inventions:[], predictions:[], restates:[],
+       faceGaps:{What:0, How:0, Why:0}}
 };
 const $ = id => document.getElementById(id);
 const stage = $("stage"), dlg = $("dlg");
@@ -366,7 +421,7 @@ function choices(list){ lastChoices = list; reviewIdx = -1; renderChoices(list);
 function renderChoices(list){
   dlg.innerHTML = `<div class="choices fadein">
     ${hist.length? `<button class="backbtn" style="align-self:flex-start;" onclick="goBack()">◂</button>`:""}
-    ${list.map((c,i)=>`<button class="choice" onclick="window.__c${i}()">${c.t}</button>`).join("")}</div>`;
+    ${list.map((c,i)=>`<button class="choice" ${c.off?"disabled":""} onclick="window.__c${i}()">${c.t}</button>`).join("")}</div>`;
   list.forEach((c,i)=> window["__c"+i] = c.fn);
 }
 function addClue(c){
@@ -378,7 +433,7 @@ function addClue(c){
 function clearClues(){ S.clues=[]; $("clues").classList.remove("on"); $("clues").innerHTML=""; }
 
 /* ==========================================================================
-   TITLE — the wordmark
+   TITLE & EPIGRAPH
    ========================================================================== */
 function sceneTitle(){
   S.scene="title"; hud(false);
@@ -428,8 +483,7 @@ function sceneEpigraph(){
 }
 
 /* ==========================================================================
-   EPISODE 0 — THE CITY OF ANSWERS → THE FIRST VALLEY
-   (unchanged foundations from the approved node-0 build)
+   EPISODE 0 — exile, valley, gates (unchanged foundations)
    ========================================================================== */
 const EXAM = [
   {q:"Define scarcity.", a:"'The state of limited resources against unlimited wants.'"},
@@ -560,11 +614,12 @@ const TELL = {
   roots:  {t:"Knobbly, dull, patient. A hand digs about eight measures a moon. Dry them and they keep till spring without complaint — the humblest thing here, and the most loyal.", clue:"roots store; 8 a moon"},
   river:  {t:"Quick silver under the surface. A hand nets about ten measures a moon — but fish rots in days unless it is SMOKED, and smoking one hand's catch eats two measures of firewood. The river gives with one hand and charges with the other.", clue:"fish: 10 a moon, smoking costs 2 firewood"},
   forest: {t:"Dead branches everywhere, free for the hauling. A hand gathers eight measures of firewood a moon. Firewood is winter's blood — and the smokehouse drinks it too.", clue:"firewood: 8 a moon"},
-  huts:   {t:"The roofs are tired. Wind slides in like a thief. A hand patches six measures a moon. The elder says fifteen patches stand between the children and the cold.", clue:"huts: 6 patches a moon"}
+  huts:   {t:"The roofs are tired. Wind slides in like a thief. A hand patches six measures a moon, the old way. The elder says fifteen patches stand between the children and the cold.", clue:"huts: 6 patches a moon"}
 };
 function exploreChoices(){
   const opts = [];
   Object.keys(SIM.SITES).forEach(k=>{
+    if(k==="shop") return;
     if(!S.examined[k]) opts.push({t:"Walk to "+SIM.SITES[k].label, fn:()=> S.favorDone? tellSite(k) : gateScene(k)});
   });
   const seen = Object.keys(S.examined).length;
@@ -635,9 +690,9 @@ function tellSite(k){
   S.examined[k]=true;
   if(k==="grove"){
     say([
-      {who:"world", t:"THE GROVE: \"Sweet and fast — a hand picks twelve measures a moon, easiest work in the valley. But hear me say it plainly: my fruit does not keep. Whatever you store, seven parts in ten will blacken before deep winter.\""},
-      {who:"aadi", t:"Twelve a moon! Fastest food in the valley— …and it ROTS. Of course. Nothing here is simply free, is it."}
-    ], ()=>{ addClue("fruit: 12 a moon — 7 of 10 rot by winter"); exploreChoices(); });
+      {who:"world", t:"THE GROVE: \"Sweet and fast — a hand picks twelve measures a moon, easiest work in the valley. But hear me say it plainly: my fruit does not keep. Whatever you store, seven parts in ten will blacken before deep winter… the old way.\""},
+      {who:"aadi", t:"Twelve a moon! Fastest food in the valley— …and it ROTS. Of course. Nothing here is simply free, is it. 'The old way,' it said. Is there a new way? Nobody here has looked for one."}
+    ], ()=>{ addClue("fruit: 12 a moon — 7 of 10 rot, the old way"); exploreChoices(); });
   } else {
     say([{who:"world", t:TELL[k].t}], ()=>{ addClue(TELL[k].clue); exploreChoices(); });
   }
@@ -655,6 +710,7 @@ function startPlanning(){
     ], showPlan);
   } else showPlan();
 }
+function shopOpen(){ return S.moon>1 || S.season>1; }
 function showPlan(){
   $("plan").style.display="block";
   $("moontitle").textContent = ["First Moon","Second Moon","Last Moon"][S.moon-1] + (S.season>1? " · season "+S.season : "") + (S.exhausted?" · the band is weary":"");
@@ -664,28 +720,37 @@ function showPlan(){
 }
 function renderSites(){
   $("sites").innerHTML = Object.keys(SIM.SITES).map(k=>{
-    const seen = S.examined[k];
-    const yl = seen ? yieldText(k) : "walk closer to learn what it offers";
+    if(k==="shop" && !shopOpen()) return "";
+    const seen = k==="shop" ? true : S.examined[k];
+    const yl = k==="shop" ? "one hand, one experiment — a new way costs a hand now, pays every moon after"
+             : (seen ? yieldText(k) : "walk closer to learn what it offers");
     return `<div class="site">
       <div class="site-name" onclick="siteTouch('${k}')"><span class="nm">${cap(SIM.SITES[k].label)}</span><span class="yl">${yl}</span></div>
       <div class="ctr">
         <button onclick="dec('${k}')" ${S.alloc[k]===0?"disabled":""}>−</button>
-        <span class="n">${S.alloc[k]}</span>
-        <button onclick="inc('${k}')" ${(!seen||handsUsed()>=SIM.HANDS)?"disabled":""}>+</button>
+        <span class="n">${S.alloc[k]||0}</span>
+        <button onclick="inc('${k}')" ${(!seen||handsUsed()>=SIM.HANDS||(k==="shop"&&S.alloc.shop>=1))?"disabled":""}>+</button>
       </div></div>`;
   }).join("");
 }
 function yieldText(k){
-  if(k==="grove") return "12 food/hand — 7 of 10 rot by winter";
+  if(k==="grove"){
+    if(S.tech.fruitKeep>=0.9) return "12 food/hand — smoked: 9 of 10 keep, drinks 2 wood/moon";
+    if(S.tech.fruitKeep>=0.7) return "12 food/hand — sun-dried: 7 of 10 now keep";
+    if(S.tech.fruitKeep>=0.5) return "12 food/hand — river-chilled: half still rot";
+    return "12 food/hand — 7 of 10 rot, the old way";
+  }
   if(k==="river") return "10 food/hand — smoking eats 2 firewood per hand";
+  if(k==="huts") return (S.tech.hutPer>6? S.tech.hutPer+" patches/hand — reed-woven, the new way" : "6 patches/hand, the old way");
   const s=SIM.SITES[k];
   return s.per+" "+(s.unit==="shelter"?"patches":s.unit)+"/hand"+(k==="roots"?" — stores well":"");
 }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 function siteTouch(k){
+  if(k==="shop") return;
   if(!S.examined[k]){
     S.examined[k]=true;
-    const t = k==="grove" ? "THE GROVE: \"A hand picks twelve a moon — and seven of ten rot before deep winter. I did warn you.\"" : TELL[k].t;
+    const t = k==="grove" ? "THE GROVE: \"A hand picks twelve a moon — and seven of ten rot before deep winter, the old way. I did warn you.\"" : TELL[k].t;
     say([{who:"world", t}], ()=>{ if(TELL[k]) addClue(TELL[k].clue); showPlan(); });
   }
 }
@@ -694,14 +759,44 @@ function updateHands(){
   $("handsleft").textContent = SIM.HANDS - handsUsed();
   $("gobtn").disabled = handsUsed()===0;
   renderSites();
+  wirePush();
 }
-function inc(k){ if(handsUsed()<SIM.HANDS){ S.alloc[k]++; updateHands(); } }
+function inc(k){ if(handsUsed()<SIM.HANDS && !(k==="shop"&&S.alloc.shop>=1)){ S.alloc[k]=(S.alloc[k]||0)+1; updateHands(); } }
 function dec(k){ if(S.alloc[k]>0){ S.alloc[k]--; updateHands(); } }
+
+/* ---- v9: pushing harder demands a prediction first ---- */
+function wirePush(){
+  const c = $("pushchk");
+  c.onchange = null;
+  c.onchange = ()=>{
+    if(c.checked && !S.pushAsked){
+      c.checked = false;
+      say([
+        {who:"shyam", t:`"Before you spend strength you have not counted — where will the EXTRA come from? Name your answer, and we will hold it against what happens."`}
+      ], ()=>{
+        choices([
+          {t:"Nowhere it costs — effort is free if the will is strong.", fn:()=>setPushPred("free")},
+          {t:"The valley will simply give more to those who ask harder.", fn:()=>setPushPred("valley")},
+          {t:"From next moon — we would be borrowing the band's strength from tomorrow.", fn:()=>setPushPred("borrow")}
+        ]);
+      });
+    }
+  };
+}
+function setPushPred(p){
+  S.pushAsked = true; S.pushPrediction = p;
+  S.log.predictions.push({what:"push", said:p});
+  const line = p==="borrow"
+    ? {who:"shyam", t:`"Borrowed. So you already suspect there is a ledger. Check it — the box is yours to tick."`}
+    : {who:"shyam", t:`"So that is your claim. The moon after will grade it. Tick the box if you still want to."`};
+  say([line], ()=>{ showPlan(); $("pushchk").checked = true; });
+}
 
 function runMoon(){
   const push = $("pushchk").checked;
+  if(S.alloc.shop>0 && !S.expPending){ chooseExperiment(); return; }
   const alloc = {...S.alloc};
-  const res = computeMoon(alloc, push, S.exhausted, S.store.fuel);
+  const res = computeMoon(alloc, push, S.exhausted, S.store.fuel, S.tech);
   S.log.plans.push({season:S.season, moon:S.moon, alloc, push, exhausted:S.exhausted});
   if(push) S.log.pushes++;
   const wasExhausted = S.exhausted;
@@ -710,18 +805,72 @@ function runMoon(){
   S.store.fuel += res.gained.fuel;
   S.store.shelter += res.gained.shelter;
   S.log.fruitRotTotal += res.fruitRot; S.log.fishRotTotal += res.fishRot;
+  if(res.fruitRot>0) S.fruitRotSeen = true;
   $("plan").style.display="none"; $("pushchk").checked=false;
   drawStore();
   const beats = [];
-  if(wasExhausted) beats.push({who:"narr", t:"The band moves like wet rope this moon — last moon's pushing is being repaid, with interest."});
-  if(alloc.grove) beats.push({who:"narr", t:`The grove: ${res.fruitGathered} measures picked${res.fruitRot?` — and by moon's end, ${res.fruitRot} lie blackened in the baskets. ${res.fruitKept} survive`:""}.`});
+  if(wasExhausted){
+    beats.push({who:"narr", t:"The band moves like wet rope this moon — last moon's pushing is being repaid, with interest."});
+    const pred = S.pushPrediction;
+    if(pred==="borrow") beats.push({who:"world", t:`THE VALLEY, in the dragging of feet: "You named it before you spent it — BORROWED. Here is the collection. Strength is a store like any other: what you draw beyond its filling, you owe."`});
+    else if(pred) beats.push({who:"world", t:`THE VALLEY, in the dragging of feet: "You said ${pred==="free"?"effort was free":"I would simply give more"}. Look at the band. The extra came from THIS moon — pushing does not create strength, it moves it. Everything is drawn from a store."`});
+  }
+  if(S.expPending) runExperiment(beats);
+  if(alloc.grove) beats.push({who:"narr", t:`The grove: ${res.fruitGathered} measures picked${res.fruitRot?` — and by moon's end, ${res.fruitRot} lie blackened in the baskets. ${res.fruitKept} survive`:` — ${res.fruitKept} kept`}.`});
   if(alloc.roots) beats.push({who:"narr", t:`The root field: ${res.roots} measures dug, dried, stored. They will not betray you.`});
   if(alloc.river) beats.push({who:"narr", t:`The river: ${res.fishRaw} measures netted. ${res.fishKept} smoked and saved${res.smokeUsed?` (the smokehouse ate ${res.smokeUsed} firewood)`:""}${res.fishRot?`; ${res.fishRot} ROT unsmoked — the wood ran out`:""}.`});
   if(alloc.forest) beats.push({who:"narr", t:`The forest: ${res.wood} measures of firewood hauled.`});
   if(alloc.huts) beats.push({who:"narr", t:`The huts: ${res.hutwork} patches set against the wind.`});
   if(push) beats.push({who:"narr", t:"The band worked past dusk every day. It shows in the piles — and in their faces. Something was borrowed this moon."});
-  say(beats, ()=>{ S.rung=0; afterMoon(alloc, res, push); });
+  say(beats, ()=>{ S.rung=0; S.expPending=null; afterMoon(alloc, res, push); });
 }
+
+/* ---- v9: THE WORKSHOP — invent before being taught ---- */
+function chooseExperiment(){
+  const probs = [];
+  if(S.fruitRotSeen && !allTried("rot")) probs.push("rot");
+  if(!allTried("roofs")) probs.push("roofs");
+  if(!probs.length){
+    say([{who:"world", t:"THE WORKSHOP, dusty: \"Nothing here is asking a question today. Bring me a problem you have SEEN, and a hunch.\""}],
+      ()=>{ S.alloc.shop=0; showPlan(); });
+    return;
+  }
+  say([
+    {who:"narr", t:"One hand stands free of the fields this moon, before a bench of borrowed tools. The valley's problems queue up like patients."},
+    {who:"shyam", t:`"A hand that makes nothing this moon. What must it make instead, to be worth its keep?"`}
+  ], ()=>{
+    choices(probs.map(p=>({t:"Attack "+WORKSHOP.problems[p].label, fn:()=>chooseMethod(p)})));
+  });
+}
+function allTried(p){
+  const t = S.tech.tried[p]||{};
+  return Object.keys(WORKSHOP.problems[p].methods).every(m=>t[m]);
+}
+function chooseMethod(p){
+  const P = WORKSHOP.problems[p];
+  const tried = S.tech.tried[p]||{};
+  say([{who:"world", t: p==="rot"
+    ? "THE WORKSHOP: \"The fruit blackens. You have SEEN this valley work: roots dry hard in the sun and live. Fish keeps in smoke. The river runs cold. The earth is cool and dark. Which of the valley's own tricks will you steal for the fruit? Your hunch, boy — not a recitation.\""
+    : "THE WORKSHOP: \"The roofs leak. You have seen reeds woven into nets that hold thrashing fish, and ash keep the field soft. What will you try against the wind?\""}],
+  ()=>{
+    choices(Object.keys(P.methods).map(m=>({
+      t: P.methods[m].label + (tried[m]? "  (tried)":""), off: !!tried[m],
+      fn: ()=>{ S.expPending = {p, m}; runMoon(); }
+    })));
+  });
+}
+function runExperiment(beats){
+  const {p, m} = S.expPending;
+  const M = WORKSHOP.problems[p].methods[m];
+  (S.tech.tried[p] = S.tech.tried[p]||{})[m] = true;
+  M.apply(S.tech);
+  S.log.inventions.push({season:S.season, moon:S.moon, problem:p, method:m, worked:M.ok});
+  beats.push({who:"narr", t:"At the workshop, the experiment runs its course — the moon itself is the test bench."});
+  beats.push({who:"world", t:M.tell});
+  if(M.ok) beats.push({who:"aadi", t:"It WORKED. Same valley, same hands — and the numbers just moved. In the City they never told me you could argue with a number and win."});
+  else beats.push({who:"aadi", t:"…It failed. But I know exactly WHY it failed, which is strange — failing in the City taught me nothing but shame. Next hunch will be better aimed."});
+}
+
 function paceShort(){
   const frac = S.moon/SIM.MOONS;
   return ["food","fuel","shelter"].filter(k=> S.store[k] < SIM.NEED[k]*frac);
@@ -738,19 +887,18 @@ function afterMoon(alloc, res, push){
     lines.push(shyamAfterMoon(alloc, res, push));
   }
   say(lines, ()=>{
-    if(S.moon < SIM.MOONS){ S.moon++; S.alloc={grove:0,roots:0,river:0,forest:0,huts:0}; showPlan(); }
+    if(S.moon < SIM.MOONS){ S.moon++; S.alloc={grove:0,roots:0,river:0,forest:0,huts:0,shop:0}; showPlan(); }
     else sceneWinter();
   });
 }
 function shyamAfterMoon(alloc, res, push){
-  if(res.fruitRot >= 25) return {who:"shyam", t:`"The grove paid you ${res.fruitGathered} and your baskets kept ${res.fruitKept}. Who ate the difference? And had the grove not told you it would?"`};
+  if(res.fruitRot >= 25) return {who:"shyam", t:`"The grove paid you ${res.fruitGathered} and your baskets kept ${res.fruitKept}. Who ate the difference? And is picking MORE the only answer — or is there a hand that could stop the eating itself?"`};
   if(res.fishRot > 0) return {who:"shyam", t:`"The river gave ${res.fishRaw} and the smokehouse saved ${res.fishKept}. What does smoke cost — and who forgot to pay it?"`};
   if(push) return {who:"shyam", t:`"Bigger piles today. Where did this moon's extra strength come from? Was it free?"`};
   const spread = Object.values(alloc).filter(v=>v>0).length>=4 && Math.max(...Object.values(alloc))<=2;
   if(spread) return {who:"shyam", t:`"Eight hands in ${Object.values(alloc).filter(v=>v>0).length} places — is a fistful of everything a store of anything?"`};
-  return {who:"shyam", t:`"What will you STOP doing next moon? Is adding the only move you know?"`};
+  return {who:"shyam", t:`"What will you STOP doing next moon? And what has no hand tried YET? Adding is not the only move — and neither is moving."`};
 }
-
 /* ---------------- Shyam's cascade — era-aware, questions only ---------------- */
 function ladder(){
   if(S.era===0){
@@ -765,7 +913,6 @@ function ladder(){
       `"On the road here we came to a fork, and you took the left path. Where did the right one go? What would you call a thing that stops existing the moment you choose?"`
     ];
   }
-  // era 1 — labor
   const bad = worstFit();
   return [
     bad ? `"You set ${bad.name} to ${SIM2.TASKNAMES[bad.task]}. What is ${bad.name}'s hand actually FOR? Have you watched it?"`
@@ -802,66 +949,78 @@ function restorePanels(){
 }
 
 /* ==========================================================================
-   VISIONS — era-aware
+   VISIONS v9 — the player BUILDS the chain back to 0, link by link
    ========================================================================== */
-const VISIONS = {
-  0:[
-    {cap:"THE TALISMAN PULLS YOU BOTH UP AND BACK. The valley from above — one green bowl in a ring of rock. Count its trees; you would finish counting. Count its moons before winter; you already have. Generous is not the same as endless.",
-     svg:`<path d="M40,340 Q195,200 350,340 L350,430 L40,430 Z" fill="#1E2A55"/><path d="M10,340 Q50,250 100,340 Z" fill="#141B36"/><path d="M290,340 Q340,240 380,340 Z" fill="#141B36"/><circle cx="195" cy="130" r="20" fill="#EDE6D6" opacity=".7"/>`},
-    {cap:"HIGHER. The whole earth — one ball of rock and water, lit on one side. Every valley that has ever fed anyone is on it. It does not grow. It has never once grown. Everyone who will ever live shares this one ration.",
-     svg:`<circle cx="195" cy="260" r="90" fill="#16405c"/><path d="M138,216 Q172,192 215,212 Q248,230 232,260 Q195,278 152,256 Z" fill="#1a4a3c"/><circle cx="195" cy="260" r="108" fill="#1EA896" opacity="0.1" class="glow"/><circle cx="70" cy="90" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="320" cy="120" r="1.3" fill="#EDE6D6" class="tw2"/>`},
-    {cap:"THE FLOOR. Before the earth: a sun, spending itself — so much fire, and even that is a purse, not a spring. Before the sun: hydrogen. Before hydrogen: one beginning. Matter, energy, space, TIME — all of it issued once, 13.8 billion years ago, and never reissued. Scarcity was not invented by misers. It was born here, at 0. Everything since has been choosing.",
-     svg:`<circle cx="195" cy="250" r="12" fill="#D4AF37"/><circle cx="195" cy="250" r="44" fill="#D4AF37" opacity="0.3" class="glow"/><circle cx="195" cy="250" r="100" fill="#8E7BC8" opacity="0.15" class="glow"/><text x="195" y="257" text-anchor="middle" font-size="19" font-weight="800" fill="#EDE6D6" font-family="Cinzel,serif">0</text>`}
-  ],
-  1:[
-    {cap:"THE TALISMAN TURNS THE LIGHT AROUND. Dhara's arm, mid-pull — and inside it, yesterday's bread. Inside the bread, a field of wheat, drinking a summer. Work is eaten sunlight, spent through a hand.",
-     svg:`<path d="M60,380 Q195,300 330,380 L330,430 L60,430 Z" fill="#1E2A55"/><circle cx="195" cy="180" r="46" fill="#D4AF37" opacity=".8"/><path d="M120,340 q10,-40 6,-70 M150,344 q8,-44 2,-80 M180,342 q4,-40 0,-74 M215,344 q-4,-42 2,-78 M250,340 q-8,-40 -4,-72" stroke="#C2A44A" stroke-width="4" fill="none"/>`},
-    {cap:"FURTHER. The wheat drinks the sun; the sun burns itself thinner with every heartbeat. Every stroke of every net that has ever been cast was a loan from that fire, passed through soil and stomach into a shoulder.",
-     svg:`<circle cx="195" cy="230" r="70" fill="#D4AF37" opacity=".9"/><circle cx="195" cy="230" r="100" fill="#D4AF37" opacity=".25" class="glow"/><circle cx="195" cy="230" r="140" fill="#C26A3D" opacity=".1" class="glow"/><circle cx="80" cy="80" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="320" cy="100" r="1.3" fill="#EDE6D6" class="tw2"/>`},
-    {cap:"THE FLOOR AGAIN. The same floor as always: 0. Energy, issued once, never reissued. But look — a hand that LEARNS wastes less of the loan with every repetition. That is all skill is. A borrowed fire, spent more and more carefully. And it is everything.",
-     svg:`<circle cx="195" cy="250" r="12" fill="#D4AF37"/><circle cx="195" cy="250" r="44" fill="#D4AF37" opacity="0.3" class="glow"/><circle cx="195" cy="250" r="100" fill="#8E7BC8" opacity="0.15" class="glow"/><text x="195" y="257" text-anchor="middle" font-size="19" font-weight="800" fill="#EDE6D6" font-family="Cinzel,serif">0</text>`}
-  ]
+const VCHAIN = {
+  0:{ steps:[
+      "This valley — one green bowl in a ring of rock; count its trees, you would finish counting",
+      "The earth — one ball of rock and water, lit on one side; it has never once grown",
+      "The sun — a purse of fire, spending itself thinner with every heartbeat",
+      "0 — matter, energy, time: issued once at the beginning, never reissued"
+    ],
+    closing:"The chain holds. Scarcity was not invented by misers — it was born at 0, and every plan ever made is someone spending the first purse.",
+    aadi:"I recited 'limited resources' in an exam two weeks ago. Tonight I BUILT the limit myself, link by link, back to the start of everything. It will not come apart again."},
+  1:{ steps:[
+      "Dhara's arm, mid-pull on the net",
+      "Yesterday's bread, burning inside that arm",
+      "A field of wheat, drinking a whole summer of light",
+      "The sun, spending its one fire",
+      "0 — the single issue of everything, at the beginning"
+    ],
+    closing:"The chain holds. Work is eaten sunlight, spent through a hand — and a hand that LEARNS wastes less of the loan with every repetition. That is all skill is.",
+    aadi:"In the City they made us chant 'labor is a factor of production'. Nobody said it was SUNLIGHT learning to tie knots. I built that sentence myself just now — it's mine."}
 };
-let visionIdx = 0;
+let chainIdx = 0, chainTries = 0;
 function startVision(){
-  visionIdx = 0;
+  chainIdx = 0; chainTries = 0;
   $("plan").style.display="none"; $("store").style.display="none"; $("crew").style.display="none";
-  visionStep();
-}
-function visionStep(){
-  const V = VISIONS[S.era];
-  if(visionIdx >= V.length){ endVision(); return; }
-  const v = V[visionIdx];
-  S.log.visions = Math.max(S.log.visions, visionIdx+1);
+  const V = VCHAIN[S.era];
   stage.innerHTML = `<svg viewBox="0 0 390 560" ${PAR} xmlns="http://www.w3.org/2000/svg">
-    <rect width="390" height="560" fill="#0B1024"/>${v.svg}
-    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8E7BC8" font-family="Cinzel,serif">VISION · ${visionIdx+1} / 3</text>
+    <rect width="390" height="560" fill="#0B1024"/>
+    <circle cx="70" cy="90" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="320" cy="120" r="1.3" fill="#EDE6D6" class="tw2"/>
+    <circle cx="195" cy="250" r="12" fill="#D4AF37"/>
+    <circle cx="195" cy="250" r="44" fill="#D4AF37" opacity="0.3" class="glow"/>
+    <circle cx="195" cy="250" r="100" fill="#8E7BC8" opacity="0.15" class="glow"/>
+    <text x="195" y="257" text-anchor="middle" font-size="19" font-weight="800" fill="#EDE6D6" font-family="Cinzel,serif">0</text>
+    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8E7BC8" font-family="Cinzel,serif">VISION · BUILD THE CHAIN</text>
   </svg>`;
-  say([{who:"tali", t:v.cap}], ()=>{
-    choices([
-      {t: visionIdx<V.length-1 ? "Further back ⟵" : "…there is nothing before this. ⟵", fn:()=>{visionIdx++; visionStep();}},
-      {t:"Enough — return ↩", fn:endVision}
-    ]);
-  });
+  say([
+    {who:"tali", t:"(The talisman does not show you the answer this time. It hands you the LINKS. Build the chain yourself — from where you stand, back to 0. Tap them in order.)"}
+  ], drawChain);
 }
-function endVision(){
-  const line = S.era===0
-    ? (S.log.visions>=3
-      ? "I recited 'limited resources' in an exam two weeks ago. I just watched the limit get ISSUED. Once. At the start of everything. …Every plan we make down there is us spending the first purse."
-      : "My head is full. But that door stays open — I want to go deeper some night.")
-    : (S.log.visions>=3
-      ? "In the City they made us chant 'labor is a factor of production'. Nobody said it was SUNLIGHT learning to tie knots."
-      : "Enough. The lake is waiting — but that door stays open.");
-  say([{who:"aadi", t:line}], ()=>{
-    if(S.era===0){ stage.innerHTML = valleySVG(); $("store").style.display="block"; drawStore();
-      if(S.scene==="plan") showPlan(); else exploreChoices(); }
-    else { stage.innerHTML = lakeSVG();
-      if(S.scene==="crew") showCrew(); else exploreLake(); }
-  });
+function drawChain(){
+  const V = VCHAIN[S.era];
+  const order = V.steps.map((_,i)=>i);
+  /* stable shuffle: rotate by 2 so it is never in given order, deterministic */
+  const shown = order.slice(2).concat(order.slice(0,2));
+  dlg.innerHTML = `<div class="chainrow fadein">
+    <div style="font-size:.8rem; color:var(--dim); font-style:italic; padding:0 2px;">nearest first — furthest last</div>
+    ${shown.map(i=>`<button class="chainbtn ${i<chainIdx?'done':''}" id="ch${i}" onclick="chainTap(${i})">${i<chainIdx?'✦ ':''}${V.steps[i]}</button>`).join("")}
+    <button class="ghostbtn" onclick="endVision(false)" style="align-self:flex-start;">enough — return ↩</button>
+  </div>`;
+}
+function chainTap(i){
+  const V = VCHAIN[S.era];
+  if(i===chainIdx){
+    chainIdx++;
+    S.log.visions = Math.max(S.log.visions, Math.round(3*chainIdx/V.steps.length));
+    if(chainIdx>=V.steps.length){
+      say([{who:"tali", t:"("+V.closing+")"},{who:"aadi", t:V.aadi}], ()=>endVision(true));
+    } else drawChain();
+  } else {
+    chainTries++; S.log.probeRetries++;
+    const b = $("ch"+i); if(b){ b.classList.add("shake"); setTimeout(()=>b.classList.remove("shake"), 400); }
+  }
+}
+function endVision(done){
+  if(S.era===0){ stage.innerHTML = valleySVG(); $("store").style.display="block"; drawStore();
+    if(S.scene==="plan") showPlan(); else exploreChoices(); }
+  else { stage.innerHTML = lakeSVG();
+    if(S.scene==="crew") showCrew(); else exploreLake(); }
 }
 
 /* ==========================================================================
-   ERA 0 — WINTER, WHITESTORY, THRESHOLD
+   ERA 0 — WINTER: the door is the test, and after failure the world TELLS
    ========================================================================== */
 function sceneWinter(){
   S.scene="winter"; $("plan").style.display="none";
@@ -878,9 +1037,12 @@ function sceneWinter(){
   </svg>`;
   const beats = [{who:"narr", t:"The first snow does not ask if you are ready. It simply arrives, and begins counting."}];
   if(v.pass){
+    const inv = S.log.inventions.filter(x=>x.worked);
     beats.push({who:"narr", t:`The store holds: ${S.store.food} food against the hundred needed. The woodpile: ${S.store.fuel} against forty. The roofs: ${S.store.shelter} patches, tight as a drum.`});
     beats.push({who:"world", t:"THE ELDER, at midwinter, holding a bowl that is FULL: \"Same valley. Same hands. Same days. We have never eaten like this in deep snow. What did you change, boy?\""});
-    beats.push({who:"aadi", t:"Nothing you had. Only where it STOOD. …We stopped asking the valley for more. We started asking every hand: 'and what will you NOT do today?' That question was the harvest."});
+    beats.push({who:"aadi", t: inv.length
+      ? "Two things. Where the hands STOOD — every yes paid for with a named no. And one hand that made nothing at all… except a new way. The workshop hand fed us more than any picker."
+      : "Nothing you had. Only where it STOOD. …We stopped asking the valley for more. We started asking every hand: 'and what will you NOT do today?' That question was the harvest."});
     say(beats, ()=>{ raiseHI(74); sceneWhiteStory0(); });
   } else {
     const misses = [];
@@ -888,24 +1050,33 @@ function sceneWinter(){
     if(!v.fuel) misses.push(`the woodpile died at ${S.store.fuel} of 40 — cold moves in like a tenant`);
     if(!v.shelter) misses.push(`the roofs stood at ${S.store.shelter} patches of 15 — wind found every one it needed`);
     beats.push({who:"narr", t:"The band endures — thinner. " + misses.join("; ") + ". No one dies in the First Valley. But spring finds everyone smaller, and the children's eyes older."});
+    /* v9: the world TELLS, plainly, tied to the actual attempt — then the door reopens */
+    beats.push(worldWinterTelling(v));
+    beats.push({who:"world", t:"THE OLD TREE, over the snow: \"Hear the law under your winter, so you carry it out of here: the true price of anything is what you gave up to get it. Not coin — coin is not yet invented. The hand-moon you spent HERE is the harvest you never saw THERE. Plan with that law, and the store fills.\""});
     beats.push(shyamWinterFail(v));
-    beats.push({who:"world", t:"THE ELDER: \"The valley forgives. Spring comes; the moons return. Plan again — and this time, spend the purse like you have SEEN winter. Because now you have.\""});
+    beats.push({who:"world", t:"THE ELDER: \"The valley forgives. Spring comes; the moons return. Plan again — and this time, spend the purse like you have SEEN winter. Because now you have. And the workshop bench is still there, boy — no one in this valley ever thought to use it.\""});
     say(beats, ()=>{
       S.season++; S.log.seasons=S.season; S.moon=1;
       S.store={food:0,fuel:0,shelter:0}; S.exhausted=false;
-      S.alloc={grove:0,roots:0,river:0,forest:0,huts:0};
+      S.alloc={grove:0,roots:0,river:0,forest:0,huts:0,shop:0};
       stage.innerHTML = valleySVG(); drawStore(); showPlan();
     });
   }
 }
+function worldWinterTelling(v){
+  if(S.log.fruitRotTotal >= 40) return {who:"world", t:`THE GROVE: "Count what I gave and what you kept: ${S.log.fruitRotTotal} measures blackened across the season. You lost more food to rot than to any shortage of hands. The valley did not fail you — the KEEPING failed you. That is a problem a hand could attack, if a hand were ever spared to think."`};
+  if(!v.fuel && S.log.fishRotTotal>0) return {who:"world", t:`THE SMOKEHOUSE: "Two mouths drank one woodpile — the hearth and I. Nobody counted us together, so we both went thirsty. Wood is not one need, boy. It is every need that burns."`};
+  if(S.log.pushes>=2) return {who:"world", t:`THE VALLEY: "Twice you spent tomorrow's strength on today's pile, and twice tomorrow came to collect. Add your two pushed moons to the weary ones that followed: the season gained nothing. Strength borrowed is not strength created."`};
+  return {who:"world", t:`THE VALLEY: "Look at where the hands stood, moon by moon. Enough existed here — it was PLACED wrong. Placement, not effort, is what winter graded."`};
+}
 function shyamWinterFail(v){
-  if(S.log.fruitRotTotal >= 50) return {who:"shyam", t:`"Across the season, ${S.log.fruitRotTotal} measures of fruit blackened in your baskets. The grove warned you on the first day, did it not? What does it cost to ignore a true warning — and who just paid it?"`};
-  if(!v.fuel && S.log.fishRotTotal>0) return {who:"shyam", t:`"Two hungers, one woodpile — the hearth and the smokehouse. Which one did you choose? Did you know you were choosing?"`};
-  if(S.log.pushes>=2) return {who:"shyam", t:`"Twice you spent tomorrow's strength on today's pile. Add the piles now — did the season grow, or only the noise?"`};
-  return {who:"shyam", t:`"Never mind what went wrong. What would you NOT do, next season?"`};
+  if(S.log.fruitRotTotal >= 50) return {who:"shyam", t:`"The grove has told you where the season leaked. So — next season: which hand will you take AWAY from picking, and what will you ask it to make instead?"`};
+  if(!v.fuel && S.log.fishRotTotal>0) return {who:"shyam", t:`"Two hungers, one woodpile. Now that you know both mouths — how will you count wood next season, before the moons spend themselves?"`};
+  if(S.log.pushes>=2) return {who:"shyam", t:`"Pushing is answered. What move is left, if adding hours is not one? Is there a way to make one hand WORTH two, without borrowing?"`};
+  return {who:"shyam", t:`"Never mind what went wrong. What will you do DIFFERENTLY — not harder, not again: differently?"`};
 }
 
-/* ---------------- generic whitestory runner ---------------- */
+/* ---------------- generic whitestory runner (v9: probes carry cube faces) ---------------- */
 let WS=null, wsIdx=0, wsPicks=[], probeIdx=0;
 function wsRun(cfg){ WS=cfg; wsIdx=0; wsPicks=[]; probeIdx=0; wsBlankStep(); }
 function wsBlankStep(){
@@ -937,6 +1108,7 @@ function probeStep(){
       if(i===p.ok){ probeIdx++; probeStep(); }
       else {
         S.log.probeRetries++;
+        if(p.face) S.log.faceGaps[p.face]++;
         say([{who:"world", t:`${p.who}: "…No. You are reciting again. Stand in what you DID, and answer from there."`}], probeStep);
       }
     }})));
@@ -953,21 +1125,21 @@ function sceneWhiteStory0(){
   ], ()=> wsRun({
     blanks:[
       {label:"I want to", opts:["pick every fruit in the valley","fill the winter store","make the band work harder"], ok:1},
-      {label:"by", opts:["doing everything a little","gathering only what is free","spending each hand where it matters most"], ok:2},
+      {label:"by", opts:["doing everything a little","spending each hand where it matters most — and sparing one to find new ways","gathering only what is free"], ok:1},
       {label:"so that", opts:["the valley owes us","the band lives to spring","no fruit is ever wasted"], ok:1},
-      {label:"creating value through", opts:["endless effort","choosing what to give up","taking more from the valley"], ok:1}
+      {label:"creating value through", opts:["endless effort","choosing what to give up — and bettering the ways themselves","taking more from the valley"], ok:1}
     ],
     counters:[
-      `THE OLD TREE: "Every fruit? Seven in ten of mine ROT, boy — your own baskets testified. Is that truly what you wanted?"`,
+      `THE OLD TREE: "Every fruit? Seven of ten of mine ROT the old way, boy — your own baskets testified. Is that truly what you wanted?"`,
       `THE OLD TREE: "You TRIED that. Ask your first winter how it went."`,
       `THE OLD TREE: "The valley keeps no ledgers of debt — yet. Look at the children and try again."`
     ],
     probes:[
-      {who:"THE BOULDER by the path", q:"\"You said 'give up'. What do you mean by giving up?\"",
+      {who:"THE BOULDER by the path", face:"What", q:"\"You said 'give up'. What do you mean by giving up?\"",
        opts:["Working fewer hours than before","Every hand sent to one place is a hand lost to every other place","Throwing away the fruit we picked"], ok:1},
-      {who:"THE OLD TREE", q:"\"How do you know that choosing beats sheer effort?\"",
+      {who:"THE OLD TREE", face:"How", q:"\"How do you know that choosing beats sheer effort?\"",
        opts:["Shyam told us, and he seems wise","Twenty-four hand-moons was all we ever had; the store only filled when each went to its best use — the baskets are our proof","Because fruit tastes better when you work less"], ok:1},
-      {who:"THE RIVER", q:"\"Why must anything be given up at all?\"",
+      {who:"THE RIVER", face:"Why", q:"\"Why must anything be given up at all?\"",
        opts:["Because the elders demand sacrifice","Because fruit rots","Because hands and moons are finite — walking one path abandons every other. It began with the world itself"], ok:2}
     ],
     onDone: wsDone0
@@ -975,24 +1147,62 @@ function sceneWhiteStory0(){
 }
 function wsDone0(){
   const winning = S.log.plans.filter(p=>p.season===S.season);
+  const inv = S.log.inventions.filter(x=>x.worked).map(x=> x.problem==="rot"?"a new way to keep fruit":"a new way to hold a roof");
   S.cards.push({
     name:"Choice — the First Price ★",
-    C:"A finite purse: 8 hands × 3 moons = 24, against needs bigger than any single task. Enough existed; it stood in the wrong places.",
-    I:`The valley's offers — fruit (fast, rots), roots (slow, loyal), fish (rich, charges firewood), wood, roofs. Your season: ${summarizePlan(winning)}.`,
-    P:"Ranking wants, spending each hand-moon on its best use, and PAYING for every yes with a named no. Effort was never the lever; placement was.",
+    C:"A finite purse: 8 hands × 3 moons = 24, against needs bigger than any single task. Enough existed; it stood in the wrong places — and leaked through old ways no one questioned.",
+    I:`The valley's offers — fruit (fast, rots), roots (slow, loyal), fish (rich, charges firewood), wood, roofs${inv.length? ", and a workshop bench nobody used before":""}.`,
+    P:"Ranking wants, spending each hand-moon on its best use, PAYING for every yes with a named no" + (inv.length? " — and spending one hand on "+inv.join(" and ")+", trading a moon's picking for every later moon's keeping." : "."),
     M:"A winter that held — and the law under it: the true price of anything is what you gave up to get it. Money will not be invented for eras yet. Price already exists."
   });
   raiseHI(90); hud(true);
   say([
     {who:"narr", t:"The talisman flares — properly, for the first time. A card writes itself in the codex, out of nothing but what you actually did. (Codex: 'Choice — the First Price' lights.)"},
     {who:"world", t:"THE OLD TREE: \"Carry it, boy. Everything you meet on this road — every coin, every debt, every price — is this one law wearing better clothes.\""}
-  ], sceneThreshold0);
+  ], ()=>aadiRestate(0));
 }
-function summarizePlan(plans){
-  const tot={grove:0,roots:0,river:0,forest:0,huts:0};
-  plans.forEach(p=> Object.keys(tot).forEach(k=> tot[k]+=p.alloc[k]||0));
-  return Object.keys(tot).filter(k=>tot[k]>0).map(k=>`${SIM.SITES[k].label} ${tot[k]}`).join(" · ");
+
+/* ---------------- v9: Aadi restates with one flaw — the player must catch it ---------------- */
+function aadiRestate(era){
+  S.log.restates.push({era, tries:0});
+  const R = S.log.restates[S.log.restates.length-1];
+  if(era===0){
+    const attempt = ()=>{
+      say([{who:"aadi", t:"Let me say it back before we walk, so I don't lose it on the road: we beat winter because this season we finally worked HARD enough. Effort filled the store. …That's it, isn't it?"}], ()=>{
+        choices([
+          {t:"That's it. Carry it.", fn:()=>{ R.tries++; S.log.faceGaps.How++;
+            say([{who:"shyam", t:`"Is it? Count the hours, talisman. Did the band work fewer hours in the season that FAILED? …Then what actually changed?"`}], attempt); }},
+          {t:"No. The hours never changed — WHERE they stood changed. Every yes was paid with a named no.", fn:()=>{
+            say([
+              {who:"aadi", t:"…Placement, not sweat. And the workshop hand — it made no food and fed us anyway, because it changed the WAY. I'll carry both, in those words."},
+              {who:"shyam", t:`"His words were wrong and yours corrected them. Remember this feeling, talisman — it is the whole reason the City exiled him."`}
+            ], sceneThreshold0); }},
+          {t:"No. The weather was kinder this season.", fn:()=>{ R.tries++; S.log.faceGaps.Why++;
+            say([{who:"world", t:`THE VALLEY: "The sky was the same sky, boy. Ask your own ledger, not my weather."`}], attempt); }}
+        ]);
+      });
+    };
+    attempt();
+  } else {
+    const attempt = ()=>{
+      say([{who:"aadi", t:"Saying it back before it slips: the racks filled because we finally made the work FAIR — every hand treated the same, every day. …Right?"}], ()=>{
+        choices([
+          {t:"Right. Fairness filled the racks.", fn:()=>{ R.tries++; S.log.faceGaps.How++;
+            say([{who:"shyam", t:`"Did it? There was a day the village demanded exactly that. Go stand on its tally and say 'fair' again."`}], attempt); }},
+          {t:"No — each hand found ITS craft and stayed long enough for the craft to move in. Fit, then practice.", fn:()=>{
+            say([
+              {who:"aadi", t:"Fit, then practice. The hours were only jars — gift and repetition filled them. Mine now."},
+              {who:"shyam", t:`"Twice now you have caught him. Keep counting how it feels."`}
+            ], sceneThreshold1); }},
+          {t:"No — Karn's arms did it. Strength fills baskets.", fn:()=>{ R.tries++; S.log.faceGaps.What++;
+            say([{who:"world", t:`THE NETS: "Ask my torn knots what arms are worth at this craft. Try again."`}], attempt); }}
+        ]);
+      });
+    };
+    attempt();
+  }
 }
+
 function mapSVG(litN, pulseN){
   const nodes=[[60,180,"choice ★"],[120,220,"labor"],[185,175,"surplus"],[250,225,"property"],[310,185,"exchange"]];
   return `
@@ -1113,7 +1323,7 @@ function lakeGate(k){
   ], ()=>{
     choices([
       {t:"Nothing — mending costs no coin.", fn:()=>{
-        S.log.gateRetries++;
+        S.log.gateRetries++; S.log.faceGaps.What++;
         say([{who:"world", t:`THE LAKE: "No coin, no price? Your codex is glowing in your satchel. Read it back to me, and come again."`}], ()=>lakeGate(k));
       }},
       {t:"The bait that never got dug — the morning spent one way, lost every other way.", fn:()=>{
@@ -1125,7 +1335,7 @@ function lakeGate(k){
         ], ()=>{ stage.innerHTML = lakeSVG(pageCameo(430)); tellLake(k); });
       }},
       {t:"Whatever a mended net is worth at the festival.", fn:()=>{
-        S.log.gateRetries++;
+        S.log.gateRetries++; S.log.faceGaps.What++;
         say([{who:"world", t:`THE LAKE: "You are pricing the NET. I asked the price of the MENDING — the morning itself. Come again."`}], ()=>lakeGate(k));
       }}
     ]);
@@ -1137,16 +1347,32 @@ function tellLake(k){
   say([{who: k==="hands"?"narr":"world", t:TELL2[k].t}], ()=>{ addClue(TELL2[k].clue); exploreLake(); });
 }
 
-/* ---------------- crew assignment ---------------- */
+/* ---------------- crew assignment (v9: prediction before day one) ---------------- */
 function startCrew(){
   S.scene="crew";
   stage.innerHTML = lakeSVG();
-  if(S.day===1 && S.week===1){
+  if(S.day===1 && S.week===1 && !S.netPrediction){
     say([
       {who:"aadi", t:"Karn's arms are twice mine — nets to Karn, obviously. The rest… wherever. Unless you've been watching something I haven't?"},
-      {who:"shyam", t:`"Arms. Hm. When Meen looks at the water, what does SHE see that Karn does not?"`}
-    ], showCrew);
+      {who:"shyam", t:`"Before a single hand is set — commit, talisman. Whose hand fills baskets fastest AT THE NETS? Name it now, and the dusk will grade you."`}
+    ], ()=>{
+      choices([
+        {t:"Karn — strength pulls the heaviest catch.", fn:()=>setNetPred("karn")},
+        {t:"Dhara — a steady pull that never slips beats a strong one that tears.", fn:()=>setNetPred("dhara")},
+        {t:"I won't guess what I haven't watched. (Watch the hands first.)", fn:()=>{
+          S.netPrediction="watch"; S.log.predictions.push({what:"nets", said:"watch"});
+          say([{who:"shyam", t:`"A guess withheld until the eyes have worked — that is not ignorance, talisman. That is method."`}], ()=>{
+            if(!S.seen2.hands){ tellLake("hands"); } else showCrew();
+          });
+        }}
+      ]);
+    });
   } else showCrew();
+}
+function setNetPred(p){
+  S.netPrediction = p;
+  S.log.predictions.push({what:"nets", said:p});
+  say([{who:"shyam", t:`"Committed. The dusk keeps the score."`}], showCrew);
 }
 function showCrew(){
   $("crew").style.display="block";
@@ -1170,14 +1396,13 @@ function renderCrew(){
   $("daybtn").disabled = !Object.keys(SIM2.WORKERS).every(w=>S.assign[w]);
 }
 function cycleTask(w){
-  if(S.rotatedDay===S.day && S.week===S.rotatedWeek){ return; } // locked by the rotation promise
+  if(S.rotatedDay===S.day && S.week===S.rotatedWeek){ return; }
   const cur = S.assign[w];
   const i = cur? SIM2.TASKS.indexOf(cur) : -1;
   S.assign[w] = SIM2.TASKS[(i+1)%SIM2.TASKS.length];
   renderCrew();
 }
 function runDay(){
-  // streaks update
   for(const w in SIM2.WORKERS){
     S.streaks[w] = (S.prevAssign[w]===S.assign[w]) ? (S.streaks[w]||0)+1 : 0;
   }
@@ -1192,6 +1417,16 @@ function runDay(){
   const beats = [
     {who:"narr", t:`The day: ${res.netted} fish netted${res.netted>0?` (the spotters' calls ${res.pts.spot>2?"doubled the casts":"helped"})`:""}. The racks drank ${res.stored}${res.wasted?` — and ${res.wasted} lay silver on the shore till noon, then the smell began. The racks could not hold them`:""}.`}
   ];
+  /* v9: the dusk grades the prediction, once */
+  if(S.day===1 && S.week===1 && S.netPrediction && S.netPrediction!=="graded"){
+    if(S.netPrediction==="karn" && S.assign.karn==="net")
+      beats.push({who:"world", t:`THE NETS, at dusk: "You named the arms. Count Karn's basket — and count my torn knots behind him. Strength is real, boy. It is just not what THIS craft is made of."`});
+    else if(S.netPrediction==="dhara")
+      beats.push({who:"world", t:`THE NETS, at dusk: "You named the steady pull, against the obvious arms. What told you, before the count did? Keep whatever that was — it is worth more than the fish."`});
+    else if(S.netPrediction==="karn")
+      beats.push({who:"world", t:`THE NETS, at dusk: "You named the arms — yet never sent them to me. Some part of you already doubted the guess. Listen to that part sooner."`});
+    S.netPrediction="graded";
+  }
   if(practiced.length) beats.push({who:"narr", t:practiced.map(w=>`${SIM2.WORKERS[w].name}'s hands are surer at ${SIM2.TASKNAMES[S.assign[w]]} than yesterday`).join("; ")+"."});
   beats.push({who:"narr", t:`(Net quality stands at ${Math.round(S.quality*100)}% for tomorrow.)`});
   say(beats, ()=>{ S.rung=0; afterDay(res); });
@@ -1232,7 +1467,6 @@ function fairnessEvent(){
     choices([
       {t:"Rotate every hand today — fairness first.", fn:()=>{
         S.log.rotations++;
-        // engine rotates: each worker shifts one task along
         for(const w in S.assign){ const i=SIM2.TASKS.indexOf(S.assign[w]); S.assign[w]=SIM2.TASKS[(i+1)%4]; }
         S.rotatedDay = S.day; S.rotatedWeek = S.week;
         say([
@@ -1273,7 +1507,10 @@ function festival(){
     const rotated = S.log.rotations>0;
     say([
       {who:"narr", t:`The lamps are lit over thin racks: ${S.stored} of ${SIM2.TARGET}. The far villages send fish — and take the promise of spring nets in return. No one starves. Everyone remembers.`},
-      rotated? {who:"shyam", t:`"The rotation day — go and look at its tally against the days around it. What did 'fair' cost, and who ended up paying it?"`}
+      /* v9: the world tells, plainly, tied to the attempt */
+      rotated? {who:"world", t:`THE RACKS: "Count the rotation day against the days around it: every hand at a stranger's post, every craft starting from nothing again. Hear the law you bought with this thin winter: LABOR IS NOT TIME. It is time FILLED — with fit, and with practice. Fairness of hands is not fullness of racks."`}
+             : {who:"world", t:`THE RACKS: "Look at the three days together, boy. The hands that stayed grew; the hands that fit their craft grew fastest. Hear the law you bought with this thin winter: LABOR IS NOT TIME. It is time FILLED — with fit, and with practice."`},
+      rotated? {who:"shyam", t:`"The rotation day — you heard the racks name its price. Who ended up paying it: the families whose pride was spared, or the children whose fish went east?"`}
              : {who:"shyam", t:`"Three days, five hands. Which hand never found its craft? And who chose where it stood?"`},
       {who:"world", t:`ELDER NILA: "The lake forgives. The week returns. Set the hands again, travelers — and this time set them like you have WATCHED them."`}
     ], ()=>{
@@ -1304,11 +1541,11 @@ function sceneWhiteStory1(){
       `THE RACKS: "Look at the tally, not at the words. What actually filled us?"`
     ],
     probes:[
-      {who:"THE RACKS", q:"\"You said 'gift'. And 'skill'. What do you mean by skill?\"",
+      {who:"THE RACKS", face:"What", q:"\"You said 'gift'. And 'skill'. What do you mean by skill?\"",
        opts:["Strength saved up from childhood","What repetition writes into a hand — it cannot be handed over, only grown","A trick the old ones keep secret"], ok:1},
-      {who:"THE NETS", q:"\"How do you know practice grows the catch?\"",
+      {who:"THE NETS", face:"How", q:"\"How do you know practice grows the catch?\"",
        opts:["Because Shyam hinted at it","The same hands, the same water — and the third day out-fished the first. The tally is our witness","Because festivals make everyone try harder"], ok:1},
-      {who:"THE LAKE", q:"\"Why do equal hours fill unequal baskets?\"",
+      {who:"THE LAKE", face:"Why", q:"\"Why do equal hours fill unequal baskets?\"",
        opts:["Because some people are simply lazy","Because luck swims where it pleases","Because hours are only vessels — gift and practice fill them. Time was never the whole of work"], ok:2}
     ],
     onDone: wsDone1
@@ -1326,7 +1563,7 @@ function wsDone1(){
   say([
     {who:"narr", t:"The talisman flares again — brighter than at the valley. A second card writes itself beside the first. (Codex: 'Labor — the Hand that Learns' lights.)"},
     {who:"world", t:`THE LAKE: "Carry them both, boy. They spend together from here on — every wage, every wanted worker, every 'why is she paid more' you will ever meet is these two cards, shuffled."`}
-  ], sceneThreshold1);
+  ], ()=>aadiRestate(1));
 }
 function sceneThreshold1(){
   S.scene="threshold";
@@ -1341,7 +1578,7 @@ function sceneThreshold1(){
 }
 
 /* ==========================================================================
-   JOURNEY LOG — era-aware
+   JOURNEY LOG — era-aware (v9: inventions, predictions, cube faces)
    ========================================================================== */
 function sceneLog(era){
   const chips = era===0
@@ -1353,17 +1590,25 @@ function sceneLog(era){
         const parts = Object.keys(d.assign).map(w=>`${w.slice(0,4)}→${d.assign[w]}`).join(" ");
         return `<span class="clue" style="border-color:var(--line); color:var(--stone);">w${d.week}·d${d.day} — ${parts} (+${d.stored}${d.wasted?`, waste ${d.wasted}`:""})</span>`;
       }).join(" ");
+  const invChips = S.log.inventions.map(x=>
+    `<span class="clue" style="border-color:${x.worked?'var(--teal)':'var(--sienna)'}; color:${x.worked?'var(--teal)':'var(--sienna)'};">⚒ ${x.problem}·${x.method} — ${x.worked?"worked":"failed, taught"}</span>`).join(" ");
   const stats = era===0
     ? `seasons: <b style="color:var(--text)">${S.log.seasons}</b> · fruit rotted: <b style="color:var(--text)">${S.log.fruitRotTotal}</b> · fish lost: <b style="color:var(--text)">${S.log.fishRotTotal}</b> · pushes: <b style="color:var(--text)">${S.log.pushes}</b>`
     : `weeks: <b style="color:var(--text)">${S.log.weeks}</b> · fish wasted on shore: <b style="color:var(--text)">${S.log.wastedTotal}</b> · rotations chosen: <b style="color:var(--text)">${S.log.rotations}</b> · gate retries: <b style="color:var(--text)">${S.log.gateRetries}</b>`;
+  const fg = S.log.faceGaps;
+  const faces = (fg.What+fg.How+fg.Why)>0
+    ? `faces still soft — What: <b style="color:var(--text)">${fg.What}</b> · How: <b style="color:var(--text)">${fg.How}</b> · Why: <b style="color:var(--text)">${fg.Why}</b>`
+    : `every face held — What, How and Why all answered from lived ground`;
   dlg.innerHTML = `
   <div class="dline" style="cursor:default;">
     <div style="font-size:.64rem; letter-spacing:1.5px; color:var(--dim); text-transform:uppercase; margin-bottom:8px; font-family:'Cinzel',serif;">Journey log · episode ${era} — what the game learned about the learner</div>
     <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px;">${chips}</div>
-    <div style="font-size:.9rem; color:var(--stone);">${stats} · Shyam asked: <b style="color:var(--text)">${S.log.asks}×</b> (deepest rung ${S.log.deepestRung}/4) · vision: <b style="color:var(--text)">${S.log.visions}/3</b> · probes retried: <b style="color:var(--text)">${S.log.probeRetries}</b></div>
+    ${invChips? `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px;">${invChips}</div>`:""}
+    <div style="font-size:.9rem; color:var(--stone);">${stats} · Shyam asked: <b style="color:var(--text)">${S.log.asks}×</b> (deepest rung ${S.log.deepestRung}/4) · chain built: <b style="color:var(--text)">${S.log.visions}/3</b> · probes retried: <b style="color:var(--text)">${S.log.probeRetries}</b></div>
+    <div style="font-size:.85rem; color:var(--stone); margin-top:6px;">${faces}</div>
     <div style="font-size:.82rem; color:var(--dim); margin-top:9px;">${era===0
-      ? "Every rotted basket is a diagnosed misconception; every rung a located gap; every extra season, productive failure at work."
-      : "The rotation tally, the shore waste, the gate retries — each one names the exact idea that still wobbles. At the Gate, one day, Aadi answers with all of it."}</div>
+      ? "Every rotted basket is a diagnosed misconception; every failed experiment, a hunch corrected; every extra season, productive failure at work."
+      : "The rotation tally, the shore waste, the caught flaws in Aadi's retellings — each names the exact idea that still wobbles. At the Gate, one day, Aadi answers with all of it."}</div>
     <div class="btnrow" style="margin-top:10px;">
       ${era===0? `<button class="gobtn" style="margin-left:0;" onclick="goEast()">Walk east — toward the question ▸</button>`:""}
       <button class="ghostbtn" onclick="openCodex()">Open the Codex ✦</button>
@@ -1397,7 +1642,7 @@ function openCodex(){
 }
 
 /* ---------------- boot ---------------- */
-window.__test = { S, EXAM, VISIONS, ladder, summarizePlan, worstFit };
+window.__test = { S, EXAM, VCHAIN, ladder, worstFit, WORKSHOP };
 </script>
 </body>
 </html>
