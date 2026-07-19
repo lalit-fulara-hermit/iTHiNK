@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>iTHiNK — the GAME · Episodes 0–1 · v10</title>
+<title>iTHiNK — the GAME · Episodes 0–1 · v11</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -170,7 +170,7 @@
       <div class="hi-label"><span id="hiname">—</span><span><span id="hival">0</span>/<span id="hipot">0</span></span></div>
       <div class="hi-track"><div class="hi-cur" id="hicur" style="width:0%"></div><div class="hi-pot" id="hipotmark" style="left:0%; right:5%;"></div></div>
     </div>
-    <button class="codex-chip" onclick="openCodex()">Codex ✦ <span id="codexn">0</span></button>
+    <span id="chargechip" style="font-family:'Cinzel',serif; font-size:.72rem; color:#8E7BC8; letter-spacing:1px; margin-right:8px; white-space:nowrap;">✧ 0/3</span><button class="codex-chip" onclick="openCodex()">Codex ✦ <span id="codexn">0</span></button>
   </div>
   <div id="stage"></div>
   <div id="dlg"></div>
@@ -205,6 +205,7 @@
   <div class="btnrow">
     <button class="shyambtn" id="shyambtn" onclick="askShyam()">Ask Shyam</button>
     <button class="ghostbtn" id="visionbtn" style="display:none;" onclick="startVision()">✦ Why is there never enough?</button>
+    <button class="ghostbtn" id="voicebtn" style="display:none;" onclick="openVoices()">✧ The silent things</button>
   </div>
 </div>
 <div id="modal" onclick="this.classList.remove('on')"><div class="card" id="cardbox" onclick="event.stopPropagation()"></div></div>
@@ -327,7 +328,8 @@ if(typeof module!=="undefined") module.exports = { SIM, computeMoon, winterVerdi
 
 <script>
 /* ==========================================================================
-   iTHiNK v10 — Episodes 0 & 1: INNOVATION IS SURVIVAL.
+   iTHiNK v11 — Episodes 0 & 1: SECOND-PERSON EXILE — YOU ARE AADI.
+   Story migration per Decision 18. Validated math untouched from v10.
    The Neurocircuitry Test governs every activity: the player GENERATES.
    · The old ways cannot beat winter — the valley says so after moon one.
      Only invention (the Workshop) closes the gap. Thinking is the lever.
@@ -344,6 +346,7 @@ const S = {
   alloc:{grove:0,roots:0,river:0,forest:0,huts:0,shop:0},
   examined:{}, favorDone:false, exhausted:false,
   clues:[], cards:[], rung:0, cameoShown:false,
+  charge:0, voicesHeard:{}, pendingCard:null,
   tech: freshTech(), expPending:null, pushPrediction:null, trapDone:false, pushPlanned:false,
   fruitRotSeen:false, built:0,
   /* era II state */
@@ -352,7 +355,7 @@ const S = {
   log:{plans:[], asks:0, deepestRung:0, visions:0, probeRetries:0, seasons:1,
        fruitRotTotal:0, fishRotTotal:0, pushes:0,
        days:[], weeks:1, wastedTotal:0, rotations:0, gateRetries:0,
-       inventions:[], predictions:[], restates:[],
+       inventions:[], predictions:[], restates:[], voices:0,
        faceGaps:{What:0, How:0, Why:0}}
 };
 const $ = id => document.getElementById(id);
@@ -376,8 +379,11 @@ function hud(on, name){
   $("hipotmark").style.left = S.hi+"%";
   $("hipotmark").style.right = (100-S.pot)+"%";
   $("codexn").textContent = S.cards.length;
+  $("chargechip").textContent = "✧ "+S.charge+"/3";
 }
 function raiseHI(to){ S.hi = Math.min(S.pot, Math.max(S.hi, to)); hud(true); }
+function earnCharge(n){ S.charge = Math.min(3, S.charge + n); hud(true); }
+function spendCharge(){ if(S.charge<=0) return false; S.charge--; hud(true); return true; }
 function drawStore(){
   ["food","fuel","shelter"].forEach(k=>{
     const need = SIM.NEED[k];
@@ -388,7 +394,7 @@ function drawStore(){
 
 /* ---------------- dialogue (with back / story-so-far) ---------------- */
 let queue = [], onQueueDone = null, hist = [], reviewIdx = -1, lastChoices = null;
-const NAMES = {aadi:"AADI", shyam:"SHYAM", narr:"—", tali:"YOU · THE TALISMAN", world:"THE WORLD"};
+const NAMES = {aadi:"YOU", shyam:"SHYAM", narr:"—", tali:"THE TALISMAN", world:"THE WORLD"};
 function say(lines, done){ queue = lines.slice(); onQueueDone = done||null; lastChoices = null; reviewIdx = -1; nextLine(); }
 function renderLine(l, review){
   dlg.innerHTML = `<div class="dline fadein" onclick="${review?'reviewFwd()':'nextLine()'}">
@@ -436,6 +442,46 @@ function addClue(c){
   $("clues").innerHTML = S.clues.map(x=>`<span class="clue">◆ ${x}</span>`).join("");
 }
 function clearClues(){ S.clues=[]; $("clues").classList.remove("on"); $("clues").innerHTML=""; }
+
+/* ---- v11: optional voices — the deeper WHY of things already seen, bought with charge ---- */
+const VOICES = {
+  0:{
+    smokewhy:{label:"✧ Ask the smokehouse WHY smoke keeps things", lines:[
+      {who:"world", t:`THE SMOKEHOUSE: "Rot is not a curse, boy — it is a thing that EATS. Small, unseeable, alive. It needs water and it needs air, like you. My smoke dries the flesh and coats it bitter — I take rot's water and spoil its table. That is the whole trick. Anything that steals water from the small eaters will keep food: sun, salt, smoke — one law, three coats."`}]},
+    moonwhy:{label:"✧ Ask the moon WHY winter must come", lines:[
+      {who:"world", t:`THE MOON: "The valley does not lose the sun, child — it leans away from it. Half the year your bowl of rock tilts sunward and drinks; half the year it tilts away and pays. Winter is not a punishment. It is the lean season of a tilted world — and every store you fill is a bet that the tilt will pass. It always has."`}]},
+    coldwhy:{label:"✧ Ask the river WHY cold only slows the rot", lines:[
+      {who:"world", t:`THE RIVER: "The small eaters that blacken your fruit are workers like any others — and cold makes ALL workers slow. My chill does not kill them; it only slows their eating. That is why the buried fruit died and the chilled fruit half-lived: damp FEEDS rot, cold merely delays it. Know the difference between stopping a thing and slowing it."`}]}
+  },
+  1:{
+    knotwhy:{label:"✧ Ask the nets WHY mending compounds", lines:[
+      {who:"world", t:`THE NETS: "Every knot in me holds its neighbors — that is what a net IS. One torn knot loads four more, and four load sixteen. That is why a small tear today is a great hole by the festival, and why the hand that mends EARLY does the work of ten mending late. Decay compounds, boy. So does care."`}]},
+    shoalwhy:{label:"✧ Ask the lake WHY fish crowd into shoals", lines:[
+      {who:"world", t:`THE LAKE: "A thousand eyes see the heron before two eyes do — my fish crowd together because the many are safer than the few. And that is exactly why one sharp-eyed spotter multiplies every net you own: the fish mass into one silver crowd, and whoever finds the crowd finds them ALL. Their safety is your harvest. Most laws cut both ways."`}]},
+    rackwhy:{label:"✧ Ask the racks WHY smoke keeps fish", lines:[
+      {who:"world", t:`THE RACKS: "You met this law already, in a valley west of here — smoke steals the water that the small eaters need. Same law, lake clothes. Notice that, boy: you did not learn a new thing when you came east. You RECOGNIZED an old one. That is what carrying knowledge means — the road changes, the laws travel with you."`}]}
+  }
+};
+function voiceOpts(era){
+  const out=[], vs = VOICES[era];
+  for(const id in vs){
+    if((S.voicesHeard[era]||{})[id]) continue;
+    if(S.charge>0) out.push({t:vs[id].label+"  · spend ✧1", fn:()=>hearVoice(era,id)});
+    else out.push({t:vs[id].label+"  · no charge yet", off:true});
+  }
+  return out;
+}
+function hearVoice(era,id){
+  if(!spendCharge()) return;
+  (S.voicesHeard[era]=S.voicesHeard[era]||{})[id]=true;
+  S.log.voices++;
+  say(VOICES[era][id].lines, restorePanels);
+}
+function openVoices(){
+  const opts = voiceOpts(S.era);
+  if(!opts.length){ say([{who:"tali", t:`"Nothing silent is left here, boy. You have heard them all."`}], restorePanels); return; }
+  choices(opts.concat([{t:"↩ leave the silent things", fn:restorePanels}]));
+}
 
 /* ==========================================================================
    TITLE & EPIGRAPH
@@ -513,7 +559,7 @@ function sceneExam(){
     <text x="195" y="58" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">FINAL EXAMINATION</text>
   </svg>`;
   say([
-    {who:"narr", t:"Aadi has never missed a question in his life. Tonight he graduates first in the City of Answers. You are the talisman on his chest — old, dim, and awake for reasons no one remembers."}
+    {who:"narr", t:"You have never missed a question in your life. Tonight you graduate first in the City of Answers. The old talisman on your chest — worn so long you forget it is there — is dim, and strangely awake."}
   ], examStep);
 }
 function examStep(){
@@ -552,8 +598,8 @@ function sceneExile(){
   say([
     {who:"world", t:`THE GATEKEEPER, quietly: "You have every answer, Aadi. You own none of them. The City has no use for a mirror."`},
     {who:"narr", t:"The verdict is exile. The terms of return are carved over the gate: COME BACK WHEN YOU CAN EXPLAIN, NOT RECITE."},
-    {who:"tali", t:"(As the gate closes, you warm against his chest — the first time in years. Where he is going, the land itself speaks to whoever carries you. Some things it tells freely. Some… for a favor.)"},
-    {who:"narr", t:"As the gate swings shut, something falls into step beside him. Aadi turns. The road is empty. He tells whatever it is to go home."},
+    {who:"tali", t:"\"Awake at last, boy? Then hear me once, at the gate: where you walk now, the land speaks to whoever carries me. Some things it tells freely; some ask a favor first. Solve what the road sets before you and I fill with charge — spend me, and even the silent things will talk.\""},
+    {who:"narr", t:"As the gate swings shut, something falls into step beside you. You turn. The road is empty. You tell whatever it is to go home."},
     {who:"shyam", t:`"You first."`},
     {who:"aadi", t:"…Who said that? Show yourself— …nothing. No one. Of course. Why is today the day I stop being surprised by anything?"},
     {who:"shyam", t:`"Call me Shyam. Are you going to stand here, or is there a road?"`}
@@ -606,11 +652,13 @@ function sceneValley(){
     {who:"narr", t:"Days later: a green valley, a band of eight, huts by a river. They take the travelers in without questions — there is soup, and a place by the fire."},
     {who:"aadi", t:"It's beautiful. Fruit on the trees, fish in the river, wood everywhere. So why does everyone here look at the sky like it owes them money?"},
     {who:"world", t:"THE ELDER, by the fire: \"Winter. Every year the valley gives plenty, and every year we reach spring hungry. We work from first light. It is never enough.\""},
-    {who:"tali", t:"(You warm. The valley's happiness stands at 38 of a possible 90 — you can feel the gap like a held breath. Enough EXISTS here. Something else is broken.)"},
-    {who:"shyam", t:`"'We work hard,' the elder says. Is 'hard' the same as 'right'?"`}
+    {who:"tali", t:"\"Feel it through me, boy: this valley's happiness stands at 38 of a possible 90 — the gap sits like a held breath. Enough EXISTS here. Something else is broken.\""},
+    {who:"shyam", t:`"'We work hard,' the elder says. Is 'hard' the same as 'right'?"`},
+    {who:"narr", t:"(Shyam is somewhere near, and stays near. Asking him costs nothing — it never will.)"}
   ], ()=>{
     $("shyambtn").style.display="inline-block";
     $("visionbtn").style.display="inline-block";
+    $("voicebtn").style.display="inline-block";
     exploreChoices();
   });
 }
@@ -633,30 +681,30 @@ function exploreChoices(){
 }
 const GATES = {
   grove:{voice:"THE OLD TREE",
-    stop:"Aadi reaches for a low fruit. The branch lifts it away from his hand. The whole tree turns its leaves toward him, the way a crowd turns its faces.",
+    stop:"You reach for a low fruit. The branch lifts it away from your hand. The whole tree turns its leaves toward you, the way a crowd turns its faces.",
     ask:`"Taking, first? Tell me, boy — does nature give you breath for free? You drink my brother the air, and pay him back CO₂ with every breath. Everything here is exchange. What will YOU give?"`,
-    favor:"Have Aadi bury one fruit at the field's edge — what is taken must send roots back.",
-    favorNarr:"Aadi kneels and buries the fruit whole, seeds and all. The tree is quiet for a long moment."},
+    favor:"Bury one fruit at the field's edge — what is taken must send roots back.",
+    favorNarr:"You kneel and bury the fruit whole, seeds and all. The tree is quiet for a long moment."},
   roots:{voice:"THE ROOT FIELD",
-    stop:"Aadi pushes his fingers into the soil — and the soil hardens like a shut jaw. The furrows shift, almost turning to face him.",
+    stop:"You push your fingers into the soil — and the soil hardens like a shut jaw. The furrows shift, almost turning to face you.",
     ask:`"Digging, first? Tell me, boy — does nature give you breath for free? You drink the air and pay it back with every breath. Everything here is exchange. What will YOU give?"`,
-    favor:"Have Aadi replant the smallest root as next year's seed — what is taken must be resown.",
-    favorNarr:"Aadi sets the smallest root back into the earth and closes the furrow over it. The soil loosens under his hands."},
+    favor:"Replant the smallest root as next year's seed — what is taken must be resown.",
+    favorNarr:"You set the smallest root back into the earth and close the furrow over it. The soil loosens under your hands."},
   river:{voice:"THE RIVER",
-    stop:"Aadi dips the net — and the current shoves it back empty, twice, like a hand pushing his chest.",
+    stop:"You dip the net — and the current shoves it back empty, twice, like a hand pushing your chest.",
     ask:`"Taking, first? Tell me, boy — does nature give you breath for free? You drink the air and pay it back with every breath. Everything here is exchange. What will YOU give?"`,
-    favor:"Have Aadi clear the choked reeds at the bend — give the water its breath back before asking for its fish.",
-    favorNarr:"Aadi wades in and pulls the rotting reeds from the bend. The river runs clearer through the gap, and the current stops fighting him."},
+    favor:"Clear the choked reeds at the bend — give the water its breath back before asking for its fish.",
+    favorNarr:"You wade in and pull the rotting reeds from the bend. The river runs clearer through the gap, and the current stops fighting you."},
   forest:{voice:"THE DEADWOOD FOREST",
-    stop:"Aadi grips a dead branch — and the whole treeline creaks toward him at once, like a room of elders sitting up.",
+    stop:"You grip a dead branch — and the whole treeline creaks toward you at once, like a room of elders sitting up.",
     ask:`"Hauling, first? Tell me, boy — does nature give you breath for free? You drink the air and pay it back with every breath. Everything here is exchange. What will YOU give?"`,
-    favor:"Have Aadi plant a seed-cone at the treeline — take from the dead, owe to the unborn.",
-    favorNarr:"Aadi presses a seed-cone into the loam at the forest's edge and covers it. The creaking settles."},
+    favor:"Plant a seed-cone at the treeline — take from the dead, owe to the unborn.",
+    favorNarr:"You press a seed-cone into the loam at the forest's edge and cover it. The creaking settles."},
   huts:{voice:"THE OLD HUT",
-    stop:"Aadi reaches for the torn thatch — and the doorway groans, sagging away from his hand.",
+    stop:"You reach for the torn thatch — and the doorway groans, sagging away from your hand.",
     ask:`"Mending, first? Even mending begins with taking — reeds, wood, time. Does nature give you breath for free? Everything here is exchange. What will YOU give?"`,
-    favor:"Have Aadi carry the hearth's cold ash to the root field — the house feeds the soil that feeds the house.",
-    favorNarr:"Aadi spreads the ash over the field in a thin grey arc. The doorway stands straight again, as if listening."}
+    favor:"Carry the hearth's cold ash to the root field — the house feeds the soil that feeds the house.",
+    favorNarr:"You spread the ash over the field in a thin grey arc. The doorway stands straight again, as if listening."}
 };
 function gateScene(k){
   const g = GATES[k];
@@ -667,7 +715,7 @@ function gateScene(k){
   ], ()=>{
     choices([
       {t:g.favor, fn:()=>doFavor(k)},
-      {t:"Have Aadi recite the definition of exchange at it.", fn:()=>{
+      {t:"Recite the definition of exchange at it, word for word.", fn:()=>{
         say([
           {who:"world", t:`${g.voice}: "Words. The wind brings me words all day, and none of them ever grew into anything. Try again."`}
         ], ()=>gateScene(k));
@@ -677,14 +725,14 @@ function gateScene(k){
 }
 function doFavor(k){
   const g = GATES[k];
-  S.favorDone=true; raiseHI(42); drawStore();
+  S.favorDone=true; raiseHI(42); earnCharge(1); drawStore();
   say([
     {who:"narr", t:g.favorNarr},
-    {who:"world", t:`${g.voice}: "Good. Now I will tell you what the elder cannot count. Before the last leaf falls, this band needs: ONE HUNDRED measures of food in store. FORTY of firewood. FIFTEEN patches on the huts. Less than that, and winter collects the difference from the children."`},
+    {who:"world", t:`${g.voice}: "Good. Now I will tell you what the elder cannot count. Before the last leaf falls, this band needs: ONE HUNDRED AND TWENTY measures of food in store. FORTY of firewood. FIFTEEN patches on the huts. Less than that, and winter collects the difference from the children."`},
     {who:"world", t:`${g.voice}: "You have eight hands and three moons. Twenty-four hand-moons. That is your whole purse, boy. Spend it well — it is the only coin that has ever existed."`},
     {who:"shyam", t:`"Twenty-four. Will you still remember that number when the piles start looking big?"`}
   ], ()=>{
-    addClue("winter needs: 100 food · 40 firewood · 15 patches");
+    addClue("winter needs: 120 food · 40 firewood · 15 patches");
     addClue("the purse: 8 hands × 3 moons = 24");
     S.cameoShown = true;
     stage.innerHTML = valleySVG(pageCameo());
@@ -711,7 +759,7 @@ function startPlanning(){
   if(S.moon===1 && S.season===1){
     say([
       {who:"aadi", t:"Right. My plan: everyone to the grove. Twelve a moon each — biggest number in the valley, you heard it. Numbers are the one thing I'm good at… unless you see something I don't?"},
-      {who:"shyam", t:`"Before you spend, talisman — whatever you choose, can you name what you are choosing to LOSE?"`}
+      {who:"shyam", t:`"Before you spend — whatever you choose, can you name what you are choosing to LOSE?"`}
     ], showPlan);
   } else showPlan();
 }
@@ -844,6 +892,7 @@ function runExperiment(beats){
   const {p, m} = S.expPending;
   const M = WORKSHOP.problems[p].methods[m];
   S.log.inventions.push({season:S.season, moon:S.moon, problem:p, method:m, worked:M.ok});
+  earnCharge(1);
   beats.push({who:"narr", t:"At the workshop, the experiment runs its course — the moon itself is the test bench."});
   beats.push({who:"world", t:M.tell});
   if(M.ok) beats.push({who:"aadi", t:"It WORKED. Same valley, same hands — and the numbers just moved. In the City they never told me you could argue with a number and win."});
@@ -879,14 +928,14 @@ function ceilingAndTrap(advance){
   S.trapDone = true;
   say([
     {who:"world", t:`THE VALLEY, at moonset: "Count with me, boy, before you plan again. Put every hand in its best OLD place — the roots, the river, the wood — and push the sums as hard as you like. The old ways top out short of winter's mark. Every year this band has run at a wall, and every year the wall has stood."`},
-    {who:"shyam", t:`"So moving hands between old places cannot be the whole answer. What kind of move is LEFT, talisman — if adding is not one, and moving is not one?"`},
+    {who:"shyam", t:`"So moving hands between old places cannot be the whole answer. What kind of move is LEFT — if adding is not one, and moving is not one?"`},
     {who:"world", t:`THE ELDER, gripping his staff: "There is one more way, travelers — the way we have always tried at the end: work the band past dusk. Sweat is free. Say yes, and next moon we push."`}
   ], ()=>{
-    say([{who:"shyam", t:`"Before you answer him — commit, talisman. If the band pushes next moon, where will the EXTRA strength come from? We will hold your answer against what happens."`}], ()=>{
+    say([{who:"shyam", t:`"Before you answer him — commit. If the band pushes next moon, where will the EXTRA strength come from? We will hold your answer against what happens."`}], ()=>{
       choices([
-        {t:"Nowhere it costs — effort is free if the will is strong.", fn:()=>trapDecide("free", advance)},
-        {t:"The valley gives more to those who ask harder.", fn:()=>trapDecide("valley", advance)},
-        {t:"From the moon after — pushing borrows the band's strength from tomorrow.", fn:()=>trapDecide("borrow", advance)}
+        {t:"Nowhere it costs — effort is free wherever the will is strong.", fn:()=>trapDecide("free", advance)},
+        {t:"The valley itself gives more to those who ask it harder.", fn:()=>trapDecide("valley", advance)},
+        {t:"From the moon after — pushing borrows its strength from tomorrow.", fn:()=>trapDecide("borrow", advance)}
       ]);
     });
   });
@@ -903,7 +952,7 @@ function trapDecide(pred, advance){
       {t:"No. The wall is not made of hours — we look for another way.", fn:()=>{
         say([
           {who:"world", t:`THE ELDER, quietly: "No one has ever said no to me on this. …What other way IS there?"`},
-          {who:"shyam", t:`"Good question, old one. Talisman — is there a bench in this valley where a hand could make no food, and still feed everyone?"`}
+          {who:"shyam", t:`"Good question, old one. Is there a bench in this valley where a hand could make no food, and still feed everyone?"`}
         ], advance);
       }}
     ]);
@@ -964,6 +1013,8 @@ function askShyam(){
 function restorePanels(){
   if(S.scene==="plan") showPlan();
   if(S.scene==="crew") showCrew();
+  if(S.scene==="valley") exploreChoices();
+  if(S.scene==="lake") exploreLake();
 }
 
 /* ==========================================================================
@@ -1003,7 +1054,7 @@ function startVision(){
     <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8E7BC8" font-family="Cinzel,serif">VISION · BUILD THE CHAIN</text>
   </svg>`;
   say([
-    {who:"tali", t:"(The talisman does not show you the answer this time. It hands you the LINKS. Build the chain yourself — from where you stand, back to 0. Tap them in order.)"}
+    {who:"tali", t:"\"No — I will not show you the answer this time. I hand you the LINKS. Build the chain yourself, from where you stand back to 0. Tap them in order.\""}
   ], drawChain);
 }
 function drawChain(){
@@ -1024,7 +1075,7 @@ function chainTap(i){
     chainIdx++;
     S.log.visions = Math.max(S.log.visions, Math.round(3*chainIdx/V.steps.length));
     if(chainIdx>=V.steps.length){
-      say([{who:"tali", t:"("+V.closing+")"},{who:"aadi", t:V.aadi}], ()=>endVision(true));
+      say([{who:"tali", t:'"'+V.closing+'"'},{who:"aadi", t:V.aadi}], ()=>endVision(true));
     } else drawChain();
   } else {
     chainTries++; S.log.probeRetries++;
@@ -1057,7 +1108,7 @@ function sceneWinter(){
   const beats = [{who:"narr", t:"The first snow does not ask if you are ready. It simply arrives, and begins counting."}];
   if(v.pass){
     const inv = S.log.inventions.filter(x=>x.worked);
-    beats.push({who:"narr", t:`The store holds: ${S.store.food} food against the hundred needed. The woodpile: ${S.store.fuel} against forty. The roofs: ${S.store.shelter} patches, tight as a drum.`});
+    beats.push({who:"narr", t:`The store holds: ${S.store.food} food against the hundred and twenty needed. The woodpile: ${S.store.fuel} against forty. The roofs: ${S.store.shelter} patches, tight as a drum.`});
     beats.push({who:"world", t:"THE ELDER, at midwinter, holding a bowl that is FULL: \"Same valley. Same hands. Same days. We have never eaten like this in deep snow. What did you change, boy?\""});
     beats.push({who:"aadi", t: inv.length
       ? "Two things. Where the hands STOOD — every yes paid for with a named no. And one hand that made nothing at all… except a new way. The workshop hand fed us more than any picker."
@@ -1065,7 +1116,7 @@ function sceneWinter(){
     say(beats, ()=>{ raiseHI(74); sceneWhiteStory0(); });
   } else {
     const misses = [];
-    if(!v.food) misses.push(`food ran out with ${S.store.food} of 100 — the gap gnaws from the third snow onward`);
+    if(!v.food) misses.push(`food ran out with ${S.store.food} of 120 — the gap gnaws from the third snow onward`);
     if(!v.fuel) misses.push(`the woodpile died at ${S.store.fuel} of 40 — cold moves in like a tenant`);
     if(!v.shelter) misses.push(`the roofs stood at ${S.store.shelter} patches of 15 — wind found every one it needed`);
     beats.push({who:"narr", t:"The band endures — thinner. " + misses.join("; ") + ". No one dies in the First Valley. But spring finds everyone smaller, and the children's eyes older."});
@@ -1141,13 +1192,13 @@ function sceneWhiteStory0(){
   stage.innerHTML = valleySVG(`<circle cx="195" cy="200" r="60" fill="#EDE6D6" opacity="0.06" class="glow"/>`);
   say([
     {who:"narr", t:"Spring. The whole band gathers at the old tree. It is the valley's custom: whoever changes a winter must SAY what they understood — out loud, where the valley can test it."},
-    {who:"shyam", t:`"The City is full of recitations, talisman. Can you build this sentence out of what you DID?"`}
+    {who:"shyam", t:`"The City is full of recitations, Aadi. Can you build this sentence out of what you DID?"`}
   ], ()=> wsRun({
     blanks:[
-      {label:"I want to", opts:["pick every fruit in the valley","fill the winter store","make the band work harder"], ok:1},
-      {label:"by", opts:["doing everything a little","spending each hand where it matters most — and sparing one to find new ways","gathering only what is free"], ok:1},
-      {label:"so that", opts:["the valley owes us","the band lives to spring","no fruit is ever wasted"], ok:1},
-      {label:"creating value through", opts:["endless effort","choosing what to give up — and bettering the ways themselves","taking more from the valley"], ok:1}
+      {label:"I want to", opts:["pick every fruit in the valley","fill the store before winter","work the band ever harder"], ok:1},
+      {label:"by", opts:["spreading the hands thin — a little of everything, every moon","spending each hand at its best use — and sparing one for new ways","gathering only what the valley gives away without asking"], ok:1},
+      {label:"so that", opts:["the valley owes the band","the band lives to spring","no fruit is ever wasted"], ok:1},
+      {label:"creating value through", opts:["effort without end, from first light to dusk","choosing what to give up — and bettering the ways themselves","taking more from the valley, moon after moon"], ok:1}
     ],
     counters:[
       `THE OLD TREE: "Every fruit? Seven of ten of mine ROT the old way, boy — your own baskets testified. Is that truly what you wanted?"`,
@@ -1156,70 +1207,72 @@ function sceneWhiteStory0(){
     ],
     probes:[
       {who:"THE BOULDER by the path", face:"What", q:"\"You said 'give up'. What do you mean by giving up?\"",
-       opts:["Working fewer hours than before","Every hand sent to one place is a hand lost to every other place","Throwing away the fruit we picked"], ok:1},
+       opts:["Working fewer hours than before, and resting the band more","Every hand sent to one place is a hand lost to every other place","Throwing away the picked fruit so the baskets stay light"], ok:1},
       {who:"THE OLD TREE", face:"How", q:"\"How do you know that choosing beats sheer effort?\"",
-       opts:["Shyam told us, and he seems wise","Twenty-four hand-moons was all we ever had; the store only filled when each went to its best use — the baskets are our proof","Because fruit tastes better when you work less"], ok:1},
+       opts:["Shyam kept circling it in questions, and he is never wrong","Twenty-four hand-moons was all we had; the store filled only when each went to its best use","Because fruit tastes sweeter when the hands rest longer"], ok:1},
       {who:"THE RIVER", face:"Why", q:"\"Why must anything be given up at all?\"",
-       opts:["Because the elders demand sacrifice","Because fruit rots","Because hands and moons are finite — walking one path abandons every other. It began with the world itself"], ok:2}
+       opts:["Because the elders demand a sacrifice before every winter","Because fruit rots faster than any band could ever eat it","Because hands and moons are finite — one path walked abandons the rest"], ok:2}
     ],
     onDone: wsDone0
   }));
 }
 function wsDone0(){
-  const winning = S.log.plans.filter(p=>p.season===S.season);
   const inv = S.log.inventions.filter(x=>x.worked).map(x=> x.problem==="rot"?"a new way to keep fruit":"a new way to hold a roof");
-  S.cards.push({
+  S.pendingCard = {
     name:"Choice — the First Price ★",
     C:"A finite purse: 8 hands × 3 moons = 24, against needs bigger than any single task. Enough existed; it stood in the wrong places — and leaked through old ways no one questioned.",
     I:`The valley's offers — fruit (fast, rots), roots (slow, loyal), fish (rich, charges firewood), wood, roofs${inv.length? ", and a workshop bench nobody used before":""}.`,
     P:"Ranking wants, spending each hand-moon on its best use, PAYING for every yes with a named no" + (inv.length? " — and spending one hand on "+inv.join(" and ")+", trading a moon's picking for every later moon's keeping." : "."),
     M:"A winter that held — and the law under it: the true price of anything is what you gave up to get it. Money will not be invented for eras yet. Price already exists."
-  });
-  raiseHI(90); hud(true);
-  say([
-    {who:"narr", t:"The talisman flares — properly, for the first time. A card writes itself in the codex, out of nothing but what you actually did. (Codex: 'Choice — the First Price' lights.)"},
-    {who:"world", t:"THE OLD TREE: \"Carry it, boy. Everything you meet on this road — every coin, every debt, every price — is this one law wearing better clothes.\""}
-  ], ()=>aadiRestate(0));
+  };
+  raiseHI(90); earnCharge(2);
+  talismanEcho(0);
 }
 
-/* ---------------- v9: Aadi restates with one flaw — the player must catch it ---------------- */
-function aadiRestate(era){
+/* ---- v11: the talisman echoes each lesson back with ONE flaw — it warms only when corrected ---- */
+function talismanEcho(era){
   S.log.restates.push({era, tries:0});
   const R = S.log.restates[S.log.restates.length-1];
+  const flawLine = era===0
+    ? `"Before the road, boy, I will carry this winter in words — correct me if I carry it wrong: you beat winter because this season the band finally worked HARD enough. Effort filled the store."`
+    : `"Carrying the lake in words now — catch me if I carry it wrong: the racks filled because the work was finally made FAIR. Every hand treated the same, every day, and the fish followed."`;
+  const opts = era===0 ? [
+    {t:"That is right — the extra effort filled the store. Carry it exactly so.", gap:"How",
+     counter:[{who:"shyam", t:`"Did the band work fewer hours in the season that FAILED? …Then what actually changed?"`},{who:"tali", t:`"Cold still, boy. Say it again — and say it right."`}]},
+    {t:"Wrong. The hours never changed — WHERE they stood changed, and every yes was paid with a named no.", ok:true},
+    {t:"Wrong. The weather was kinder this season, and the valley simply gave us more of everything.", gap:"Why",
+     counter:[{who:"world", t:`THE VALLEY: "The sky was the same sky, boy. Ask your own ledger, not my weather."`},{who:"tali", t:`"Still cold. Again."`}]}
+  ] : [
+    {t:"That is right — fairness filled the racks at last. Carry it exactly so.", gap:"How",
+     counter:[{who:"shyam", t:`"Did it? There was a day the village demanded exactly that. Go stand on its tally and say 'fair' again."`},{who:"tali", t:`"Cold still. Say it right."`}]},
+    {t:"Wrong. Karn's arms did it — strength fills baskets faster than any craft or practice.", gap:"What",
+     counter:[{who:"world", t:`THE NETS: "Ask my torn knots what arms are worth at this craft. Try again."`},{who:"tali", t:`"Cold. Again."`}]},
+    {t:"Wrong. Each hand found ITS craft and stayed until the craft moved in — fit first, then practice.", ok:true}
+  ];
+  const attempt = ()=>{
+    say([{who:"tali", t:flawLine}], ()=>{
+      choices(opts.map(o=>({t:o.t, fn:()=>{
+        if(o.ok){ earnCharge(1); commitCard(era); }
+        else { R.tries++; S.log.faceGaps[o.gap]++; say(o.counter, attempt); }
+      }})));
+    });
+  };
+  attempt();
+}
+function commitCard(era){
+  S.cards.push(S.pendingCard); S.pendingCard=null; hud(true);
   if(era===0){
-    const attempt = ()=>{
-      say([{who:"aadi", t:"Let me say it back before we walk, so I don't lose it on the road: we beat winter because this season we finally worked HARD enough. Effort filled the store. …That's it, isn't it?"}], ()=>{
-        choices([
-          {t:"That's it. Carry it.", fn:()=>{ R.tries++; S.log.faceGaps.How++;
-            say([{who:"shyam", t:`"Is it? Count the hours, talisman. Did the band work fewer hours in the season that FAILED? …Then what actually changed?"`}], attempt); }},
-          {t:"No. The hours never changed — WHERE they stood changed. Every yes was paid with a named no.", fn:()=>{
-            say([
-              {who:"aadi", t:"…Placement, not sweat. And the workshop hand — it made no food and fed us anyway, because it changed the WAY. I'll carry both, in those words."},
-              {who:"shyam", t:`"His words were wrong and yours corrected them. Remember this feeling, talisman — it is the whole reason the City exiled him."`}
-            ], sceneThreshold0); }},
-          {t:"No. The weather was kinder this season.", fn:()=>{ R.tries++; S.log.faceGaps.Why++;
-            say([{who:"world", t:`THE VALLEY: "The sky was the same sky, boy. Ask your own ledger, not my weather."`}], attempt); }}
-        ]);
-      });
-    };
-    attempt();
+    say([
+      {who:"narr", t:"The talisman flares WARM against your chest — properly, for the first time. A card writes itself in the codex out of nothing but what you actually did, and signs itself in your hand. (Codex: 'Choice — the First Price' lights.)"},
+      {who:"tali", t:`"Corrected, and warm. Your words now, boy — and that correcting feeling is the whole reason the City exiled you. Keep it."`},
+      {who:"world", t:`THE OLD TREE: "Carry it. Everything you meet on this road — every coin, every debt, every price — is this one law wearing better clothes."`}
+    ], sceneThreshold0);
   } else {
-    const attempt = ()=>{
-      say([{who:"aadi", t:"Saying it back before it slips: the racks filled because we finally made the work FAIR — every hand treated the same, every day. …Right?"}], ()=>{
-        choices([
-          {t:"Right. Fairness filled the racks.", fn:()=>{ R.tries++; S.log.faceGaps.How++;
-            say([{who:"shyam", t:`"Did it? There was a day the village demanded exactly that. Go stand on its tally and say 'fair' again."`}], attempt); }},
-          {t:"No — each hand found ITS craft and stayed long enough for the craft to move in. Fit, then practice.", fn:()=>{
-            say([
-              {who:"aadi", t:"Fit, then practice. The hours were only jars — gift and repetition filled them. Mine now."},
-              {who:"shyam", t:`"Twice now you have caught him. Keep counting how it feels."`}
-            ], sceneThreshold1); }},
-          {t:"No — Karn's arms did it. Strength fills baskets.", fn:()=>{ R.tries++; S.log.faceGaps.What++;
-            say([{who:"world", t:`THE NETS: "Ask my torn knots what arms are worth at this craft. Try again."`}], attempt); }}
-        ]);
-      });
-    };
-    attempt();
+    say([
+      {who:"narr", t:"The talisman flares warm again — brighter than at the valley. A second card writes itself beside the first, signed like the first. (Codex: 'Labor — the Hand that Learns' lights.)"},
+      {who:"tali", t:`"Twice now you have caught me carrying it wrong. Keep counting how that feels."`},
+      {who:"world", t:`THE LAKE: "Carry them both. They spend together from here on — every wage, every wanted worker, every 'why is she paid more' you will ever meet is these two cards, shuffled."`}
+    ], sceneThreshold1);
   }
 }
 
@@ -1249,8 +1302,8 @@ function sceneThreshold0(){
   S.scene="threshold";
   stage.innerHTML = mapSVG(0, 1);
   say([
-    {who:"tali", t:"(Something shifts in how the whole road LOOKS. Every place you will ever visit now casts a faint shadow-question: at the cost of what? You cannot unsee it. That is what crossing a threshold means.)"},
-    {who:"narr", t:"On the last night of spring, a small thing happens that refuses to leave Aadi alone. Bodhi the fisher comes back with two baskets. Kesar the hunter — stronger, older, prouder — comes back with half of one. Same day. Same valley. Same hours of work."},
+    {who:"tali", t:"\"Look at the road through me, boy. Every place you will ever visit now casts a faint shadow-question: at the cost of what? You cannot unsee it. That is what crossing a threshold means.\""},
+    {who:"narr", t:"On the last night of spring, a small thing happens that refuses to leave you alone. Bodhi the fisher comes back with two baskets. Kesar the hunter — stronger, older, prouder — comes back with half of one. Same day. Same valley. Same hours of work."},
     {who:"aadi", t:"Same purse spent… DIFFERENT harvest back. So a hand-moon is not a hand-moon? What is hiding inside WORK, Shyam? …Shyam?"},
     {who:"shyam", t:`"*the voice is already somewhere ahead, on the eastern path* Does this valley have that answer? Then why are your feet still in it?"`}
   ], ()=>sceneLog(0));
@@ -1318,14 +1371,14 @@ function sceneLake(){
   say([
     {who:"world", t:"ELDER NILA, mending by feel, not looking up: \"Every family fishes dawn to dusk. Every family, every day. And still the racks go into winter thin. The Festival of Lamps is in three days — if the racks are not full by then, we borrow fish from the far villages, and owe them our spring.\""},
     {who:"aadi", t:"Everyone's working. All day. This isn't the valley's problem — no one is standing in the wrong PLACE… wait. Bodhi and Kesar. Two baskets, half a basket. Same hours. It followed us here."},
-    {who:"tali", t:"(Happiness: 40 of a possible 92. The gap is not effort, and it is not placement. It is something INSIDE the work.)"}
+    {who:"tali", t:"\"Through me again, boy: happiness stands at 40 of a possible 92. The gap is not effort, and it is not placement. It is something INSIDE the work.\""}
   ], exploreLake);
 }
 const TELL2 = {
   lake:{t:"THE LAKE: \"My fish run in shoals — silver crowds that move like one mind. Eyes that find them double every net that follows. Cast blind, and you drag empty water.\"", clue:"spotting multiplies the nets"},
   nets:{t:"THE NETS: \"We tear a little every day — reeds, teeth, stones. Unmended, we fish like ghosts: present, and holding nothing. Quick fingers keep us whole.\"", clue:"nets decay daily; mending restores them"},
   racks:{t:"THE RACKS: \"We drink only what the smoke can hold — no more. Fish beyond our breath rot on the shore by noon. Feed us steadily, or feed the flies.\"", clue:"rack capacity caps each day's keep"},
-  hands:{t:"Aadi watches the shore for a long hour. Meen calls shoals before they break the surface. Karn hauls wood like straw — but his net comes up torn. Dhara's pull is slow and never slips. Tara's fingers dance through knots. Old Puna sits, watches, points — and is always right.", clue:"five hands, five different gifts"}
+  hands:{t:"You watch the shore for a long hour. Meen calls shoals before they break the surface. Karn hauls wood like straw — but his net comes up torn. Dhara's pull is slow and never slips. Tara's fingers dance through knots. Old Puna sits, watches, points — and is always right.", clue:"five hands, five different gifts"}
 };
 function exploreLake(){
   const opts = [];
@@ -1338,23 +1391,23 @@ function exploreLake(){
 }
 function lakeGate(k){
   say([
-    {who:"narr", t:"Before Aadi takes three steps, the whole lake goes flat — flat as held breath. A voice moves under the surface like a slow wave."},
+    {who:"narr", t:"Before you take three steps, the whole lake goes flat — flat as held breath. A voice moves under the surface like a slow wave."},
     {who:"world", t:`THE LAKE: "You carry a lit card, boy. I can feel it burning from here. SPEND it, and I open. Listen: one morning, one back — Tara can mend the nets, or dig the day's bait. She mends. What is the true price of the mended net?"`}
   ], ()=>{
     choices([
-      {t:"Nothing — mending costs no coin.", fn:()=>{
+      {t:"Nothing — mending costs no coin, and what costs no coin has no price.", fn:()=>{
         S.log.gateRetries++; S.log.faceGaps.What++;
         say([{who:"world", t:`THE LAKE: "No coin, no price? Your codex is glowing in your satchel. Read it back to me, and come again."`}], ()=>lakeGate(k));
       }},
-      {t:"The bait that never got dug — the morning spent one way, lost every other way.", fn:()=>{
+      {t:"The bait that never got dug — a morning spent one way, lost every other.", fn:()=>{
         if(S.cards[0]) S.cards[0].spent = "the Lake-gate · Episode 1";
-        S.gateDone2 = true; raiseHI(46);
+        S.gateDone2 = true; raiseHI(46); earnCharge(1);
         say([
           {who:"world", t:`THE LAKE: "Spent well. And look — the card still burns. Knowledge is the only coin that survives its spending."`},
-          {who:"shyam", t:`"Did you notice, talisman? The lake asked for the OLD lesson before it would teach the new one. What do you suppose the next place will ask for?"`}
+          {who:"shyam", t:`"Did you notice? The lake asked for the OLD lesson before it would teach the new one. What do you suppose the next place will ask for?"`}
         ], ()=>{ stage.innerHTML = lakeSVG(pageCameo(430)); tellLake(k); });
       }},
-      {t:"Whatever a mended net is worth at the festival.", fn:()=>{
+      {t:"Whatever a mended net will fetch when the festival lamps are lit.", fn:()=>{
         S.log.gateRetries++; S.log.faceGaps.What++;
         say([{who:"world", t:`THE LAKE: "You are pricing the NET. I asked the price of the MENDING — the morning itself. Come again."`}], ()=>lakeGate(k));
       }}
@@ -1373,15 +1426,15 @@ function startCrew(){
   stage.innerHTML = lakeSVG();
   if(S.day===1 && S.week===1 && !S.netPrediction){
     say([
-      {who:"aadi", t:"Karn's arms are twice mine — nets to Karn, obviously. The rest… wherever. Unless you've been watching something I haven't?"},
-      {who:"shyam", t:`"Before a single hand is set — commit, talisman. Whose hand fills baskets fastest AT THE NETS? Name it now, and the dusk will grade you."`}
+      {who:"aadi", t:"Karn's arms are twice mine — nets to Karn, obviously. The rest… wherever, surely. …Why does that sound exactly like something the City would say?"},
+      {who:"shyam", t:`"Before a single hand is set — commit. Whose hand fills baskets fastest AT THE NETS? Name it now, and the dusk will grade you."`}
     ], ()=>{
       choices([
-        {t:"Karn — strength pulls the heaviest catch.", fn:()=>setNetPred("karn")},
-        {t:"Dhara — a steady pull that never slips beats a strong one that tears.", fn:()=>setNetPred("dhara")},
-        {t:"I won't guess what I haven't watched. (Watch the hands first.)", fn:()=>{
+        {t:"Karn — the strongest back; strength pulls the heaviest catch.", fn:()=>setNetPred("karn")},
+        {t:"Dhara — the steady pull; never slipping beats strong-but-tearing.", fn:()=>setNetPred("dhara")},
+        {t:"No guess before watching — let the eyes work before the mouth does.", fn:()=>{
           S.netPrediction="watch"; S.log.predictions.push({what:"nets", said:"watch"});
-          say([{who:"shyam", t:`"A guess withheld until the eyes have worked — that is not ignorance, talisman. That is method."`}], ()=>{
+          say([{who:"shyam", t:`"A guess withheld until the eyes have worked — that is not ignorance. That is method."`}], ()=>{
             if(!S.seen2.hands){ tellLake("hands"); } else showCrew();
           });
         }}
@@ -1509,7 +1562,7 @@ function fairnessEvent(){
 function punaThenCrew(){
   say([
     {who:"world", t:`OLD PUNA, not turning from the water: "Sixty years I have watched this lake. On festival eve — TOMORROW — the great shoal runs. It has never once missed. The water will give more than these racks can drink."`},
-    {who:"shyam", t:`"Hear him, talisman. A catch you cannot HOLD — is it a catch at all? What would today have to build, for tomorrow's gift to count?"`}
+    {who:"shyam", t:`"Hear him. A catch you cannot HOLD — is it a catch at all? What would today have to build, for tomorrow's gift to count?"`}
   ], showCrew);
 }
 function festival(){
@@ -1558,13 +1611,13 @@ function sceneWhiteStory1(){
   stage.innerHTML = lakeSVG(`<circle cx="195" cy="200" r="60" fill="#EDE6D6" opacity="0.06" class="glow"/>`);
   say([
     {who:"narr", t:"After the lamps, the village gathers at the shore. The custom here is the same as everywhere the talisman goes: whoever changes a season must SAY what they understood, where the water can test it."},
-    {who:"shyam", t:`"Same rule as the valley, talisman. Out of what you DID — can you build it?"`}
+    {who:"shyam", t:`"Same rule as the valley. Out of what you DID — can you build it?"`}
   ], ()=> wsRun({
     blanks:[
       {label:"I want to", opts:["make every hand equally busy","fill the festival racks","catch every fish in the lake"], ok:1},
-      {label:"by", opts:["rotating tasks so no one complains","adding hours to every day","setting each hand to its gift, and letting it stay to learn"], ok:2},
-      {label:"so that", opts:["the village eats through the lean days","no family envies another","the lake learns respect"], ok:0},
-      {label:"creating value through", opts:["strong arms","work fitted to the worker, sharpened by repetition","longer days"], ok:1}
+      {label:"by", opts:["rotating the tasks so that no family complains","adding hours to every day on the water","setting each hand to its gift, and letting it stay"], ok:2},
+      {label:"so that", opts:["the village eats through the lean days","no family ever envies another's post","the lake learns respect for the hands"], ok:0},
+      {label:"creating value through", opts:["the strength of the strongest arms","work fitted to the worker, sharpened by repetition","the length of days on the water"], ok:1}
     ],
     counters:[
       `THE RACKS: "Busy? We have drunk from busy hands all our lives and stood half empty. Is busy what you WANTED?"`,
@@ -1573,34 +1626,31 @@ function sceneWhiteStory1(){
     ],
     probes:[
       {who:"THE RACKS", face:"What", q:"\"You said 'gift'. And 'skill'. What do you mean by skill?\"",
-       opts:["Strength saved up from childhood","What repetition writes into a hand — it cannot be handed over, only grown","A trick the old ones keep secret"], ok:1},
+       opts:["Strength saved up through a childhood of hauling","What repetition writes into a hand — grown, never handed over","A trick the old ones guard and refuse to teach"], ok:1},
       {who:"THE NETS", face:"How", q:"\"How do you know practice grows the catch?\"",
-       opts:["Because Shyam hinted at it","The same hands, the same water — and the third day out-fished the first. The tally is our witness","Because festivals make everyone try harder"], ok:1},
+       opts:["Because Shyam kept circling it with his questions","The same hands, the same water — and the third day out-fished the first","Because the festival made every hand try harder"], ok:1},
       {who:"THE LAKE", face:"Why", q:"\"Why do equal hours fill unequal baskets?\"",
-       opts:["Because some people are simply lazy","Because luck swims where it pleases","Because hours are only vessels — gift and practice fill them. Time was never the whole of work"], ok:2}
+       opts:["Because some hands are simply lazier than other hands","Because luck swims wherever it pleases to swim","Because hours are only vessels — gift and practice fill them"], ok:2}
     ],
     onDone: wsDone1
   }));
 }
 function wsDone1(){
-  S.cards.push({
+  S.pendingCard = {
     name:"Labor — the Hand that Learns",
     C:"Eight hours are equal for everyone; baskets are not. A village worked dawn to dusk and stayed thin — effort without fit and practice leaks.",
     I:"Five hands, four crafts, three days — each hand carrying a different gift: eyes, back, steadiness, fingers, sixty years of water.",
     P:"Fitting work to the worker, then letting repetition compound — the same hand at the same craft, a steeper catch each day. Refusing the rotation that resets the climb.",
     M:"Racks full past the festival — and the law under it: labor is not time. It is time FILLED — with fit, and with practice. And now there is more than mouths…"
-  });
-  raiseHI(92); hud(true);
-  say([
-    {who:"narr", t:"The talisman flares again — brighter than at the valley. A second card writes itself beside the first. (Codex: 'Labor — the Hand that Learns' lights.)"},
-    {who:"world", t:`THE LAKE: "Carry them both, boy. They spend together from here on — every wage, every wanted worker, every 'why is she paid more' you will ever meet is these two cards, shuffled."`}
-  ], ()=>aadiRestate(1));
+  };
+  raiseHI(92); earnCharge(2);
+  talismanEcho(1);
 }
 function sceneThreshold1(){
   S.scene="threshold";
   stage.innerHTML = mapSVG(1, 2);
   say([
-    {who:"tali", t:"(The map stirs again. Two nodes burn gold now. The road ahead — surplus, property, exchange — sits in their light differently than it did. You can feel the next question before anyone asks it.)"},
+    {who:"tali", t:"\"The map stirs again, boy. Two nodes burn gold now. The road ahead — surplus, property, exchange — sits in their light differently than it did. You can feel the next question before anyone asks it.\""},
     {who:"narr", t:"Because here is what full racks do that thin racks never did: three days after the festival, the racks are STILL full. The village eats, and eats, and the pile does not end. On the fourth day, flies find the northern rack. Old Puna stands before it, saying nothing."},
     {who:"world", t:`OLD PUNA, finally: "Sixty years. I have never once seen a pile outlive its week. What does a village DO with more-than-enough?"`},
     {who:"aadi", t:"More than enough… The valley taught us to fill the store. The lake taught us HOW hands fill it faster than hours should allow. Nobody ever taught anyone what happens AFTER the store is full. Shyam? …of course. Gone ahead again."},
@@ -1635,11 +1685,11 @@ function sceneLog(era){
     <div style="font-size:.64rem; letter-spacing:1.5px; color:var(--dim); text-transform:uppercase; margin-bottom:8px; font-family:'Cinzel',serif;">Journey log · episode ${era} — what the game learned about the learner</div>
     <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px;">${chips}</div>
     ${invChips? `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px;">${invChips}</div>`:""}
-    <div style="font-size:.9rem; color:var(--stone);">${stats} · Shyam asked: <b style="color:var(--text)">${S.log.asks}×</b> (deepest rung ${S.log.deepestRung}/4) · chain built: <b style="color:var(--text)">${S.log.visions}/3</b> · probes retried: <b style="color:var(--text)">${S.log.probeRetries}</b></div>
+    <div style="font-size:.9rem; color:var(--stone);">${stats} · Shyam asked: <b style="color:var(--text)">${S.log.asks}×</b> (deepest rung ${S.log.deepestRung}/4) · chain built: <b style="color:var(--text)">${S.log.visions}/3</b> · probes retried: <b style="color:var(--text)">${S.log.probeRetries}</b> · ✧ voices heard: <b style="color:var(--text)">${S.log.voices}</b></div>
     <div style="font-size:.85rem; color:var(--stone); margin-top:6px;">${faces}</div>
     <div style="font-size:.82rem; color:var(--dim); margin-top:9px;">${era===0
       ? "Every rotted basket is a diagnosed misconception; every failed experiment, a hunch corrected; every extra season, productive failure at work."
-      : "The rotation tally, the shore waste, the caught flaws in Aadi's retellings — each names the exact idea that still wobbles. At the Gate, one day, Aadi answers with all of it."}</div>
+      : "The rotation tally, the shore waste, the caught flaws in the talisman's retellings — each names the exact idea that still wobbles. At the Gate, one day, Aadi answers with all of it."}</div>
     <div class="btnrow" style="margin-top:10px;">
       ${era===0? `<button class="gobtn" style="margin-left:0;" onclick="goEast()">Walk east — toward the question ▸</button>`:""}
       <button class="ghostbtn" onclick="openCodex()">Open the Codex ✦</button>
@@ -1648,7 +1698,7 @@ function sceneLog(era){
     <div style="font-size:.8rem; color:var(--dim); margin-top:12px; text-align:center; font-style:italic;">${era===0? "…the road continues…" : "…and, for the time being, that's all folks…"}</div>
   </div>`;
   $("clues").classList.remove("on");
-  if(era===1){ $("shyambtn").style.display="none"; $("visionbtn").style.display="none"; }
+  if(era===1){ $("shyambtn").style.display="none"; $("visionbtn").style.display="none"; $("voicebtn").style.display="none"; }
 }
 
 /* ---------------- codex ---------------- */
@@ -1667,13 +1717,14 @@ function openCodex(){
       <div class="cipm-row"><span class="k">P</span><span class="v">${c.P}</span></div>
       <div class="cipm-row"><span class="k">M</span><span class="v">${c.M}</span></div>
       ${c.spent? `<div style="font-size:.78rem; color:var(--teal); margin-top:6px;">◆ spent at ${c.spent} — and still lit</div>`:""}
+      <div style="font-size:.75rem; color:var(--dim); margin-top:6px; font-style:italic; text-align:right;">— ${S.playerName||"the traveler"}</div>
     </div>`).join("") || `<p style="color:var(--dim); font-size:.92rem;">Nothing lit yet. Understanding, not answers, fills these pages.</p>`}
   <div class="lockedcard">${locked}</div>`;
   $("modal").classList.add("on");
 }
 
 /* ---------------- boot ---------------- */
-window.__test = { S, EXAM, VCHAIN, ladder, worstFit, WORKSHOP };
+window.__test = { S, EXAM, VCHAIN, ladder, worstFit, WORKSHOP, VOICES };
 </script>
 </body>
 </html>
