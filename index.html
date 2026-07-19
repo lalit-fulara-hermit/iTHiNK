@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>iTHiNK — the GAME · Episodes 0–1 · v11</title>
+<title>iTHiNK — the GAME · Episodes 0–1 · v12</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -22,51 +22,51 @@
 
   #hud{display:flex; align-items:center; gap:10px; padding:10px 2px 8px; background:var(--midnight); min-height:48px; flex:0 0 auto;}
   .hi-wrap{flex:1; min-width:120px;}
-  .hi-label{display:flex; justify-content:space-between; font-size:.62rem; letter-spacing:1.5px; color:var(--dim); margin-bottom:3px; text-transform:uppercase; font-family:'Cinzel',serif;}
+  .hi-label{display:flex; justify-content:space-between; font-size:.68rem; letter-spacing:1.5px; color:var(--dim); margin-bottom:3px; text-transform:uppercase; font-family:'Cinzel',serif;}
   .hi-track{height:11px; background:#0d1230; border:1px solid var(--line); border-radius:99px; position:relative; overflow:hidden;}
   .hi-cur{position:absolute; top:0; bottom:0; left:0; background:linear-gradient(90deg,var(--sienna),var(--gold)); border-radius:99px; transition:width 1.4s ease;}
   .hi-pot{position:absolute; top:-1px; bottom:-1px; border:1.5px dashed var(--teal); border-left:none; border-radius:0 99px 99px 0;}
-  .codex-chip{background:var(--indigo); border:1px solid var(--amethyst); color:var(--amethyst); border-radius:99px; padding:7px 13px; font-size:.76rem; font-family:'Cinzel',serif; letter-spacing:1px;}
+  .codex-chip{background:var(--indigo); border:1px solid var(--amethyst); color:var(--amethyst); border-radius:99px; padding:8px 14px; font-size:.8rem; font-family:'Cinzel',serif; letter-spacing:1px;}
 
   #stage{flex:1 1 auto; min-height:210px; position:relative; background:#0B1024; border:1px solid var(--line); border-radius:14px; overflow:hidden;}
   #stage svg{position:absolute; inset:0; width:100%; height:100%;}
 
   #dlg{margin-top:8px; flex:0 0 auto;}
   .dline{background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:12px 14px; cursor:pointer;}
-  .dline .who{display:inline-block; font-size:.6rem; font-weight:700; letter-spacing:1.5px; padding:3px 10px; border-radius:99px; margin-bottom:6px; font-family:'Cinzel',serif;}
+  .dline .who{display:inline-block; font-size:.68rem; font-weight:700; letter-spacing:1.5px; padding:3px 10px; border-radius:99px; margin-bottom:6px; font-family:'Cinzel',serif;}
   .who.aadi{background:rgba(212,175,55,.14); color:var(--gold);}
   .who.shyam{background:rgba(142,123,200,.16); color:var(--amethyst);}
   .who.narr{background:rgba(167,169,178,.12); color:var(--stone);}
   .who.tali{background:rgba(237,230,214,.12); color:var(--parchment);}
   .who.world{background:rgba(30,168,150,.14); color:var(--teal);}
-  .dline .txt{display:block; font-size:1.04rem;}
+  .dline .txt{display:block; font-size:1.08rem;}
   .dline .adv{float:right; color:var(--dim); font-size:1.05rem; margin-top:-4px;}
   .choices{display:flex; flex-direction:column; gap:8px; margin-top:8px;}
-  .choice{background:var(--royal); border:1px solid var(--line); color:var(--text); padding:13px 15px; border-radius:11px; text-align:left; font-size:1rem; min-height:48px;}
+  .choice{background:var(--royal); border:1px solid var(--line); color:var(--text); padding:13px 15px; border-radius:11px; text-align:left; font-size:1.04rem; min-height:48px;}
   .choice:active{border-color:var(--gold);}
   .choice:disabled{opacity:.35;}
   .backbtn{background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:99px; width:36px; height:36px; font-size:1rem; float:left; margin-right:9px; line-height:1;}
 
   #clues{display:none; margin-top:7px; gap:5px; flex-wrap:wrap; flex:0 0 auto;}
   #clues.on{display:flex;}
-  .clue{font-size:.74rem; color:var(--teal); border:1px dashed rgba(30,168,150,.55); border-radius:99px; padding:4px 11px; animation:pop .4s;}
+  .clue{font-size:.8rem; color:var(--teal); border:1px dashed rgba(30,168,150,.55); border-radius:99px; padding:4px 11px; animation:pop .4s;}
   @keyframes pop{0%{transform:scale(.6); opacity:0;}100%{transform:scale(1); opacity:1;}}
 
   #store{display:none; margin-top:8px; background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:10px 13px; flex:0 0 auto;}
   .st-row{display:flex; align-items:center; gap:9px; margin:5px 0;}
-  .st-name{flex:0 0 76px; font-size:.66rem; letter-spacing:1px; text-transform:uppercase; color:var(--dim); font-family:'Cinzel',serif;}
+  .st-name{flex:0 0 76px; font-size:.72rem; letter-spacing:1px; text-transform:uppercase; color:var(--dim); font-family:'Cinzel',serif;}
   .st-track{flex:1; height:9px; background:#0d1230; border:1px solid var(--line); border-radius:99px; position:relative; overflow:hidden;}
   .st-fill{position:absolute; top:0; bottom:0; left:0; background:var(--teal); border-radius:99px; transition:width .9s ease;}
   .st-num{flex:0 0 76px; text-align:right; font-size:.85rem; color:var(--stone);}
 
   #plan,#crew{display:none; margin-top:8px; background:var(--indigo); border:1px solid var(--line); border-radius:12px; padding:11px 13px; flex:0 0 auto;}
   .plan-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; flex-wrap:wrap; gap:4px;}
-  .plan-title{font-size:.66rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); font-family:'Cinzel',serif;}
+  .plan-title{font-size:.72rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); font-family:'Cinzel',serif;}
   .hands-left{font-size:.86rem; color:var(--stone);}
   .site{display:flex; align-items:center; gap:8px; padding:8px 0; border-top:1px solid rgba(42,53,96,.6);}
   .site-name{flex:1; cursor:pointer; line-height:1.3;}
   .site-name .nm{color:var(--text); font-size:.98rem;}
-  .site-name .yl{display:block; font-size:.78rem; color:var(--dim); font-style:italic;}
+  .site-name .yl{display:block; font-size:.85rem; color:var(--dim); font-style:italic;}
   .ctr{display:flex; align-items:center; gap:7px;}
   .ctr button{width:42px; height:42px; border-radius:10px; background:var(--royal); color:var(--text); border:1px solid var(--line); font-size:1.25rem; line-height:1;}
   .ctr button:disabled{opacity:.3;}
@@ -107,7 +107,7 @@
   #modal.on{display:flex;}
   .card{background:var(--indigo); border:1px solid var(--amethyst); border-radius:16px; max-width:430px; width:100%; padding:18px; max-height:84vh; overflow:auto;}
   .card h3{color:var(--amethyst); margin-bottom:6px; letter-spacing:1px; font-family:'Cinzel',serif;}
-  .cipm-row{display:flex; gap:9px; margin:7px 0; font-size:.92rem;}
+  .cipm-row{display:flex; gap:9px; margin:7px 0; font-size:.96rem;}
   .cipm-row .k{flex:0 0 28px; height:28px; border-radius:8px; background:var(--royal); border:1px solid var(--amethyst); color:var(--amethyst); font-weight:800; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif;}
   .cipm-row .v{color:var(--stone); padding-top:3px;}
   .lockedcard{opacity:.5; font-size:.84rem; color:var(--dim); border-top:1px solid var(--line); padding-top:9px; margin-top:10px;}
@@ -328,8 +328,9 @@ if(typeof module!=="undefined") module.exports = { SIM, computeMoon, winterVerdi
 
 <script>
 /* ==========================================================================
-   iTHiNK v11 — Episodes 0 & 1: SECOND-PERSON EXILE — YOU ARE AADI.
-   Story migration per Decision 18. Validated math untouched from v10.
+   iTHiNK v12 — THE THINKING ENGINE.
+   Ladder: observe→connect→hypothesize→predict→critique→transfer.
+   Causal rules replace authored outcomes. Economy math untouched from v10.
    The Neurocircuitry Test governs every activity: the player GENERATES.
    · The old ways cannot beat winter — the valley says so after moon one.
      Only invention (the Workshop) closes the gap. Thinking is the lever.
@@ -347,6 +348,8 @@ const S = {
   examined:{}, favorDone:false, exhausted:false,
   clues:[], cards:[], rung:0, cameoShown:false,
   charge:0, voicesHeard:{}, pendingCard:null,
+  lawsSeen:{}, lawsOwned:{}, toolsSeen:{}, diagnosed:{}, pendingTrace:null,
+  missedFlaw:false, curElderPlan:null, winterPred:null, plansUsed:{},
   tech: freshTech(), expPending:null, pushPrediction:null, trapDone:false, pushPlanned:false,
   fruitRotSeen:false, built:0,
   /* era II state */
@@ -356,6 +359,7 @@ const S = {
        fruitRotTotal:0, fishRotTotal:0, pushes:0,
        days:[], weeks:1, wastedTotal:0, rotations:0, gateRetries:0,
        inventions:[], predictions:[], restates:[], voices:0,
+       predLedger:[], critiques:[], diagMiss:0, rungOK:0, rungMiss:0,
        faceGaps:{What:0, How:0, Why:0}}
 };
 const $ = id => document.getElementById(id);
@@ -471,17 +475,101 @@ function voiceOpts(era){
   }
   return out;
 }
+const VOICELAWS = {smokewhy:["water","air","smoke"], coldwhy:["cold","earth"], moonwhy:[], knotwhy:[], shoalwhy:[], rackwhy:["smoke"]};
 function hearVoice(era,id){
   if(!spendCharge()) return;
   (S.voicesHeard[era]=S.voicesHeard[era]||{})[id]=true;
   S.log.voices++;
-  say(VOICES[era][id].lines, restorePanels);
+  say(VOICES[era][id].lines, ()=>{ (VOICELAWS[id]||[]).forEach(seeLaw); restorePanels(); });
 }
 function openVoices(){
   const opts = voiceOpts(S.era);
   if(!opts.length){ say([{who:"tali", t:`"Nothing silent is left here, boy. You have heard them all."`}], restorePanels); return; }
   choices(opts.concat([{t:"↩ leave the silent things", fn:restorePanels}]));
 }
+
+/* ==========================================================================
+   v12 — THE CAUSAL ENGINE. Rules, not authored outcomes.
+   User-facing: plain sentences. No codes ever shown.
+   ========================================================================== */
+const LAWS = {
+  eats:  {short:"something alive EATS the fruit",  t:"Rot is alive — something small is eating the flesh."},
+  water: {short:"rot drinks water",                t:"Rot drinks water. Dry things do not blacken."},
+  air:   {short:"rot breathes air",                t:"Rot breathes air. What is sealed, keeps."},
+  cold:  {short:"cold slows, never stops",         t:"Cold slows every small worker — it stops none of them."},
+  sun:   {short:"sun takes water out",             t:"The sun takes the water out of whatever lies under it."},
+  smoke: {short:"smoke dries AND coats",           t:"Smoke takes water and coats against air — and drinks wood for it."},
+  earth: {short:"earth GIVES water",               t:"The earth is cool — but damp. It gives water. Damp is rot's mother."},
+  ashlaw:{short:"ash runs when wet",               t:"Ash fills gaps while dry — and runs like grey soup when wet."},
+  reeds: {short:"woven reeds hold",                t:"Reeds woven tight hold against pull and wind."},
+  gaps:  {short:"wind enters through gaps",        t:"Wind and water enter through gaps. Close the gap, close the door."},
+  wood:  {short:"every fire is a bill",            t:"Wood burns once. Every improvement that burns is a standing bill."},
+  fit:   {short:"fit before copy",                 t:"A tool that serves one flesh can ruin another. Fit before copy."},
+  scale: {short:"a tenth of a cure is a story",    t:"A cure that covers one basket in ten is a story, not a way."},
+  turn:  {short:"rot can be TURNED",               t:"Some spoilings are not endings. Rot turned right becomes a new keeping."}
+};
+function seeLaw(id){
+  if(S.lawsSeen[id]) return;
+  S.lawsSeen[id] = true;
+  addClue("law — " + LAWS[id].short);
+}
+function ownLaw(id){
+  seeLaw(id);
+  if(!S.lawsOwned[id]) S.lawsOwned[id] = true;
+  hud(true);
+}
+/* every experiment = problem × target × tool, resolved by the rules */
+const EXP = {
+  rot: {
+    targets: {water:"Take its water", air:"Seal its air", cold:"Slow it with cold"},
+    tools: {
+      sun:   {label:"the sun — roots dry hard under it", fits:["water"],
+              ok:true, actual:"nine", rule:"sun",
+              apply:t=>{t.fruitKeep=0.9; t.fruitFuelFlat=0;},
+              tell:`THE GROVE: "…So the sun takes the water and leaves the sweetness. Nine of ten now survive to winter. You did not grow one more fruit, boy — you stopped LOSING them. Remember which of those was free."`},
+      smoke: {label:"the smokehouse — fish keeps in its breath", fits:["water","air"],
+              ok:true, actual:"nine", rule:"smoke",
+              apply:t=>{t.fruitKeep=0.95; t.fruitFuelFlat=2;},
+              tell:`THE SMOKEHOUSE: "Nineteen of twenty will keep — I dry them AND coat them. But I drink two measures of wood each moon for it. Every improvement has a price. Yours is now a standing bill."`},
+      river: {label:"the river — cold to its bones", fits:["cold"],
+              ok:false, actual:"half", rule:"cold",
+              apply:t=>{t.fruitKeep=0.5;},
+              tell:`THE RIVER: "Cold slows the rot. It does not stop it. Half will still blacken — better than before, worse than you hoped. Now you know what cold is and is not."`},
+      earth: {label:"the cool earth — like the roots live in", fits:["air","cold"],
+              ok:false, actual:"one or two", rule:"earth",
+              apply:t=>{},
+              tell:`THE ROOT FIELD: "The root LIVES in the earth — the fruit only dies there faster. Damp is rot's mother. A failed test that teaches is not a wasted hand, boy. But it was still a hand."`},
+      salt:  {label:"the brine rock — where nothing rots and nothing grows", fits:["water"],
+              ok:false, actual:"nine", rule:"fit", need:"salt",
+              apply:t=>{},
+              tell:`THE BRINE ROCK: "Nine of ten kept — and not one child will touch them. Brine serves the flesh of the river, not of the tree. You copied a cure without asking WHOM it cures. Fit before copy."`},
+      honey: {label:"the hive's wax and honey — what bees seal never spoils", fits:["air"],
+              ok:false, actual:"ten — of one basket", rule:"scale", need:"honey",
+              apply:t=>{},
+              tell:`THE HIVE: "What my wax seals, keeps — every piece of it. All one cupful. You have found a perfect cure for a tenth of a basket. A cure that cannot reach the pile is a story, not a way."`},
+      jar:   {label:"the forgotten jar — crushed, sealed, and strange", fits:["air"],
+              ok:false, actual:"none — and all", rule:"turn", need:"jar",
+              apply:t=>{},
+              tell:`THE JAR: "The crushed fruit did not die in me — it TURNED. Sharp, alive, keeping through a whole year. Not tonight's answer, boy. But remember me… when the piles begin to outlive their week."`}
+    },
+    coreTools:["sun","smoke","river","earth"]
+  },
+  roofs: {
+    targets: {gaps:"Close the gaps"},
+    tools: {
+      reeds: {label:"river reeds — woven tight, they hold thrashing fish", fits:["gaps"],
+              ok:true, actual:"nine patches", rule:"reeds",
+              apply:t=>{t.hutPer=9;},
+              tell:`THE OLD HUT: "Reed over straw, crossed like netting — the wind slides off instead of in. Nine patches a moon per hand now, where five went before. Same hands. Better idea."`},
+      ash:   {label:"hearth ash — packed into the gaps", fits:["gaps"],
+              ok:false, actual:"none, after the rain", rule:"ashlaw",
+              apply:t=>{},
+              tell:`THE OLD HUT: "Dry, the ash sat. Wet, it ran like grey soup down my walls. The field drinks ash; walls do not. Wrong place for a right thing."`}
+    },
+    coreTools:["reeds","ash"]
+  }
+};
+
 
 /* ==========================================================================
    TITLE & EPIGRAPH
@@ -555,8 +643,8 @@ function sceneExam(){
     <text x="195" y="198" text-anchor="middle" font-size="20" fill="#D4AF37" font-weight="800">?</text>
     <g><circle cx="195" cy="498" r="11" fill="#0B1024"/><rect x="182" y="510" width="26" height="34" rx="8" fill="#0B1024"/>
     <circle cx="200" cy="522" r="4.5" fill="#EDE6D6" opacity="0.25"/></g>
-    <text x="195" y="40" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE CITY OF ANSWERS</text>
-    <text x="195" y="58" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">FINAL EXAMINATION</text>
+    <text x="195" y="40" text-anchor="middle" font-size="12" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE CITY OF ANSWERS</text>
+    <text x="195" y="58" text-anchor="middle" font-size="12" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">FINAL EXAMINATION</text>
   </svg>`;
   say([
     {who:"narr", t:"You have never missed a question in your life. Tonight you graduate first in the City of Answers. The old talisman on your chest — worn so long you forget it is there — is dim, and strangely awake."}
@@ -593,7 +681,7 @@ function sceneExile(){
     <text x="195" y="140" text-anchor="middle" font-size="10.5" letter-spacing="2" fill="#D4AF37" font-family="Cinzel,serif">EXPLAIN, NOT RECITE</text>
     <g fill="#0B1024"><circle cx="80" cy="462" r="10"/><rect x="68" y="473" width="24" height="36" rx="7"/></g>
     <circle cx="85" cy="486" r="4.5" fill="#EDE6D6" opacity="0.5" class="glow"/>
-    <text x="195" y="40" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE GATE · EXILE</text>
+    <text x="195" y="40" text-anchor="middle" font-size="12" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE GATE · EXILE</text>
   </svg>`;
   say([
     {who:"world", t:`THE GATEKEEPER, quietly: "You have every answer, Aadi. You own none of them. The City has no use for a mirror."`},
@@ -622,21 +710,28 @@ function valleySVG(extra=""){
       <circle cx="31" cy="30" r="30" fill="#1a4a3c"/><circle cx="14" cy="43" r="18" fill="#1a4a3c"/><circle cx="50" cy="44" r="16" fill="#1a4a3c"/>
       <circle cx="20" cy="24" r="3.6" fill="#C26A3D"/><circle cx="42" cy="18" r="3.6" fill="#C26A3D"/><circle cx="33" cy="38" r="3.6" fill="#C26A3D"/>
     </g>
-    <text x="62" y="342" text-anchor="middle" font-size="12" fill="#A7A9B2">the fruit grove</text>
+    <text x="62" y="342" text-anchor="middle" font-size="13.5" fill="#A7A9B2">the fruit grove</text>
     <ellipse cx="110" cy="420" rx="30" ry="8" fill="#3a3050"/>
     <path d="M92,417 q6,-9 10,0 M105,420 q6,-9 10,0 M118,417 q6,-9 10,0" stroke="#5a4a30" fill="none" stroke-width="2"/>
-    <text x="110" y="448" text-anchor="middle" font-size="12" fill="#A7A9B2">the root field</text>
-    <text x="252" y="540" text-anchor="middle" font-size="12" fill="#A7A9B2">the river</text>
+    <text x="110" y="448" text-anchor="middle" font-size="13.5" fill="#A7A9B2">the root field</text>
+    <text x="252" y="540" text-anchor="middle" font-size="13.5" fill="#A7A9B2">the river</text>
     <g fill="#241a10"><rect x="288" y="330" width="7" height="28" rx="2" transform="rotate(8 291 344)"/><rect x="305" y="326" width="7" height="32" rx="2" transform="rotate(-6 308 342)"/><rect x="322" y="331" width="7" height="26" rx="2" transform="rotate(3 325 344)"/></g>
-    <text x="308" y="382" text-anchor="middle" font-size="12" fill="#A7A9B2">the deadwood forest</text>
+    <text x="308" y="382" text-anchor="middle" font-size="13.5" fill="#A7A9B2">the deadwood forest</text>
+    <path d="M0,205 Q120,150 240,196 Q330,228 390,198 L390,240 L0,250 Z" fill="#10173a" opacity=".8"/>
+    <ellipse cx="195" cy="120" rx="180" ry="60" fill="#1E2A55" opacity=".14"/>
+    <ellipse cx="230" cy="536" rx="10" ry="4" fill="#e8eef8" opacity=".5"/>
+    <text x="252" y="524" text-anchor="middle" font-size="12" fill="#8A90B0">the brine rock</text>
+    <circle cx="52" cy="248" r="2.4" fill="#D4AF37" opacity=".8" class="tw"/>
+    <circle cx="58" cy="253" r="1.8" fill="#D4AF37" opacity=".7" class="tw2"/>
+    <path d="M252,486 q-3,-10 4,-12 q8,-2 8,6 q0,8 -12,6" fill="#7a5a38"/>
     <g fill="#2a2338"><path d="M282,452 L310,430 L338,452 L338,482 L282,482 Z"/><path d="M330,458 L352,441 L370,458 L370,480 L330,480 Z"/></g>
-    <text x="328" y="502" text-anchor="middle" font-size="12" fill="#A7A9B2">the huts</text>
+    <text x="328" y="502" text-anchor="middle" font-size="13.5" fill="#A7A9B2">the huts</text>
     <ellipse cx="300" cy="490" rx="9" ry="4" fill="#C26A3D" opacity=".55"/>
     <path d="M296,490 Q299,477 303,490" fill="#D4AF37" class="flame"/>
     <g fill="#0B1024"><circle cx="130" cy="480" r="7"/><path d="M122,488 Q118,506 122,520 L130,520 L131,509 L134,520 L142,520 Q142,502 138,488 Z"/></g>
     <circle cx="135" cy="494" r="4" fill="#EDE6D6" opacity="0.5" class="glow"/>
     ${extra}
-    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE FIRST VALLEY</text>
+    <text x="195" y="30" text-anchor="middle" font-size="12" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE FIRST VALLEY</text>
   </svg>`;
 }
 function pageCameo(y=380){
@@ -675,9 +770,33 @@ function exploreChoices(){
     if(k==="shop") return;
     if(!S.examined[k]) opts.push({t:"Walk to "+SIM.SITES[k].label, fn:()=> S.favorDone? tellSite(k) : gateScene(k)});
   });
+  if(S.favorDone){
+    if(!S.toolsSeen.salt)  opts.push({t:"Walk to the white-crusted rock by the river", fn:()=>tellExtra("salt")});
+    if(!S.toolsSeen.honey) opts.push({t:"Climb to the wild hive in the grove", fn:()=>tellExtra("honey")});
+    if(!S.toolsSeen.jar)   opts.push({t:"Open the forgotten jar behind the huts", fn:()=>tellExtra("jar")});
+  }
   const seen = Object.keys(S.examined).length;
   if(S.favorDone && seen>=3) opts.push({t:"Enough walking — gather the band. We plan. ▸", fn:startPlanning});
   choices(opts);
+}
+const EXTRAS = {
+  salt: {law:null, lines:[
+    {who:"narr", t:"A wet rock wears a white crust. You touch a finger to it, then to your tongue — it BITES. In its shadow: no moss, no rot, no life at all."},
+    {who:"tali", t:`"Mark it, boy. Where the white crust lies, nothing grows — and nothing spoils. A tool, waiting for the right flesh."`}]},
+  honey: {law:"air", lines:[
+    {who:"narr", t:"High in the old tree, bees seal every cell with wax. What they seal never spoils. There is perhaps a cupful — and ten thousand guards."},
+    {who:"tali", t:`"Sealed from air, nothing rots. Remember the amount, too. The amount is half the truth."`}]},
+  jar: {law:"turn", lines:[
+    {who:"narr", t:"Behind the huts, a clay jar someone sealed and forgot. Inside: crushed fruit from LAST season. It smells sharp, alive… not rotten."},
+    {who:"tali", t:`"A whole year, and not dead — TURNED. File this one away, boy. It is an answer to a question nobody here has asked yet."`}]}
+};
+function tellExtra(k){
+  S.toolsSeen[k]=true;
+  say(EXTRAS[k].lines, ()=>{
+    if(EXTRAS[k].law) seeLaw(EXTRAS[k].law);
+    addClue("tool noticed — " + (k==="salt"?"the brine rock":k==="honey"?"the hive's wax":"the strange jar"));
+    exploreChoices();
+  });
 }
 const GATES = {
   grove:{voice:"THE OLD TREE",
@@ -739,8 +858,10 @@ function doFavor(k){
     tellSite(k);
   });
 }
+const SITELAWS = {grove:["eats","water"], roots:["sun"], river:["smoke","wood"], forest:["wood"], huts:["gaps"]};
+function plantLaws(k){ (SITELAWS[k]||[]).forEach(seeLaw); }
 function tellSite(k){
-  S.examined[k]=true;
+  S.examined[k]=true; plantLaws(k);
   if(k==="grove"){
     say([
       {who:"world", t:"THE GROVE: \"Sweet and fast — a hand picks twelve measures a moon, easiest work in the valley. But hear me say it plainly: my fruit does not keep. Whatever you store, seven parts in ten will blacken before deep winter… the old way.\""},
@@ -752,6 +873,44 @@ function tellSite(k){
 }
 
 /* ---------------- era 0 planning ---------------- */
+const ELDERPLANS = [
+ {id:"greed", alloc:{grove:6,roots:0,river:0,forest:1,huts:1,shop:0},
+  intro:`THE ELDER: "I have made the plan myself this moon, travelers. Six hands to the grove — twelve measures each, the fastest food we have. One hand for wood. One for the roofs. Say yes, and we work."`,
+  lines:[
+    {t:"Six hands to the grove — the fastest food in the valley.", flaw:true},
+    {t:"One hand hauls deadwood for the hearth.", flaw:false},
+    {t:"One hand patches the huts against the wind.", flaw:false}],
+  whyQ:`THE VALLEY: "You tapped his grove line. WHY does it lie?"`,
+  whyOpts:[
+    {t:"Six hands pick 72 — and the old way keeps about 22. The plan feeds the rot, not the store.", ok:true},
+    {t:"Six hands will strip the grove bare before the moon is even half done.", ok:false},
+    {t:"Six hands in one place will crowd each other and pick slower for it.", ok:false}],
+  dusk:`THE VALLEY, at dusk: "Count the elder's grove — picked much, KEPT little. The rot ate what his plan refused to price. A plan that ignores a leak is a plan FOR the leak."`},
+ {id:"twomouths", alloc:{grove:1,roots:2,river:3,forest:1,huts:1,shop:0},
+  intro:`THE ELDER: "Wiser this time. Three hands to the river — the richest measures we have. Two to the roots. One each to the wood, the huts, the grove. Well?"`,
+  lines:[
+    {t:"Three hands to the river — nine rich measures each.", flaw:true},
+    {t:"Two hands dig roots — slow, but they never betray.", flaw:false},
+    {t:"One hand each: the wood, the huts, the grove.", flaw:false}],
+  whyQ:`THE VALLEY: "You tapped his river line. WHY does it lie?"`,
+  whyOpts:[
+    {t:"Three river hands need six wood for smoke — one wood hand brings eight, and the hearth drinks too. Two mouths, one pile.", ok:true},
+    {t:"The river cannot carry three nets at once — the fish will scatter from the noise.", ok:false},
+    {t:"Fish is not worth its trouble — the smoking always costs more than the catch.", ok:false}],
+  dusk:`THE VALLEY, at dusk: "The smokehouse and the hearth drank from ONE pile, and the fish paid for it on the shore. Nobody counted both mouths. A number counted once is not yet counted."`},
+ {id:"thin", alloc:{grove:2,roots:2,river:1,forest:1,huts:2,shop:0},
+  intro:`THE ELDER: "Then we go safe, travelers. A little of everything — two to the grove, two to roots, one to the river, one to wood, two to the huts. Nothing forgotten. Nothing risked."`,
+  lines:[
+    {t:"A little of everything — no site left empty.", flaw:true},
+    {t:"The roots and the grove both feed the store.", flaw:false},
+    {t:"The huts get two hands — the children sleep dry.", flaw:false}],
+  whyQ:`THE VALLEY: "You tapped his careful spread. WHY does it lie?"`,
+  whyOpts:[
+    {t:"A fistful of everything is a store of nothing — spread hands can miss every winter mark at once.", ok:true},
+    {t:"Some sites must always rest — working all five in one moon angers the valley.", ok:false},
+    {t:"Careful work is slow work — a safe plan tires the band more than a bold one.", ok:false}],
+  dusk:`THE VALLEY, at dusk: "Every pile a little taller — every mark still missed. Spreading is not choosing, boy. And winter only counts choices."`}
+];
 function startPlanning(){
   S.scene="plan";
   stage.innerHTML = valleySVG();
@@ -761,7 +920,49 @@ function startPlanning(){
       {who:"aadi", t:"Right. My plan: everyone to the grove. Twelve a moon each — biggest number in the valley, you heard it. Numbers are the one thing I'm good at… unless you see something I don't?"},
       {who:"shyam", t:`"Before you spend — whatever you choose, can you name what you are choosing to LOSE?"`}
     ], showPlan);
+  } else if(S.moon>=2){
+    const unused = ELDERPLANS.filter(p=>!S.plansUsed[p.id]);
+    if(!unused.length){ showPlan(); return; }
+    elderScene(unused[0]);
   } else showPlan();
+}
+function elderScene(plan){
+  S.plansUsed[plan.id] = true;
+  S.curElderPlan = plan;
+  say([
+    {who:"world", t:plan.intro},
+    {who:"shyam", t:`"Before you nod at an elder — does his plan LIE anywhere? Tap the line that does. Or call it sound, and live with it."`}
+  ], ()=>offerLines(plan, 0));
+}
+function offerLines(plan, taps){
+  choices(plan.lines.map(l=>({t:'"'+l.t+'"', fn:()=>{
+    if(l.flaw){ askWhy(plan, taps); }
+    else {
+      say([{who:"world", t:`THE VALLEY: "That line holds. ${taps>=1? "You are tapping, not thinking. Count what each line PAYS and what it LOSES." : "Look again."}"`}], ()=>offerLines(plan, taps+1));
+    }
+  }})).concat([{t:"The plan is sound — run it as the elder says.", fn:()=>{
+    S.missedFlaw = true;
+    S.alloc = {...plan.alloc};
+    say([{who:"shyam", t:`"Nodded through, then. The dusk will read it back to us."`}], runMoon);
+  }}]));
+}
+function askWhy(plan, taps){
+  say([{who:"world", t:plan.whyQ}], ()=>{
+    choices(plan.whyOpts.map(o=>({t:o.t, fn:()=>{
+      if(o.ok){
+        S.log.critiques.push({id:plan.id, found:true, taps});
+        earnCharge(1);
+        say([
+          {who:"world", t:`THE VALLEY: "Named, and priced. The elder is silent — the way a man is silent when the numbers turn on him."`},
+          {who:"world", t:`THE ELDER, finally: "…Then move the hands yourself, traveler. Show me."`},
+          {who:"tali", t:`"His plan is on the board, boy. Fix what lied — and remember the bench takes a hand too, if you want it."`}
+        ], ()=>{ S.alloc = {...plan.alloc}; S.missedFlaw=false; S.curElderPlan=null; showPlan(); });
+      } else {
+        S.log.probeRetries++;
+        say([{who:"world", t:`THE VALLEY: "No — that is a story about the flaw, not the flaw. Stand in the numbers and answer again."`}], ()=>askWhy(plan, taps));
+      }
+    }})));
+  });
 }
 function shopOpen(){ return S.moon>1 || S.season>1; }
 function showPlan(){
@@ -802,7 +1003,7 @@ function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 function siteTouch(k){
   if(k==="shop") return;
   if(!S.examined[k]){
-    S.examined[k]=true;
+    S.examined[k]=true; plantLaws(k);
     const t = k==="grove" ? "THE GROVE: \"A hand picks twelve a moon — and seven of ten rot before deep winter, the old way. I did warn you.\"" : TELL[k].t;
     say([{who:"world", t}], ()=>{ if(TELL[k]) addClue(TELL[k].clue); showPlan(); });
   }
@@ -821,9 +1022,9 @@ function runMoon(){
   if(S.alloc.shop>0 && !S.expPending){ chooseExperiment(); return; }
   const alloc = {...S.alloc};
   if(S.expPending){ /* the new way is tried on THIS moon's harvest as the experiment runs */
-    const {p,m} = S.expPending;
-    (S.tech.tried[p] = S.tech.tried[p]||{})[m] = true;
-    WORKSHOP.problems[p].methods[m].apply(S.tech);
+    const {p,tool} = S.expPending;
+    (S.tech.tried[p] = S.tech.tried[p]||{})[tool] = true;
+    EXP[p].tools[tool].apply(S.tech);
   }
   const res = computeMoon(alloc, push, S.exhausted, S.store.fuel, S.tech);
   S.log.plans.push({season:S.season, moon:S.moon, alloc, push, exhausted:S.exhausted});
@@ -851,10 +1052,16 @@ function runMoon(){
   if(alloc.forest) beats.push({who:"narr", t:`The forest: ${res.wood} measures of firewood hauled.`});
   if(alloc.huts) beats.push({who:"narr", t:`The huts: ${res.hutwork} patches set against the wind.`});
   if(push) beats.push({who:"narr", t:"The band worked past dusk every day. It shows in the piles — and in their faces. Something was borrowed this moon."});
+  if(S.missedFlaw && S.curElderPlan){
+    beats.push({who:"world", t:S.curElderPlan.dusk});
+    beats.push({who:"shyam", t:`"He is an elder, and he was wrong, and you nodded. Which of the three of you does that number belong to?"`});
+    S.log.critiques.push({id:S.curElderPlan.id, found:false});
+    S.missedFlaw=false; S.curElderPlan=null;
+  }
   say(beats, ()=>{ S.rung=0; S.expPending=null; afterMoon(alloc, res, push); });
 }
 
-/* ---- v9: THE WORKSHOP — invent before being taught ---- */
+/* ---- v12: THE WORKSHOP — diagnose, aim, choose a tool, predict, run, trace ---- */
 function chooseExperiment(){
   const probs = [];
   if(S.fruitRotSeen && !allTried("rot")) probs.push("rot");
@@ -868,35 +1075,134 @@ function chooseExperiment(){
     {who:"narr", t:"One hand stands free of the fields this moon, before a bench of borrowed tools. The valley's problems queue up like patients."},
     {who:"shyam", t:`"A hand that makes nothing this moon. What must it make instead, to be worth its keep?"`}
   ], ()=>{
-    choices(probs.map(p=>({t:"Attack "+WORKSHOP.problems[p].label, fn:()=>chooseMethod(p)})));
+    choices(probs.map(p=>({t:"Attack "+WORKSHOP.problems[p].label, fn:()=>diagGate(p)})));
   });
 }
 function allTried(p){
   const t = S.tech.tried[p]||{};
-  return Object.keys(WORKSHOP.problems[p].methods).every(m=>t[m]);
+  return EXP[p].coreTools.every(m=>t[m]);
 }
-function chooseMethod(p){
-  const P = WORKSHOP.problems[p];
-  const tried = S.tech.tried[p]||{};
+/* -- step 1: the bench refuses hunches until the cause is named -- */
+function diagGate(p){
+  if(S.diagnosed[p]){ composeTarget(p); return; }
+  if(p==="roofs"){
+    if(S.lawsSeen.gaps){ S.diagnosed.roofs=true; composeTarget(p); }
+    else say([{who:"world", t:`THE WORKSHOP: "You have not even LISTENED to the roofs, boy. Go stand under one when the wind talks. Then come back."`}], ()=>{ S.alloc.shop=0; showPlan(); });
+    return;
+  }
+  const seen = ["eats","water","air","cold","sun","smoke","earth"].filter(l=>S.lawsSeen[l]).length;
+  if(seen<3){
+    say([
+      {who:"world", t:`THE WORKSHOP: "A hunch with no noticings behind it is a guess in work clothes. Bring me three things the valley has SHOWN you about the blackening. Walk. Look. Listen."`},
+      {who:"tali", t:`"The roots, the smokehouse, the river, the earth — they have all been telling you things. Some speak only for charge."`}
+    ], ()=>{ S.alloc.shop=0; showPlan(); });
+    return;
+  }
+  runDiag();
+}
+const DIAG = [
+  "The fruit blackens — and the flies always find it first",
+  "So something small and ALIVE is eating the flesh",
+  "The eater DRINKS — it lives on the water in the fruit",
+  "And it BREATHES — sealed away from air, it starves",
+  "Cold does not kill it — cold only slows its eating"
+];
+let diagIdx = 0;
+function runDiag(){
+  diagIdx = 0;
+  say([{who:"world", t:`THE WORKSHOP: "Then name the enemy before you swing. Build the chain — what IS the blackening? Tap it in order, boy."`}], drawDiag);
+}
+function drawDiag(){
+  const order = DIAG.map((_,i)=>i);
+  const shown = order.slice(2).concat(order.slice(0,2));
+  dlg.innerHTML = `<div class="chainrow fadein">
+    <div style="font-size:.85rem; color:var(--dim); font-style:italic; padding:0 2px;">what you saw first — down to what it means</div>
+    ${shown.map(i=>`<button class="chainbtn ${i<diagIdx?'done':''}" id="dg${i}" onclick="diagTap(${i})">${i<diagIdx?'✦ ':''}${DIAG[i]}</button>`).join("")}
+  </div>`;
+  seeDlg();
+}
+function diagTap(i){
+  if(i===diagIdx){
+    diagIdx++;
+    if(diagIdx>=DIAG.length){
+      S.diagnosed.rot = true; earnCharge(1);
+      ["eats","water","air","cold"].forEach(seeLaw);
+      say([
+        {who:"world", t:`THE WORKSHOP: "THERE is your enemy — small, thirsty, breathing, slow in the cold. Now you are not guessing, boy. You are AIMING."`},
+        {who:"tali", t:`"Feel that? Naming the cause is half the invention. The City never taught the half that matters."`}
+      ], ()=>composeTarget("rot"));
+    } else drawDiag();
+  } else {
+    S.log.diagMiss++;
+    const b = $("dg"+i); if(b){ b.classList.add("shake"); setTimeout(()=>b.classList.remove("shake"), 400); }
+  }
+}
+/* -- step 2: aim at a face of the cause -- */
+function composeTarget(p){
+  const T = EXP[p].targets;
+  const keys = Object.keys(T);
+  if(keys.length===1){ composeTool(p, keys[0]); return; }
+  say([{who:"world", t:`THE WORKSHOP: "The enemy has three faces, boy. Which will you strike?"`}], ()=>{
+    choices(keys.map(k=>({t:T[k], fn:()=>composeTool(p,k)})));
+  });
+}
+/* -- step 3: pick a tool the world has shown you -- */
+function composeTool(p, target){
+  const tools = EXP[p].tools, tried = S.tech.tried[p]||{};
+  const avail = Object.keys(tools).filter(m=> !tools[m].need || S.toolsSeen[tools[m].need]);
+  const hidden = Object.keys(tools).length - avail.length;
   say([{who:"world", t: p==="rot"
-    ? "THE WORKSHOP: \"The fruit blackens. You have SEEN this valley work: roots dry hard in the sun and live. Fish keeps in smoke. The river runs cold. The earth is cool and dark. Which of the valley's own tricks will you steal for the fruit? Your hunch, boy — not a recitation.\""
-    : "THE WORKSHOP: \"The roofs leak. You have seen reeds woven into nets that hold thrashing fish, and ash keep the field soft. What will you try against the wind?\""}],
+    ? `THE WORKSHOP: "And with WHAT? Only what this valley has shown you counts${hidden? " — and it has shown you less than it holds, walker":""}."`
+    : `THE WORKSHOP: "The roofs leak through their gaps. What will you close them with?"`}],
   ()=>{
-    choices(Object.keys(P.methods).map(m=>({
-      t: P.methods[m].label + (tried[m]? "  (tried)":""), off: !!tried[m],
-      fn: ()=>{ S.expPending = {p, m}; runMoon(); }
+    choices(avail.map(m=>({
+      t: tools[m].label + (tried[m]? "  (tried)":""), off: !!tried[m],
+      fn: ()=>{
+        if(!tools[m].fits.includes(target)){
+          say([{who:"world", t:`THE WORKSHOP: "Think, boy. ${aimCounter(p,target,m)} Aim again — the bench charges nothing for aiming."`}], ()=>composeTarget(p));
+          return;
+        }
+        predictStep(p, target, m);
+      }
     })));
   });
 }
+function aimCounter(p, target, m){
+  if(m==="sun" && target!=="water") return "Which of the sun's hands seals air or makes cold? The sun TAKES WATER — that is its one trick.";
+  if(m==="river" && target!=="cold") return "The river is WET, boy. It cannot take water and it seals nothing. Cold is all it carries.";
+  if(m==="earth" && target==="water") return "The earth GIVES water — you have seen the morning soil. It cannot take what it gives.";
+  if(m==="salt" && target!=="water") return "The white crust bites the water out. It seals nothing and carries no cold.";
+  if(m==="honey" && target!=="air") return "Wax and honey SEAL. They do not dry and they do not chill.";
+  if(m==="smoke" && target==="cold") return "Smoke is the child of fire. Ask it for anything but cold.";
+  if(m==="jar" && target!=="air") return "The jar is a sealed mouth. Sealing is its only word.";
+  return "That tool does not serve that face.";
+}
+/* -- step 4: commit a number before the moon runs -- */
+function predictStep(p, target, tool){
+  const q = p==="rot" ? `THE WORKSHOP: "Committed, then. Before the moon answers — of ten fruit, how many will this keep to winter? Say it now. The dusk remembers."`
+                      : `THE WORKSHOP: "Before the moon answers — how many patches will one hand set this way? The old way managed five."`;
+  const opts = p==="rot" ? ["One or two of the ten","About half of the ten","Nine of the ten, or more"]
+                         : ["Fewer than the old five","About the old five","Nine, or more"];
+  say([{who:"world", t:q}], ()=>{
+    const norms = p==="rot" ? ["one or two","half","nine"] : ["fewer","five","nine"];
+    choices(opts.map((o,i)=>({t:o, fn:()=>{
+      S.expPending = {p, tool, target, pred:o, norm:norms[i]};
+      say([{who:"shyam", t:`"Said, and kept. Now we watch."`}], runMoon);
+    }})));
+  });
+}
 function runExperiment(beats){
-  const {p, m} = S.expPending;
-  const M = WORKSHOP.problems[p].methods[m];
-  S.log.inventions.push({season:S.season, moon:S.moon, problem:p, method:m, worked:M.ok});
+  const {p, tool, pred} = S.expPending;
+  const M = EXP[p].tools[tool];
+  S.log.inventions.push({season:S.season, moon:S.moon, problem:p, method:tool, worked:M.ok});
+  S.log.predLedger.push({what:p+"·"+tool, said:pred, norm:S.expPending.norm, got:M.actual});
   earnCharge(1);
   beats.push({who:"narr", t:"At the workshop, the experiment runs its course — the moon itself is the test bench."});
   beats.push({who:"world", t:M.tell});
+  beats.push({who:"narr", t:`(You said: "${pred}". The moon answered: ${M.actual}.)`});
   if(M.ok) beats.push({who:"aadi", t:"It WORKED. Same valley, same hands — and the numbers just moved. In the City they never told me you could argue with a number and win."});
-  else beats.push({who:"aadi", t:"…It failed. But I know exactly WHY it failed, which is strange — failing in the City taught me nothing but shame. Next hunch will be better aimed."});
+  else beats.push({who:"aadi", t:"…It failed — but I can point at WHY. Failing in the City taught me nothing but shame. This taught me a law."});
+  S.pendingTrace = {rule:M.rule, tool, p};
 }
 
 function paceShort(){
@@ -904,6 +1210,39 @@ function paceShort(){
   return ["food","fuel","shelter"].filter(k=> S.store[k] < SIM.NEED[k]*frac);
 }
 function afterMoon(alloc, res, push){
+  if(S.pendingTrace){ traceScene(alloc, res, push); return; }
+  afterMoonCore(alloc, res, push);
+}
+/* -- step 5: trace the result back to its law -- */
+function traceScene(alloc, res, push){
+  const tr = S.pendingTrace; S.pendingTrace = null;
+  const decoys = Object.keys(LAWS).filter(k=>k!==tr.rule && k!=="turn" && k!=="reeds" && k!=="gaps");
+  const pick = [decoys[(S.log.inventions.length*3)%decoys.length], decoys[(S.log.inventions.length*3+4)%decoys.length]];
+  const opts = [tr.rule, ...pick].sort();
+  let tries = 0;
+  const ask = ()=>{
+    say([{who:"world", t:`THE WORKSHOP: "Before the piles are counted — which law did this moon just prove on my bench?"`}], ()=>{
+      choices(opts.map(k=>({t:LAWS[k].t, fn:()=>{
+        if(k===tr.rule){
+          ownLaw(tr.rule);
+          say([
+            {who:"tali", t:`"Owned. That law is yours now — it goes in the book, and the book is you."`}
+          ], ()=>afterMoonCore(alloc, res, push));
+        } else {
+          tries++; S.log.probeRetries++;
+          if(tries>=2){
+            ownLaw(tr.rule);
+            say([{who:"world", t:`THE WORKSHOP: "No. Hear it plainly, then, and keep it: ${LAWS[tr.rule].t}"`}], ()=>afterMoonCore(alloc, res, push));
+          } else {
+            say([{who:"world", t:`THE WORKSHOP: "That law is true — and it is not the one my bench just proved. Look at what HAPPENED, boy. Again."`}], ask);
+          }
+        }
+      }})));
+    });
+  };
+  ask();
+}
+function afterMoonCore(alloc, res, push){
   const short = paceShort();
   const onPace = short.length===0;
   if(onPace) raiseHI(42 + S.moon*4);
@@ -916,8 +1255,8 @@ function afterMoon(alloc, res, push){
   }
   say(lines, ()=>{
     const advance = ()=>{
-      if(S.moon < SIM.MOONS){ S.moon++; S.alloc={grove:0,roots:0,river:0,forest:0,huts:0,shop:0}; showPlan(); }
-      else sceneWinter();
+      if(S.moon < SIM.MOONS){ S.moon++; S.alloc={grove:0,roots:0,river:0,forest:0,huts:0,shop:0}; startPlanning(); }
+      else winterCommit();
     };
     if(S.moon===1 && S.season===1 && !S.trapDone) ceilingAndTrap(advance);
     else advance();
@@ -998,17 +1337,58 @@ function worstFit(){
   }
   return worst;
 }
+const LADDER_ANS = {
+  0:[
+    {ok:"The harvest those hands would have pulled anywhere else.",
+     no:"Nothing — the hands were busy, and busy is enough.",
+     confirm:`THE WIND, through the grass: "…so you can NAME the price. Few ever can…"`},
+    {ok:"It stops existing the moment I choose — it does not wait.",
+     no:"It waits for me — I can pick it up next moon, unchanged.",
+     confirm:`THE WIND: "…gone the moment you turned. Now you know what a choice costs…"`},
+    {ok:"Twenty-four — and it must buy food, wood and roofs, all three.",
+     no:"Twenty-four — and food alone decides the winter.",
+     confirm:`THE WIND: "…one purse, three hungers. Spend like you know it…"`},
+    {ok:"The right path became the price of the left one.",
+     no:"The right path is still there — roads do not close.",
+     confirm:`THE WIND, almost a word: "…the price… the price…"`}
+  ],
+  1:[
+    {ok:"For the craft its gift fits — watched, not guessed.",
+     no:"For whatever post happens to be empty at dawn.",
+     confirm:`THE WIND, off the water: "…watched, not guessed. That is the whole craft of setting hands…"`},
+    {ok:"The hands are unequal — gift and practice differ.",
+     no:"The luck is unequal — the hours are the same.",
+     confirm:`THE WIND: "…the hours were never the work. The hours are only the jar…"`},
+    {ok:"Skill — it cannot be bought or lent, only grown.",
+     no:"Strength — the arm simply thickens with use.",
+     confirm:`THE WIND: "…the one wealth no market sells. It grows in the staying…"`},
+    {ok:"I changed — the repetition wrote itself into me.",
+     no:"The rope changed — it learned the shape of the knot.",
+     confirm:`THE WIND, almost a word: "…the hand… the hand…"`}
+  ]
+};
 function askShyam(){
   S.log.asks++;
   const L = ladder();
   const r = Math.min(S.rung, L.length-1);
   S.log.deepestRung = Math.max(S.log.deepestRung, r+1);
-  const lines = [{who:"shyam", t:L[r]}];
-  if(r===L.length-1) lines.push({who:"world", t: S.era===0
-    ? `THE WIND, through the grass, almost a word: "…the price… the price…"`
-    : `THE WIND, off the water, almost a word: "…the hand… the hand…"`});
-  say(lines, ()=>{ restorePanels(); });
-  S.rung = (r+1) % L.length;
+  const A = LADDER_ANS[S.era][r];
+  const pair = (S.log.asks%2===0)? [ [A.ok,true], [A.no,false] ] : [ [A.no,false], [A.ok,true] ];
+  say([{who:"shyam", t:L[r]}], ()=>{
+    choices(pair.map(([t,good])=>({t, fn:()=>{
+      if(good){
+        S.log.rungOK++; S.rung=0;
+        say([{who:"world", t:A.confirm}], restorePanels);
+      } else {
+        S.log.rungMiss++; S.rung = Math.min(r+1, L.length-1);
+        say([{who:"world", t:`THE VALLEY: "Look once more at your own piles before you say that twice."`},
+             {who:"tali", t:`"Lower, then. He will meet you where you actually stand — that is his one kindness."`}], askShyam);
+      }
+    }})).concat([{t:"I don't know — take me lower.", fn:()=>{
+      S.rung = Math.min(r+1, L.length-1);
+      say([{who:"tali", t:`"Honest. Honest is faster than clever, boy."`}], askShyam);
+    }}]));
+  });
 }
 function restorePanels(){
   if(S.scene==="plan") showPlan();
@@ -1092,6 +1472,15 @@ function endVision(done){
 /* ==========================================================================
    ERA 0 — WINTER: the door is the test, and after failure the world TELLS
    ========================================================================== */
+function winterCommit(){
+  say([{who:"shyam", t:`"Last dusk before the snow. You have seen every pile. Commit, one more time — will the store hold?"`}], ()=>{
+    choices([
+      {t:"It holds — with room to spare.", fn:()=>{ S.winterPred="room"; sceneWinter(); }},
+      {t:"It holds — barely, by a few measures.", fn:()=>{ S.winterPred="barely"; sceneWinter(); }},
+      {t:"It falls short — winter will collect.", fn:()=>{ S.winterPred="short"; sceneWinter(); }}
+    ]);
+  });
+}
 function sceneWinter(){
   S.scene="winter"; $("plan").style.display="none";
   const v = winterVerdict(S.store);
@@ -1103,9 +1492,17 @@ function sceneWinter(){
     <ellipse cx="156" cy="476" rx="12" ry="5" fill="#C26A3D" opacity="${v.fuel? ".8":".25"}"/>
     ${v.fuel? `<path d="M151,476 Q155,456 161,476" fill="#D4AF37" class="flame"/>`:""}
     <g class="snow">${Array.from({length:24},(_,i)=>`<line x1="${17*i}" y1="${(i%6)*90}" x2="${17*i}" y2="${(i%6)*90+9}"/>`).join("")}</g>
-    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">WINTER · THE DOOR IS THE TEST</text>
+    <text x="195" y="30" text-anchor="middle" font-size="12" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">WINTER · THE DOOR IS THE TEST</text>
   </svg>`;
   const beats = [{who:"narr", t:"The first snow does not ask if you are ready. It simply arrives, and begins counting."}];
+  if(S.winterPred){
+    const margin = Math.min(S.store.food-SIM.NEED.food, S.store.fuel-SIM.NEED.fuel, S.store.shelter-SIM.NEED.shelter);
+    const actual = !v.pass? "short" : (margin>=12? "room" : "barely");
+    const names = {room:"holds with room", barely:"holds barely", short:"falls short"};
+    S.log.predLedger.push({what:"winter", said:S.winterPred, got:actual});
+    beats.push({who:"world", t:`THE SNOW: "You said '${names[S.winterPred]}'. The store answers: '${names[actual]}'. ${S.winterPred===actual? "You have learned to read your own valley, boy." : "Mind the gap between the two — that gap is where plans die."}"`});
+    S.winterPred = null;
+  }
   if(v.pass){
     const inv = S.log.inventions.filter(x=>x.worked);
     beats.push({who:"narr", t:`The store holds: ${S.store.food} food against the hundred and twenty needed. The woodpile: ${S.store.fuel} against forty. The roofs: ${S.store.shelter} patches, tight as a drum.`});
@@ -1129,7 +1526,7 @@ function sceneWinter(){
       S.season++; S.log.seasons=S.season; S.moon=1;
       S.store={food:0,fuel:0,shelter:0}; S.exhausted=false;
       S.alloc={grove:0,roots:0,river:0,forest:0,huts:0,shop:0};
-      stage.innerHTML = valleySVG(); drawStore(); showPlan();
+      stage.innerHTML = valleySVG(); drawStore(); startPlanning();
     });
   }
 }
@@ -1325,7 +1722,7 @@ function goEast(){
     <circle cx="80" cy="100" r="1.3" fill="#EDE6D6" class="tw"/><circle cx="300" cy="80" r="1.2" fill="#EDE6D6" class="tw2"/>
     <g fill="#0B1024"><circle cx="120" cy="452" r="9"/><rect x="110" y="462" width="22" height="30" rx="7"/></g>
     <circle cx="126" cy="472" r="4" fill="#EDE6D6" opacity="0.5" class="glow"/>
-    <text x="195" y="40" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">EPISODE 1 · EASTWARD</text>
+    <text x="195" y="40" text-anchor="middle" font-size="12" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">EPISODE 1 · EASTWARD</text>
     <text x="195" y="200" text-anchor="middle" font-size="12.5" font-style="italic" fill="#A7A9B2">"The greatest improvement in the productive powers of labour</text>
     <text x="195" y="220" text-anchor="middle" font-size="12.5" font-style="italic" fill="#A7A9B2">…seem to have been the effects of the division of labour."</text>
     <text x="195" y="248" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="#8A90B0" font-family="Cinzel,serif">— ADAM SMITH, 1776</text>
@@ -1348,21 +1745,21 @@ function lakeSVG(extra=""){
       <path d="M40,360 q30,-8 60,0 q30,8 60,0"/><path d="M180,410 q30,-8 60,0 q30,8 60,0"/>
       <path d="M70,470 q30,-8 60,0 q30,8 60,0"/><path d="M230,510 q30,-8 60,0"/>
     </g>
-    <text x="195" y="345" text-anchor="middle" font-size="12" fill="#A7A9B2">the lake</text>
+    <text x="195" y="345" text-anchor="middle" font-size="13.5" fill="#A7A9B2">the lake</text>
     <g fill="#2a2338"><path d="M20,296 L44,278 L68,296 L68,318 L20,318 Z"/><path d="M62,300 L82,286 L102,300 L102,316 L62,316 Z"/></g>
-    <text x="60" y="336" text-anchor="middle" font-size="11" fill="#A7A9B2">the village</text>
+    <text x="60" y="336" text-anchor="middle" font-size="12.5" fill="#A7A9B2">the village</text>
     <g stroke="#5a4a30" stroke-width="2.5" fill="none">
       <path d="M300,270 L300,306 M322,270 L322,306 M344,270 L344,306 M296,280 L348,280 M296,294 L348,294"/>
     </g>
-    <text x="322" y="326" text-anchor="middle" font-size="11" fill="#A7A9B2">the racks</text>
+    <text x="322" y="326" text-anchor="middle" font-size="12.5" fill="#A7A9B2">the racks</text>
     <path d="M128,288 q14,-16 30,0 q-14,16 -30,0 M162,282 q12,-14 26,0 q-12,14 -26,0" stroke="#8890b0" stroke-width="1.5" fill="none"/>
-    <text x="152" y="322" text-anchor="middle" font-size="11" fill="#A7A9B2">the nets</text>
-    <text x="240" y="270" text-anchor="middle" font-size="11" fill="#A7A9B2">the hands at work</text>
+    <text x="152" y="322" text-anchor="middle" font-size="12.5" fill="#A7A9B2">the nets</text>
+    <text x="240" y="270" text-anchor="middle" font-size="12.5" fill="#A7A9B2">the hands at work</text>
     <g fill="#0B1024"><circle cx="240" cy="286" r="5"/><path d="M235,291 Q233,302 235,310 L245,310 Q247,300 245,291 Z"/></g>
     <g fill="#0B1024"><circle cx="130" cy="500" r="7"/><path d="M122,508 Q118,524 122,538 L130,538 L131,528 L134,538 L142,538 Q142,522 138,508 Z"/></g>
     <circle cx="135" cy="514" r="4" fill="#EDE6D6" opacity="0.5" class="glow"/>
     ${extra}
-    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE NETMAKERS' WATER</text>
+    <text x="195" y="30" text-anchor="middle" font-size="12" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE NETMAKERS' WATER</text>
   </svg>`;
 }
 function sceneLake(){
@@ -1577,7 +1974,7 @@ function festival(){
       <path d="M280,220 L280,266 M310,220 L310,266 M340,220 L340,266 M276,232 L344,232 M276,248 L344,248"/>
     </g>
     ${pass? Array.from({length:12},(_,i)=>`<rect x="${278+(i%6)*11}" y="${226+Math.floor(i/6)*16}" width="7" height="4" rx="2" fill="#C2A44A"/>`).join(""):""}
-    <text x="195" y="30" text-anchor="middle" font-size="11" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE FESTIVAL OF LAMPS · THE DOOR IS THE TEST</text>
+    <text x="195" y="30" text-anchor="middle" font-size="12" letter-spacing="3" fill="#8A90B0" font-family="Cinzel,serif">THE FESTIVAL OF LAMPS · THE DOOR IS THE TEST</text>
   </svg>`;
   if(pass){
     say([
@@ -1685,7 +2082,8 @@ function sceneLog(era){
     <div style="font-size:.64rem; letter-spacing:1.5px; color:var(--dim); text-transform:uppercase; margin-bottom:8px; font-family:'Cinzel',serif;">Journey log · episode ${era} — what the game learned about the learner</div>
     <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px;">${chips}</div>
     ${invChips? `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px;">${invChips}</div>`:""}
-    <div style="font-size:.9rem; color:var(--stone);">${stats} · Shyam asked: <b style="color:var(--text)">${S.log.asks}×</b> (deepest rung ${S.log.deepestRung}/4) · chain built: <b style="color:var(--text)">${S.log.visions}/3</b> · probes retried: <b style="color:var(--text)">${S.log.probeRetries}</b> · ✧ voices heard: <b style="color:var(--text)">${S.log.voices}</b></div>
+    <div style="font-size:.9rem; color:var(--stone);">${stats} · Shyam asked: <b style="color:var(--text)">${S.log.asks}×</b> (rungs held ${S.log.rungOK} · slipped ${S.log.rungMiss}) · chain built: <b style="color:var(--text)">${S.log.visions}/3</b> · probes retried: <b style="color:var(--text)">${S.log.probeRetries}</b> · ✧ voices heard: <b style="color:var(--text)">${S.log.voices}</b></div>
+    <div style="font-size:.9rem; color:var(--stone); margin-top:5px;">predictions kept: <b style="color:var(--text)">${S.log.predLedger.filter(x=> x.said===x.got || (x.norm && String(x.got).indexOf(x.norm)>=0)).length}/${S.log.predLedger.length}</b> · flaws in elder plans: found <b style="color:var(--text)">${S.log.critiques.filter(c=>c.found).length}</b>, missed <b style="color:var(--text)">${S.log.critiques.filter(c=>!c.found).length}</b> · laws owned: <b style="color:var(--text)">${Object.keys(S.lawsOwned).length}</b> of ${Object.keys(S.lawsSeen).length} noticed</div>
     <div style="font-size:.85rem; color:var(--stone); margin-top:6px;">${faces}</div>
     <div style="font-size:.82rem; color:var(--dim); margin-top:9px;">${era===0
       ? "Every rotted basket is a diagnosed misconception; every failed experiment, a hunch corrected; every extra season, productive failure at work."
@@ -1709,6 +2107,10 @@ function openCodex(){
     : "Episode 2 · SURPLUS — locked. Opens for those who carry both cards. A pile that outlives its week is waiting, and the flies have found it first.";
   box.innerHTML = `<h3>THE CODEX</h3>
   <p style="font-size:.84rem; color:var(--dim); margin-bottom:10px;">It lights only when something is understood. ${S.cards.length} card(s) lit.</p>
+  ${Object.keys(S.lawsSeen).length? `<h3 style="font-size:.9rem; margin:4px 0 6px;">LAWS OF THE ROAD</h3>
+  <div style="margin-bottom:12px;">${Object.keys(LAWS).filter(k=>S.lawsSeen[k]).map(k=>
+    `<div style="font-size:.88rem; padding:4px 0; color:${S.lawsOwned[k]?'var(--teal)':'var(--dim)'};">${S.lawsOwned[k]?'✦':'◇'} ${LAWS[k].t}${S.lawsOwned[k]?'':' <span style="font-size:.72rem;">(half-noticed — prove it on the bench)</span>'}</div>`).join("")}
+  </div>`:""}
   ${S.cards.map(c=>`
     <div style="border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:10px;">
       <h3 style="font-size:.98rem; margin-bottom:7px;">✦ ${c.name}</h3>
@@ -1724,7 +2126,7 @@ function openCodex(){
 }
 
 /* ---------------- boot ---------------- */
-window.__test = { S, EXAM, VCHAIN, ladder, worstFit, WORKSHOP, VOICES };
+window.__test = { S, EXAM, VCHAIN, ladder, worstFit, WORKSHOP, VOICES, LAWS, EXP, ELDERPLANS, LADDER_ANS };
 </script>
 </body>
 </html>
